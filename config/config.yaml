@@ -1,0 +1,5 @@
+runmode: debug
+addr: 8080
+name: ccServer
+url: localhost:8080
+version: v1
