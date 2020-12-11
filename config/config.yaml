@@ -3,3 +3,12 @@ addr: 8080
 name: ccServer
 url: localhost:8080
 version: v1
+log:
+  wirter: file,stdout
+  logger_level: DEBUG
+  logger_file: ~/log/goOrigin.log
+  log_format_text: false
+  rollingPolicy: size
+  log_rotate_date: 1
+  log_rotate_size: 1024
+  log_backup_count: 7
