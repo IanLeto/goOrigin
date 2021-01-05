@@ -20,8 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/MySQLClient.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/MySQLClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MySQLClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/client.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
