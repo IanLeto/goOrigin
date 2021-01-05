@@ -20,43 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/root.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conf/default.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/conv.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/goOrigin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goOrigin.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/conf.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/conf_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/configuration.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/NOTICE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/color/color.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/logger.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/models.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/reconfigurable_sink.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/lager/writer_sink.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/log.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/logrotate.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/lexkong/log/st_lager.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/.travis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/bool_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/bool_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/count.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/count.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/duration_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/duration_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/flag.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/flag.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/int_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/int_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/ip_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/ip_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/string_array.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/string_array.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/string_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/string_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/uint_slice.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/spf13/pflag/uint_slice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/MySQLClient.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/client.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
