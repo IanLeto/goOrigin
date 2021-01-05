@@ -15,14 +15,16 @@ type ViperConfigurationSuite struct {
 
 func (v *ViperConfigurationSuite) SetupTest() {
 	conf.InitConfig()
-	conf.InitLog()
 }
 
 // TestMarshal :
 func (s *ViperConfigurationSuite) TestConfig() {
-	s.NotNil(viper.Get("runmode"))
+	s.NotNil(viper.Get("run_mode"))
 
 }
+
+
+
 
 // TestViperConfiguration :
 func TestViperConfiguration(t *testing.T) {

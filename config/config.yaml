@@ -1,4 +1,4 @@
-runmode: debug
+run_mode: debug
 addr: 8080
 name: ccServer
 url: localhost:8080
@@ -12,3 +12,17 @@ log:
   log_rotate_date: 1
   log_rotate_size: 1024
   log_backup_count: 7
+backend:
+  MySql:
+    address: localhost
+    port: 3306
+    password: root
+  redis:
+    address: localhost
+    port: 6379
+    isSentinal: false
+    masterName: master
+  etcd:
+    address: localhost
+    port: 2379
+

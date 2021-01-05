@@ -13,4 +13,6 @@ type Configuration interface {
 	GetTime(key string) time.Time
 	GetDuration(key string) time.Duration
 	GetStringSlice(key string) []string
+	SetDefault(key string, value interface{})
 }
+
