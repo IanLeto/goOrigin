@@ -19,11 +19,6 @@ func (v *ViperConfigurationSuite) SetupTest() {
 // TestMarshal :
 func (s *ViperConfigurationSuite) TestConfig() {
 
-}
-
-func (s ViperConfigurationSuite) TestMySqlBackendConfig() {
-
-	s.Equal("localhost:3306", conf.Conf.Backend.MySqlBackendConfig.Address)
 
 }
 

@@ -20,15 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/MySQLBackend.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conf/define.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/BackendConnection_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/unittest" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/MySQLClient.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/conf.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/MySQLBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MySQLBackend.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/conf/conf_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/default.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/default.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +70,17 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestMySqlBackendConfig in goOrigin/conf">
+  <component name="RunManager" selected="Go Test.BackendConnection_test.go">
+    <configuration name="BackendConnection_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <package value="goLibrary" />
+      <directory value="$PROJECT_DIR$/../goLibrary" />
+      <filePath value="$PROJECT_DIR$/backend/BackendConnection_test.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="TestConfig in goLibrary/viperDemo" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$/../goLibrary/viperDemo" />
@@ -107,11 +116,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.BackendConnection_test.go" />
         <item itemvalue="Go Test.TestMySqlBackendConfig in goOrigin/conf" />
         <item itemvalue="Go Test.TestConfig in goOrigin/conf" />
         <item itemvalue="Go Test.TestConfig in goLibrary/viperDemo" />
         <item itemvalue="Go Test.TestConfig in goLibrary/viperDemo" />
-        <item itemvalue="Go Test.TestConfig in goOrigin/conf" />
       </list>
     </recent_temporary>
   </component>
@@ -139,30 +148,34 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="219" y="365" key="#Go_Modules/0.0.1680.1050@0.0.1680.1050" timestamp="1607071635812" />
-    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1607939914777">
+    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1610356367427">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1607939914777" />
+    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1610356367427" />
     <state x="562" y="368" key="#xdebugger.evaluate" timestamp="1610104961195">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="562" y="368" key="#xdebugger.evaluate/0.0.1680.1050@0.0.1680.1050" timestamp="1610104961195" />
-    <state width="1638" height="364" key="GridCell.Tab.0.bottom" timestamp="1610275245525">
-      <screen x="0" y="0" width="1680" height="1050" />
+    <state width="1638" height="195" key="GridCell.Tab.0.bottom" timestamp="1610367639764">
+      <screen x="0" y="23" width="1680" height="1027" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245525" />
-    <state width="1638" height="364" key="GridCell.Tab.0.center" timestamp="1610275245524">
-      <screen x="0" y="0" width="1680" height="1050" />
+    <state width="792" height="195" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1610367629563" />
+    <state width="1638" height="195" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1610367639764" />
+    <state width="1638" height="195" key="GridCell.Tab.0.center" timestamp="1610367639763">
+      <screen x="0" y="23" width="1680" height="1027" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245524" />
-    <state width="1638" height="364" key="GridCell.Tab.0.left" timestamp="1610275245523">
-      <screen x="0" y="0" width="1680" height="1050" />
+    <state width="792" height="195" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1610367629562" />
+    <state width="1638" height="195" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1610367639763" />
+    <state width="1638" height="195" key="GridCell.Tab.0.left" timestamp="1610367639762">
+      <screen x="0" y="23" width="1680" height="1027" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245523" />
-    <state width="1638" height="364" key="GridCell.Tab.0.right" timestamp="1610275245525">
-      <screen x="0" y="0" width="1680" height="1050" />
+    <state width="792" height="195" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1610367629561" />
+    <state width="1638" height="195" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1610367639762" />
+    <state width="1638" height="195" key="GridCell.Tab.0.right" timestamp="1610367639764">
+      <screen x="0" y="23" width="1680" height="1027" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245525" />
+    <state width="792" height="195" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1610367629562" />
+    <state width="1638" height="195" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1610367639764" />
     <state width="1638" height="364" key="GridCell.Tab.1.bottom" timestamp="1610275245527">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
@@ -179,10 +192,11 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state width="1638" height="364" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245527" />
-    <state x="541" y="280" width="598" height="490" key="find.popup" timestamp="1608887988101">
-      <screen x="0" y="0" width="1680" height="1050" />
+    <state x="541" y="297" width="598" height="490" key="find.popup" timestamp="1610367677403">
+      <screen x="0" y="23" width="1680" height="1027" />
     </state>
-    <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1608887988101" />
+    <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1610367508264" />
+    <state x="541" y="297" width="598" height="490" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1610367677403" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -194,7 +208,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/conf/conf_test.go</url>
-          <line>26</line>
+          <line>25</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
