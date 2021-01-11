@@ -20,9 +20,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/MySQLBackend.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/define.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/MySQLClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MySQLClient.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/MySQLClient.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/conf.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/conf_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/conf_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/default.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +44,11 @@
   </component>
   <component name="GOROOT" path="/usr/local/go" />
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1lBXLefaL62yQiwlWPbGCFw9wJZ" />
@@ -60,7 +71,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestConfig in goLibrary/viperDemo">
+  <component name="RunManager" selected="Go Test.TestMySqlBackendConfig in goOrigin/conf">
     <configuration name="TestConfig in goLibrary/viperDemo" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$/../goLibrary/viperDemo" />
@@ -83,8 +94,22 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="TestMySqlBackendConfig in goOrigin/conf" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$/conf" />
+      <parameters value=" -testify.m ^TestMySqlBackendConfig$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="goOrigin/conf" />
+      <directory value="$PROJECT_DIR$/../goLibrary" />
+      <filePath value="$PROJECT_DIR$/../goLibrary" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestMySqlBackendConfig in goOrigin/conf" />
+        <item itemvalue="Go Test.TestConfig in goOrigin/conf" />
+        <item itemvalue="Go Test.TestConfig in goLibrary/viperDemo" />
         <item itemvalue="Go Test.TestConfig in goLibrary/viperDemo" />
         <item itemvalue="Go Test.TestConfig in goOrigin/conf" />
       </list>
@@ -118,25 +143,61 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1607939914777" />
-    <state width="1638" height="195" key="GridCell.Tab.0.bottom" timestamp="1609124237278">
+    <state x="562" y="368" key="#xdebugger.evaluate" timestamp="1610104961195">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="195" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1609124237278" />
-    <state width="1638" height="195" key="GridCell.Tab.0.center" timestamp="1609124237277">
+    <state x="562" y="368" key="#xdebugger.evaluate/0.0.1680.1050@0.0.1680.1050" timestamp="1610104961195" />
+    <state width="1638" height="364" key="GridCell.Tab.0.bottom" timestamp="1610275245525">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="195" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1609124237277" />
-    <state width="1638" height="195" key="GridCell.Tab.0.left" timestamp="1609124237276">
+    <state width="1638" height="364" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245525" />
+    <state width="1638" height="364" key="GridCell.Tab.0.center" timestamp="1610275245524">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="195" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1609124237276" />
-    <state width="1638" height="195" key="GridCell.Tab.0.right" timestamp="1609124237278">
+    <state width="1638" height="364" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245524" />
+    <state width="1638" height="364" key="GridCell.Tab.0.left" timestamp="1610275245523">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="195" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1609124237278" />
+    <state width="1638" height="364" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245523" />
+    <state width="1638" height="364" key="GridCell.Tab.0.right" timestamp="1610275245525">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245525" />
+    <state width="1638" height="364" key="GridCell.Tab.1.bottom" timestamp="1610275245527">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245527" />
+    <state width="1638" height="364" key="GridCell.Tab.1.center" timestamp="1610275245526">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245526" />
+    <state width="1638" height="364" key="GridCell.Tab.1.left" timestamp="1610275245526">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245526" />
+    <state width="1638" height="364" key="GridCell.Tab.1.right" timestamp="1610275245527">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1610275245527" />
     <state x="541" y="280" width="598" height="490" key="find.popup" timestamp="1608887988101">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1608887988101" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/conf/conf.go</url>
+          <line>45</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/conf/conf_test.go</url>
+          <line>26</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

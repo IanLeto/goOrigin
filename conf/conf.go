@@ -12,7 +12,42 @@ type Config struct {
 	Name    string `yaml:"name"`
 	Port    string `yaml:"port"`
 	RunMode string `yaml:"run_mode"`
-	Backend []*Backend
+	Backend *BackendConfig
+}
+
+func NewConfig() *Config {
+	InitConfig()
+	return &Config{
+		Name:    viper.GetString("name"),
+		Port:    viper.GetString("addr"),
+		Backend: NewBackendConfig(),
+	}
+}
+
+type BackendConfig struct {
+	*MySqlBackendConfig
+}
+
+func NewBackendConfig() *BackendConfig {
+	return &BackendConfig{
+		NewMySqlBackendConfig(),
+	}
+}
+
+type MySqlBackendConfig struct {
+	Address  string
+	Port     string
+	Password string
+	User     string
+}
+
+func NewMySqlBackendConfig() *MySqlBackendConfig {
+	return &MySqlBackendConfig{
+		Address:  viper.GetString("backend.MySql.address"),
+		Port:     viper.GetString("backend.MySql.port"),
+		User:     viper.GetString("backend.MySql.user"),
+		Password: viper.GetString("backend.MySql.password"),
+	}
 }
 
 type BaseBackend struct {
@@ -42,22 +77,12 @@ func (b *BaseBackend) Close() error {
 	panic("implement me")
 }
 
-func (b *BaseBackend) NewBackendClient() Backend {
-	panic("implement me")
-}
-
 type MySqlBackend struct {
 	*BaseBackend
 }
 
-func (c *MySqlBackend) NewBackendClient() Backend {
-	return &MySqlBackend{
-
-	}
-}
-
 func init() {
-	define.InitHandler = append(define.InitHandler, InitConfig, nil)
+	define.InitHandler = append(define.InitHandler, InitConfig)
 	for _, v := range define.InitHandler {
 		if err := v(); err != nil {
 			panic("init config file %v")
@@ -66,7 +91,7 @@ func init() {
 }
 func InitConfig() error {
 
-	viper.SetConfigFile("../config.yaml")
+	viper.SetConfigFile("../config/config.yaml")
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		dir, err := os.Getwd()
@@ -74,7 +99,7 @@ func InitConfig() error {
 			log.Fatalf("reading config err %v", err)
 		}
 		viper.AddConfigPath(dir)
-		if err != viper.ReadInConfig() {
+		if err = viper.ReadInConfig(); err != nil {
 			panic(err)
 		}
 	}

@@ -1,7 +1,6 @@
 package conf_test
 
 import (
-	"github.com/spf13/viper"
 	"goOrigin/conf"
 	"testing"
 
@@ -19,12 +18,15 @@ func (v *ViperConfigurationSuite) SetupTest() {
 
 // TestMarshal :
 func (s *ViperConfigurationSuite) TestConfig() {
-	s.NotNil(viper.Get("run_mode"))
+
 
 }
 
+func (s ViperConfigurationSuite) TestMySqlBackendConfig() {
 
+	s.Equal("localhost", conf.Conf.Backend.MySqlBackendConfig.Address)
 
+}
 
 // TestViperConfiguration :
 func TestViperConfiguration(t *testing.T) {
