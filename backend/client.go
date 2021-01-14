@@ -4,7 +4,6 @@ import "github.com/jinzhu/gorm"
 
 type Client interface {
 	Close() error
-	NewClient() interface{}
 	// 返回该client 类型
 	ShowType() string
 }

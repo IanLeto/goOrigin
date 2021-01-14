@@ -8,10 +8,18 @@ import (
 )
 
 type MySQLBackend struct {
-	Client
+	Client *gorm.DB
 }
 
-func NewMySQLBackend(config string) (*gorm.DB, error) {
+func (b *MySQLBackend) ShowType() string {
+	return "MySQL"
+}
+
+func (b *MySQLBackend) Close() error {
+	return nil
+}
+
+func NewMySQLBackend(config string) (*MySQLBackend, error) {
 	var logger = logging.GetStdLogger()
 	c := conf.Conf
 	if config == "" {
@@ -27,9 +35,11 @@ func NewMySQLBackend(config string) (*gorm.DB, error) {
 
 	db, err := gorm.Open("mysql", config)
 	if err != nil {
-		logger.Fatalf("init mysql db error: %s", err)
+		logger.Fatalf("init mysql client error: %s", err)
 		return nil, err
 	}
 
-	return db, err
+	return &MySQLBackend{
+		Client: db,
+	}, err
 }

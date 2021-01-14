@@ -1,7 +1,6 @@
 package backend_test
 
 import (
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/stretchr/testify/suite"
 	"goOrigin/backend"
@@ -12,19 +11,19 @@ import (
 // ConnectionConfigurationSuite :
 type ConnectionConfigurationSuite struct {
 	suite.Suite
-	db *gorm.DB
+	client *backend.MySQLBackend
 }
 
 func (s *ConnectionConfigurationSuite) SetupTest() {
 	var err error
 	s.NoError(conf.InitConfig())
-	s.db, err = backend.NewMySQLBackend("")
+	s.client, err = backend.NewMySQLBackend("")
 	s.NoError(err)
 }
 
 // TestMarshal :
 func (s *ConnectionConfigurationSuite) TestConfig() {
-	s.NoError(s.db.DB().Ping())
+	s.NoError(s.client.Client.DB().Ping())
 }
 
 // TestViperConfiguration :
