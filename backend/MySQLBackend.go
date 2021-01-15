@@ -16,7 +16,7 @@ func (b *MySQLBackend) ShowType() string {
 }
 
 func (b *MySQLBackend) Close() error {
-	return nil
+	return b.Client.Close()
 }
 
 func NewMySQLBackend(config string) (*MySQLBackend, error) {
@@ -30,7 +30,6 @@ func NewMySQLBackend(config string) (*MySQLBackend, error) {
 			"localDB",
 			true,
 			"Local")
-		//"root:root@tcp(localhost:3308)/gormloc2?parseTime=true")
 	}
 
 	db, err := gorm.Open("mysql", config)
@@ -43,3 +42,4 @@ func NewMySQLBackend(config string) (*MySQLBackend, error) {
 		Client: db,
 	}, err
 }
+
