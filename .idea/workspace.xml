@@ -20,12 +20,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/router/weight_record.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sql/db.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/define/event.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/errors/error_msg.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/goOrigin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goOrigin.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/MySQLBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MySQLBackend.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/default.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/unittest" beforeDir="false" afterPath="$PROJECT_DIR$/template/unittest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -205,16 +210,5 @@
     </state>
     <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1610367508264" />
     <state x="541" y="297" width="598" height="490" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1610367677403" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/conf/conf.go</url>
-          <line>45</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

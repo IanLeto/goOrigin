@@ -1,3 +1,6 @@
+# github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
+## explicit
+github.com/asaskevich/EventBus
 # github.com/cstockton/go-conv v0.0.0-20170524002450-66a2b2ba36e1
 ## explicit
 github.com/cstockton/go-conv
