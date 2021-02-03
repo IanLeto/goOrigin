@@ -15,6 +15,6 @@ type Err struct {
 	Err     error
 }
 
-func New()  {
+func New() {
 
 }

@@ -20,17 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/define/event.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/errors/error_msg.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/goOrigin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goOrigin.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/unittest" beforeDir="false" afterPath="$PROJECT_DIR$/template/unittest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/errors/error_msg.go" beforeDir="false" afterPath="$PROJECT_DIR$/errors/error_msg.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +68,16 @@
     </key>
   </component>
   <component name="RunManager" selected="Go Test.BackendConnection_test.go">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$" />
+      <package value="goOrigin" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="BackendConnection_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$/backend" />
@@ -117,6 +119,17 @@
       <package value="goOrigin/conf" />
       <directory value="$PROJECT_DIR$/../goLibrary" />
       <filePath value="$PROJECT_DIR$/../goLibrary" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="DIRECTORY" />
+      <package value="goOrigin" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
     <recent_temporary>
@@ -210,5 +223,9 @@
     </state>
     <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1610367508264" />
     <state x="541" y="297" width="598" height="490" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1610367677403" />
+    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1612324598097">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1612324598097" />
   </component>
 </project>
