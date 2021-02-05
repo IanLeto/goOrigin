@@ -16,15 +16,15 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 			return
 		})
 	}
-	registerProject := g.Group("/reg")
-	{
-		registerProject.Group("/reg-pro/", nil)
-	}
-	recordProject := g.Group("/record")
-	{
-		recordProject.GET("/", nil)
-		recordProject.PUT("/create", nil)
-		recordProject.POST("/", nil)
-	}
+	//registerProject := g.Group("/reg")
+	//{
+	//	registerProject.Group("/reg-pro/", nil)
+	//}
+	//recordProject := g.Group("/record")
+	//{
+	//	recordProject.GET("/", nil)
+	//	recordProject.PUT("/create", nil)
+	//	recordProject.POST("/", nil)
+	//}
 	return g
 }

@@ -2,10 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"goOrigin/define"
 	"goOrigin/router"
-	"goOrigin/utils"
 	"net/http"
 )
 
@@ -16,11 +14,13 @@ func main() {
 		}
 	}
 	g := gin.New()
+	gin.SetMode(gin.ReleaseMode)
 	router.Load(g, nil)
 	go func() {
 
 	}()
 
-	http.ListenAndServe(":"+utils.ConvOrDefaultString(viper.Get("port"), ""), g)
+	//http.ListenAndServe(":"+utils.ConvOrDefaultString(viper.Get("port"), "8080"), g)
+	http.ListenAndServe("localhost:8080", g)
 
 }

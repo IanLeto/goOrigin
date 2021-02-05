@@ -3,6 +3,7 @@ addr: 8080
 name: ccServer
 url: localhost:8080
 version: v1
+port: 8080
 log:
   wirter: file,stdout
   logger_level: DEBUG
@@ -26,4 +27,7 @@ backend:
   etcd:
     address: localhost
     port: 2379
+client:
+  CC:
+    address: localhost:8000
 
