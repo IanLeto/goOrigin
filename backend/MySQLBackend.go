@@ -3,7 +3,7 @@ package backend
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"goOrigin/conf"
+	"goOrigin/config"
 	"goOrigin/logging"
 )
 
@@ -21,7 +21,7 @@ func (b *MySQLBackend) Close() error {
 
 func NewMySQLBackend(config string) (*MySQLBackend, error) {
 	var logger = logging.GetStdLogger()
-	c := conf.Conf
+	c := config.GlobalConfig
 	if config == "" {
 		config = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
 			c.Backend.MySqlBackendConfig.User,

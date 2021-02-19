@@ -1,4 +1,4 @@
-package conf
+package config
 
 import "github.com/spf13/viper"
 
@@ -81,12 +81,14 @@ type MySqlBackend struct {
 // 配置中心httpclient 配置参数
 
 type CCConf struct {
-	Address string
+	Address   string
+	HeartBeat int
 }
 
 func NewCCClientConf() *CCConf {
 	return &CCConf{
-		Address: viper.GetString("address"),
+		Address:   viper.GetString("address"),
+		HeartBeat: viper.GetInt("heart_beat"),
 	}
 
 }

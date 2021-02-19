@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	"github.com/fsnotify/fsnotify"
@@ -16,6 +16,10 @@ type Config struct {
 	Client  *HttpClientConfig
 }
 
+func (c *Config) ReceiveConfigPath(path string) {
+
+
+}
 func NewConfig() *Config {
 	if InitConfig() != nil {
 		panic("init config failed")
@@ -23,6 +27,7 @@ func NewConfig() *Config {
 	return &Config{
 		Name:    viper.GetString("name"),
 		Port:    viper.GetString("addr"),
+		RunMode: viper.GetString("run_mode"),
 		Backend: NewBackendConfig(),
 		Client:  NewHttpClientConfig(),
 	}

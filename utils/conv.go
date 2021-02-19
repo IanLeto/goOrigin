@@ -9,3 +9,13 @@ func ConvOrDefaultString(from interface{}, defaults string) string {
 	}
 	return v
 }
+
+func ConvOrDefaultInt(from interface{}, defaults int) int {
+	v, err := conv.Int(from)
+	if err != nil {
+		v = defaults
+	}
+	return v
+}
+
+

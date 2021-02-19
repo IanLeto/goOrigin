@@ -29,5 +29,6 @@ backend:
     port: 2379
 client:
   CC:
-    address: localhost:8000
+    address: localhost:1129
+    heart_beat: 10
 

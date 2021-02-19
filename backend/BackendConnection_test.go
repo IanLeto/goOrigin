@@ -4,7 +4,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/stretchr/testify/suite"
 	"goOrigin/backend"
-	"goOrigin/conf"
+	"goOrigin/config"
 	"testing"
 )
 
@@ -16,7 +16,7 @@ type ConnectionConfigurationSuite struct {
 
 func (s *ConnectionConfigurationSuite) SetupTest() {
 	var err error
-	s.NoError(conf.InitConfig())
+	s.NoError(config.InitConfig())
 	s.client, err = backend.NewMySQLBackend("")
 	s.NoError(err)
 }

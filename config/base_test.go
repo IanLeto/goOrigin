@@ -1,7 +1,7 @@
-package conf_test
+package config_test
 
 import (
-	"goOrigin/conf"
+	"goOrigin/config"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -13,7 +13,7 @@ type ViperConfigurationSuite struct {
 }
 
 func (v *ViperConfigurationSuite) SetupTest() {
-	conf.InitConfig()
+	config.InitConfig()
 }
 
 // TestMarshal :
@@ -23,7 +23,7 @@ func (s *ViperConfigurationSuite) TestConfig() {
 
 func (s ViperConfigurationSuite) TestMySqlBackendConfig() {
 
-	s.Equal("localhost:3306", conf.Conf.Backend.MySqlBackendConfig.Address)
+	s.Equal("localhost:3306", config.GlobalConfig.Backend.MySqlBackendConfig.Address)
 
 }
 

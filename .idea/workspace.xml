@@ -10,45 +10,37 @@
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
       </path>
+    </expand>
+    <select>
       <path>
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:origin/cccompare" type="e8cecc67:BranchNodeDescriptor" />
       </path>
-    </expand>
-    <select />
+    </select>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/client/CCClient.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/cc.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/cc_params.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conf/config.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/.travis.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/CHANGES.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/body.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/doc.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/response.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/dghubble/sling/sling.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/google/go-querystring/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor/github.com/google/go-querystring/query/encode.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/goOrigin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goOrigin.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/event/define.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/event/event.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/event/eventBus.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/event/eventBus_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/httpclient/define.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/conf.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/base.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/conf_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/base_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/BackendConnection_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/BackendConnection_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/MySQLBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/MySQLBackend.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/CCClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/httpclient/CCClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/cc.go" beforeDir="false" afterPath="$PROJECT_DIR$/httpclient/cc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/cc_params.go" beforeDir="false" afterPath="$PROJECT_DIR$/httpclient/cc_params.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/root.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/root.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/base.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/base.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/base_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/base_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/configuration.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/define.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/conv.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/conv.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/error.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/error.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +57,7 @@
   </component>
   <component name="GOROOT" path="/usr/local/go" />
   <component name="Git.Settings">
+    <branch-grouping />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="main" />
@@ -90,15 +83,20 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/event" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/conf" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/event" />
+      <recent name="$PROJECT_DIR$/../goLibrary" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build goOrigin">
+  <component name="RunManager" selected="Go Test.eventBus_test.go">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$" />
@@ -128,28 +126,6 @@
       <filePath value="$PROJECT_DIR$/backend/BackendConnection_test.go" />
       <method v="2" />
     </configuration>
-    <configuration name="TestConfig in goLibrary/viperDemo" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="goOrigin" />
-      <working_directory value="$PROJECT_DIR$/../goLibrary/viperDemo" />
-      <parameters value=" -testify.m ^TestConfig$" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="goLibrary/viperDemo" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestConfig in goOrigin/conf" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="goOrigin" />
-      <working_directory value="$PROJECT_DIR$/conf" />
-      <parameters value=" -testify.m ^TestConfig$" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="goOrigin/conf" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <configuration name="TestMySqlBackendConfig in goOrigin/conf" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$/conf" />
@@ -159,6 +135,17 @@
       <package value="goOrigin/conf" />
       <directory value="$PROJECT_DIR$/../goLibrary" />
       <filePath value="$PROJECT_DIR$/../goLibrary" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestReceive in GoUtils/eventBusDemo" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$/../goLibrary/eventBusDemo" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="GoUtils/eventBusDemo" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestReceive\E$" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
@@ -172,13 +159,23 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="eventBus_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="goOrigin" />
+      <working_directory value="$PROJECT_DIR$/event" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <package value="goOrigin" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/event/eventBus_test.go" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.eventBus_test.go" />
+        <item itemvalue="Go Test.TestReceive in GoUtils/eventBusDemo" />
         <item itemvalue="Go Build.go build goOrigin" />
         <item itemvalue="Go Test.BackendConnection_test.go" />
         <item itemvalue="Go Test.TestMySqlBackendConfig in goOrigin/conf" />
-        <item itemvalue="Go Test.TestConfig in goOrigin/conf" />
-        <item itemvalue="Go Test.TestConfig in goLibrary/viperDemo" />
       </list>
     </recent_temporary>
   </component>
@@ -191,7 +188,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/cccompare" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -217,63 +226,67 @@
       <screen x="0" y="23" width="1680" height="1027" />
     </state>
     <state x="440" y="202" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1610620556579" />
-    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1610356367427">
+    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1612519504028">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1610356367427" />
-    <state x="562" y="368" key="#xdebugger.evaluate" timestamp="1612343808772">
+    <state x="138" y="334" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1612519504028" />
+    <state x="562" y="368" key="#xdebugger.evaluate" timestamp="1613727962253">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="562" y="368" key="#xdebugger.evaluate/0.0.1680.1050@0.0.1680.1050" timestamp="1612343808772" />
-    <state width="1638" height="364" key="GridCell.Tab.0.bottom" timestamp="1612432686583">
+    <state x="562" y="368" key="#xdebugger.evaluate/0.0.1680.1050@0.0.1680.1050" timestamp="1613727962253" />
+    <state x="100" y="100" width="1480" height="850" key="DiffContextDialog" timestamp="1612753907072">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686583" />
+    <state x="100" y="100" width="1480" height="850" key="DiffContextDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1612753907072" />
+    <state width="1638" height="364" key="GridCell.Tab.0.bottom" timestamp="1613728235147">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="364" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235147" />
     <state width="1638" height="184" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1610689415910" />
-    <state width="1638" height="364" key="GridCell.Tab.0.center" timestamp="1612432686582">
+    <state width="1638" height="364" key="GridCell.Tab.0.center" timestamp="1613728235146">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686582" />
+    <state width="1638" height="364" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235146" />
     <state width="1638" height="184" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1610689415909" />
-    <state width="1638" height="364" key="GridCell.Tab.0.left" timestamp="1612432686581">
+    <state width="1638" height="364" key="GridCell.Tab.0.left" timestamp="1613728235145">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686581" />
+    <state width="1638" height="364" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235145" />
     <state width="1638" height="184" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1610689415908" />
-    <state width="1638" height="364" key="GridCell.Tab.0.right" timestamp="1612432686582">
+    <state width="1638" height="364" key="GridCell.Tab.0.right" timestamp="1613728235146">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686582" />
+    <state width="1638" height="364" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235146" />
     <state width="1638" height="184" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1610689415909" />
-    <state width="1638" height="364" key="GridCell.Tab.1.bottom" timestamp="1612432686585">
+    <state width="1638" height="364" key="GridCell.Tab.1.bottom" timestamp="1613728235149">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686585" />
-    <state width="1638" height="364" key="GridCell.Tab.1.center" timestamp="1612432686584">
+    <state width="1638" height="364" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235149" />
+    <state width="1638" height="364" key="GridCell.Tab.1.center" timestamp="1613728235148">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686584" />
-    <state width="1638" height="364" key="GridCell.Tab.1.left" timestamp="1612432686583">
+    <state width="1638" height="364" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235148" />
+    <state width="1638" height="364" key="GridCell.Tab.1.left" timestamp="1613728235148">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686583" />
-    <state width="1638" height="364" key="GridCell.Tab.1.right" timestamp="1612432686584">
+    <state width="1638" height="364" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235148" />
+    <state width="1638" height="364" key="GridCell.Tab.1.right" timestamp="1613728235149">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="364" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1612432686584" />
+    <state width="1638" height="364" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1613728235149" />
     <state x="349" y="164" key="SettingsEditor" timestamp="1612432863007">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="349" y="164" key="SettingsEditor/0.0.1680.1050@0.0.1680.1050" timestamp="1612432863007" />
-    <state x="541" y="297" width="598" height="490" key="find.popup" timestamp="1610367677403">
-      <screen x="0" y="23" width="1680" height="1027" />
-    </state>
-    <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1610367508264" />
-    <state x="541" y="297" width="598" height="490" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1610367677403" />
-    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1612324598097">
+    <state x="541" y="280" width="598" height="490" key="find.popup" timestamp="1612753379361">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1612324598097" />
+    <state x="541" y="280" width="598" height="490" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1612753379361" />
+    <state x="541" y="297" width="598" height="490" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1610367677403" />
+    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1613715918312">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="84" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1613715918312" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

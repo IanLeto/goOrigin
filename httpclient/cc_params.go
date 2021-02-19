@@ -1,4 +1,4 @@
-package client
+package httpclient
 
 type CCRequestInfo struct {
 	Product              string `json:"product"`
@@ -17,6 +17,7 @@ type CCRequestInfo struct {
 type CCResponseInfo struct {
 	Count int                 `json:"count"`
 	Info  []CCMKCResponseInfo `json:"info"`
+	Msg   string              `json:"msg"`
 }
 
 type CCMKCResponseInfo struct {

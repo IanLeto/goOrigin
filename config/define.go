@@ -1,7 +1,10 @@
-package conf
+package config
 
-var Conf = NewConfig()
+var GlobalConfig *Config
 
+func init() {
+	GlobalConfig = NewConfig()
+}
 
 //func (c *CCApiClient) GetServiceInstance(bizID, limit, start int, ServiceInstanceIds []int) (*CCSearchServiceInstanceResponseData, error) {
 //	defer c.SearchHostTimeObserver.Start().Finish()
