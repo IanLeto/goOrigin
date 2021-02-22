@@ -13,7 +13,6 @@ type ViperConfigurationSuite struct {
 }
 
 func (v *ViperConfigurationSuite) SetupTest() {
-	config.InitConfig()
 }
 
 // TestMarshal :

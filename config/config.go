@@ -87,8 +87,8 @@ type CCConf struct {
 
 func NewCCClientConf() *CCConf {
 	return &CCConf{
-		Address:   viper.GetString("address"),
-		HeartBeat: viper.GetInt("heart_beat"),
+		Address:   viper.GetString("client.CC.address"),
+		HeartBeat: viper.GetInt("client.CC.heart_beat"),
 	}
 
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"goOrigin/define"
+	"goOrigin/logging"
 	"log"
 	"os"
 )
@@ -18,10 +19,9 @@ type Config struct {
 
 func (c *Config) ReceiveConfigPath(path string) {
 
-
 }
 func NewConfig() *Config {
-	if InitConfig() != nil {
+	if initConfig() != nil {
 		panic("init config failed")
 	}
 	return &Config{
@@ -34,13 +34,17 @@ func NewConfig() *Config {
 }
 
 func init() {
-	define.InitHandler = append(define.InitHandler, InitConfig)
+	define.InitHandler = append(define.InitHandler, initConfig)
 }
-func InitConfig() error {
-
-	viper.SetConfigFile("../config/config.yaml")
+func initConfig() error {
+	var logger = logging.GetStdLogger()
+	// 这里的配置文件一定要放到项目根目录上
+	// viper 读取文件的特性导致被不同包调用时，该路径会根据调用方变化
+	viper.AddConfigPath("../")
+	viper.SetConfigName("config") // 配置文件名称(无扩展名)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
+		logger.Debugf("error in init config %s", err)
 		dir, err := os.Getwd()
 		if err != nil {
 			log.Fatalf("reading config err %v", err)

@@ -1,10 +1,11 @@
 package httpclient
 
 import (
+	"fmt"
 	"github.com/dghubble/sling"
 	"goOrigin/config"
 	"goOrigin/logging"
-	"goOrigin/utils"
+	"sync"
 	"time"
 )
 
@@ -38,7 +39,7 @@ func NewCCClient(ccConf *config.CCConf) *CCClient {
 	}
 
 	return &CCClient{
-		agent: sling.New().Base(address),
+		agent: sling.New().Base(fmt.Sprintf("http://" + address)),
 	}
 }
 
@@ -70,23 +71,31 @@ func (c *CCClient) Mkc(product, configVersion, serverVersion, serverName, config
 	return result.Data, nil
 }
 
-func PingCCClient(c *CCClient) func(args ...interface{}) error {
+func PingCCClient(c *CCClient, ch chan struct{}) func(args ...interface{}) error {
+
 	return func(args ...interface{}) error {
 		var (
 			logger = logging.GetStdLogger()
-			ticker = time.NewTicker(time.Duration(utils.ConvOrDefaultInt(config.GlobalConfig.Client.CC.HeartBeat, 100)) * time.Second)
+			//ticker = time.NewTicker(time.Duration(utils.ConvOrDefaultInt(config.GlobalConfig.Client.CC.HeartBeat, 100)) * time.Second)
+			ticker = time.NewTicker(2 * time.Second)
+			once   = &sync.Once{}
 		)
 
 		result := struct {
+			Msg string `json:"msg"`
 		}{}
 		for {
 			select {
 			case <-ticker.C:
-				response, err := c.Agent().Get("/ping").Receive(result, result)
+				response, err := c.Agent().Get("ping").Receive(&result, &result)
 				if err != nil || response.StatusCode != 200 {
 					logger.Errorf("cc 启动失败 %v", err)
+					return err
 				}
-				return err
+				once.Do(func() {
+					ch <- struct{}{}
+				})
+
 			}
 		}
 

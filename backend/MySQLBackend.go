@@ -19,11 +19,11 @@ func (b *MySQLBackend) Close() error {
 	return b.Client.Close()
 }
 
-func NewMySQLBackend(config string) (*MySQLBackend, error) {
+func NewMySQLBackend(conf string) (*MySQLBackend, error) {
 	var logger = logging.GetStdLogger()
 	c := config.GlobalConfig
-	if config == "" {
-		config = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
+	if conf == "" {
+		conf = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
 			c.Backend.MySqlBackendConfig.User,
 			c.Backend.MySqlBackendConfig.Password,
 			c.Backend.MySqlBackendConfig.Address,
@@ -32,7 +32,7 @@ func NewMySQLBackend(config string) (*MySQLBackend, error) {
 			"Local")
 	}
 
-	db, err := gorm.Open("mysql", config)
+	db, err := gorm.Open("mysql", conf)
 	if err != nil {
 		logger.Fatalf("init mysql client error: %s", err)
 		return nil, err
@@ -42,4 +42,3 @@ func NewMySQLBackend(config string) (*MySQLBackend, error) {
 		Client: db,
 	}, err
 }
-
