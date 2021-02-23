@@ -1,4 +1,4 @@
-package mysql
+package DB
 
 import "goOrigin/errors"
 

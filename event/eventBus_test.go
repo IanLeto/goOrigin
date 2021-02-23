@@ -18,9 +18,9 @@ type eventBusSuite struct {
 	count string
 }
 
-func (v *eventBusSuite) SetupTest() {
-	v.event = event.GlobalEventBus
-	v.conf = config.GlobalConfig
+func (s *eventBusSuite) SetupTest() {
+	s.event = event.GlobalEventBus
+	s.conf = config.GlobalConfig
 }
 
 // TestMarshal :

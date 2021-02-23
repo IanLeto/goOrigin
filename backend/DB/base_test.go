@@ -1,8 +1,8 @@
-package mysql_test
+package DB_test
 
 import (
 	"github.com/stretchr/testify/suite"
-	"goOrigin/backend/mysql"
+	"goOrigin/backend/DB"
 	"goOrigin/config"
 	"testing"
 )
@@ -11,7 +11,7 @@ import (
 type MysqlBackendSuite struct {
 	suite.Suite
 	conf    *config.Config
-	backend *mysql.MySQLBackend
+	backend *DB.MySQLBackend
 }
 
 func (s *MysqlBackendSuite) SetupTest() {
@@ -24,7 +24,7 @@ func (s *MysqlBackendSuite) TestConfig() {
 	if s.conf.RunMode != "debug" {
 		return
 	}
-	s.backend = mysql.MySqlBackend
+	s.backend = DB.MySqlBackend
 	s.NoError(s.backend.Client.DB().Ping())
 
 }
