@@ -12,7 +12,7 @@ type ViperConfigurationSuite struct {
 	suite.Suite
 }
 
-func (v *ViperConfigurationSuite) SetupTest() {
+func (s *ViperConfigurationSuite) SetupTest() {
 }
 
 // TestMarshal :

@@ -14,7 +14,3 @@ type Err struct {
 	Message string
 	Err     error
 }
-
-func New() {
-
-}

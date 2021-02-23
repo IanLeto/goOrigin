@@ -2,29 +2,17 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"goOrigin/router/indexHandler"
 )
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
-	g.NoRoute(func(ctx *gin.Context) {
-		ctx.String(http.StatusNotFound, "incorrect API route")
-	})
-	pingGroup := g.Group("/ping")
+
+	g.NoRoute(indexHandler.NoRouterHandler)
+	indexGroup := g.Group("/")
 	{
-		pingGroup.GET("", func(context *gin.Context) {
-			return
-		})
+		indexGroup.GET("ping", indexHandler.Ping)
 	}
-	//registerProject := g.Group("/reg")
-	//{
-	//	registerProject.Group("/reg-pro/", nil)
-	//}
-	//recordProject := g.Group("/record")
-	//{
-	//	recordProject.GET("/", nil)
-	//	recordProject.PUT("/create", nil)
-	//	recordProject.POST("/", nil)
-	//}
+
 	return g
 }

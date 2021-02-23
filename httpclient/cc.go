@@ -84,21 +84,22 @@ func PingCCClient(c *CCClient, ch chan struct{}) func(args ...interface{}) error
 		result := struct {
 			Msg string `json:"msg"`
 		}{}
-		for {
-			select {
-			case <-ticker.C:
-				response, err := c.Agent().Get("ping").Receive(&result, &result)
-				if err != nil || response.StatusCode != 200 {
-					logger.Errorf("cc 启动失败 %v", err)
-					return err
+		go func() {
+			for {
+				select {
+				case <-ticker.C:
+					response, err := c.Agent().Get("ping").Receive(&result, &result)
+					if err != nil || response.StatusCode != 200 {
+						logger.Errorf("cc 启动失败 %v", err)
+					}
+					once.Do(func() {
+						ch <- struct{}{}
+					})
+
 				}
-				once.Do(func() {
-					ch <- struct{}{}
-				})
-
 			}
-		}
-
+		}()
+		return nil
 	}
 
 }

@@ -17,9 +17,6 @@ type Config struct {
 	Client  *HttpClientConfig
 }
 
-func (c *Config) ReceiveConfigPath(path string) {
-
-}
 func NewConfig() *Config {
 	if initConfig() != nil {
 		panic("init config failed")
