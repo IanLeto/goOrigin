@@ -1,4 +1,4 @@
-package indexHandler
+package indexHandlers
 
 import (
 	"github.com/gin-gonic/gin"
