@@ -22,6 +22,7 @@ _cgo_export.*
 _testmain.go
 _obj
 _test
+*.xml
 
 /log*
 /bin
