@@ -1,4 +1,4 @@
-package router
+package baseHandlers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,8 @@ type Response struct {
 	Data interface{} `json:"data"`
 }
 
-func renderData(c *gin.Context, data interface{}, err error) {
+// 旧版本
+func RenderData(c *gin.Context, data interface{}, err error) {
 	c.JSON(http.StatusOK, http.Response{
 
 	})

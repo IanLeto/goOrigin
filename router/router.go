@@ -13,6 +13,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)
+		indexGroup.GET("", indexHandlers.BaseInformationHandler)
 	}
 	userGroup := g.Group("/v1/user")
 	{
