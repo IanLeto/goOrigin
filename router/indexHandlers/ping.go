@@ -2,6 +2,7 @@ package indexHandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"goOrigin/errors"
 	"goOrigin/router/baseHandlers"
 	"net/http"
 )
@@ -20,4 +21,13 @@ func BaseInformationHandler(c *gin.Context) {
 		"Maintainer": "ian.liu",
 		"DocUrl":     "",
 	}, nil)
+}
+
+func DemoErrorHandler(c *gin.Context) {
+	var (
+		err error
+	)
+	if err != nil {
+		baseHandlers.RenderData(c, nil, errors.ErrInitMySQL)
+	}
 }

@@ -19,11 +19,12 @@ func RenderData(c *gin.Context, data interface{}, err error) {
 	})
 }
 
-func RenderResponse(c *gin.Context, data interface{}, err *errors.Errno) {
+func RenderResponse(c *gin.Context, data interface{}, err *errors.Err) {
 	if err == nil {
-		err = &errors.Errno{
+		err = &errors.Err{
 			Code:    0,
 			Message: "OK",
+			Err:     nil,
 		}
 	}
 	c.JSON(err.Code, Response{
