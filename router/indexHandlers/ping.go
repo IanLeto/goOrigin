@@ -2,6 +2,7 @@ package indexHandlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"goOrigin/router"
 	"net/http"
 )
 
@@ -14,5 +15,9 @@ func NoRouterHandler(c *gin.Context) {
 }
 
 func BaseInformationHandler(c *gin.Context) {
-
+	router.RenderResponse(c, map[string]string{
+		"Version":    "0.0.1",
+		"Maintainer": "ian.liu",
+		"DocUrl":     "",
+	}, nil)
 }
