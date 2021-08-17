@@ -9,11 +9,13 @@ type ComponentConfig interface {
 // base Backend
 type BackendConfig struct {
 	*MySqlBackendConfig
+	*MongoBackendConfig
 }
 
 func NewBackendConfig() *BackendConfig {
 	return &BackendConfig{
 		NewMySqlBackendConfig(),
+		NewMongoBackendConfig(),
 	}
 }
 
@@ -43,6 +45,23 @@ func NewMySqlBackendConfig() *MySqlBackendConfig {
 		Port:     viper.GetString("backend.MySql.port"),
 		User:     viper.GetString("backend.MySql.user"),
 		Password: viper.GetString("backend.MySql.password"),
+	}
+}
+
+// mongoDB
+type MongoBackendConfig struct {
+	Address  string
+	Port     string
+	Password string
+	User     string
+}
+
+func NewMongoBackendConfig() *MongoBackendConfig {
+	return &MongoBackendConfig{
+		Address:  viper.GetString("backend.mongo.address"),
+		Port:     viper.GetString("backend.mongo.port"),
+		User:     viper.GetString("backend.mongo.user"),
+		Password: viper.GetString("backend.mongo.password"),
 	}
 }
 

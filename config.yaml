@@ -27,8 +27,16 @@ backend:
   etcd:
     address: localhost
     port: 2379
+  mongo:
+    address: localhost
+    port: 27017
+    user: root
+    password: root
+
 client:
   CC:
     address: localhost:1129
     heart_beat: 10
+
+
 
