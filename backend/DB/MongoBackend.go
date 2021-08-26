@@ -7,6 +7,9 @@ import (
 	"goOrigin/config"
 )
 
+const IanLeto = "template"
+
+
 type MonBackend struct {
 	*mgo.Session
 }
@@ -23,3 +26,9 @@ func NewMonBackend(conf config.MongoBackendConfig) *MonBackend {
 	}
 	return &MonBackend{Session: session}
 }
+
+func NewMongoDBSession()  {
+	
+}
+
+
