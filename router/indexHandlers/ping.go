@@ -21,12 +21,3 @@ func BaseInformationHandler(c *gin.Context) {
 		"DocUrl":     "",
 	}, nil)
 }
-
-func DemoErrorHandler(c *gin.Context) {
-	var (
-		err error
-	)
-	if err != nil {
-		baseHandlers.RenderData(c, nil, nil)
-	}
-}
