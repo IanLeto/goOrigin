@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/sirupsen/logrus"
+	"goOrigin/backend"
 	"goOrigin/config"
 )
 
 const IanLeto = "template"
 
-
 type MonBackend struct {
 	*mgo.Session
 }
 
-func NewMonBackend(conf config.MongoBackendConfig) *MonBackend {
-	url := fmt.Sprintf("mongodb://%s:%s@%s:%s/", conf.User, conf.Password, conf.Address, conf.Port)
+func (b *MonBackend) NewConn(config config.Config) backend.Connection {
+	mongConf := config.Backend.MongoBackendConfig
+	url := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", mongConf.User, mongConf.Password, mongConf.Address, mongConf.Port, mongConf.DB)
 	session, err := mgo.Dial(url)
 	if err != nil {
 		logrus.Errorf("init mongo db fail: %s", err)
@@ -27,8 +28,22 @@ func NewMonBackend(conf config.MongoBackendConfig) *MonBackend {
 	return &MonBackend{Session: session}
 }
 
-func NewMongoDBSession()  {
-	
+func (b *MonBackend) Create() (interface{}, error) {
+	panic("implement me")
 }
 
+func (b *MonBackend) Update() (interface{}, error) {
+	panic("implement me")
+}
 
+func (b *MonBackend) Delete() (interface{}, error) {
+	panic("implement me")
+}
+
+func (b *MonBackend) Close() error {
+	panic("implement me")
+}
+
+func (b *MonBackend) GetCollection(name string) *mgo.Collection {
+	return b.DB("").C(name)
+}

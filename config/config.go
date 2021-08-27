@@ -54,6 +54,7 @@ type MongoBackendConfig struct {
 	Port     string
 	Password string
 	User     string
+	DB       string
 }
 
 func NewMongoBackendConfig() *MongoBackendConfig {
@@ -62,6 +63,7 @@ func NewMongoBackendConfig() *MongoBackendConfig {
 		Port:     viper.GetString("backend.mongo.port"),
 		User:     viper.GetString("backend.mongo.user"),
 		Password: viper.GetString("backend.mongo.password"),
+		DB:       viper.GetString("backend.mongo.DB"),
 	}
 }
 

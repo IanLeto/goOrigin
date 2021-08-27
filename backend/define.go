@@ -1,7 +1,4 @@
 package backend
 
 
-func InitPersistence()  {
-
-}
 

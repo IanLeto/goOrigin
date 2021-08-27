@@ -18,9 +18,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/goOrigin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goOrigin.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Version.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/DB/MongoBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/DB/MongoBackend.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/base.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/base.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +70,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../goLibrary/syntaxDemo" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -76,18 +80,18 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/../goLibrary/syntaxDemo" />
-      <recent name="$PROJECT_DIR$/../goLibrary" />
-      <recent name="$PROJECT_DIR$/event" />
-      <recent name="$PROJECT_DIR$" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/router/baseHandlers" />
       <recent name="$PROJECT_DIR$/backend/mysql" />
       <recent name="$PROJECT_DIR$/router" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/config" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/../goLibrary/syntaxDemo" />
+      <recent name="$PROJECT_DIR$/../goLibrary" />
+      <recent name="$PROJECT_DIR$/event" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build goOrigin">

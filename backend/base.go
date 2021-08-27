@@ -1,6 +1,9 @@
 package backend
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"goOrigin/config"
+)
 
 var GlobalBackend Backend
 
@@ -20,4 +23,12 @@ func (d *DataBase) NewBackend() Backend {
 
 func (d *DataBase) Close() error {
 	panic("implement me")
+}
+
+type Connection interface {
+	NewConn(config config.Config) Connection
+	Create() (interface{}, error)
+	Update() (interface{}, error)
+	Delete() (interface{}, error)
+	Close() error
 }

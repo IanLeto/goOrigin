@@ -32,6 +32,7 @@ backend:
     port: 27017
     user: root
     password: root
+    db: ian
 
 client:
   CC:
