@@ -18,8 +18,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/router/ianHandlers/record.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/indexHandlers/ping.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/indexHandlers/ping.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/shoadowPriest.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/shoadowPriest.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
