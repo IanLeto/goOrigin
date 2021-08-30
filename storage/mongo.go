@@ -7,7 +7,6 @@ import (
 	"goOrigin/config"
 )
 
-
 type MongoConn struct {
 	*mgo.Session
 	*mgo.Database
@@ -28,8 +27,4 @@ func NewMongoConn() *MongoConn {
 		Session:  session,
 		Database: session.DB(config.Conf.Backend.MongoBackendConfig.DB),
 	}
-}
-
-func (c *MongoConn) SelectOne() {
-
 }
