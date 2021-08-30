@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"goOrigin/router/ianHandlers"
 	"goOrigin/router/indexHandlers"
 	"goOrigin/router/userHandlers"
 )
@@ -23,6 +24,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		userGroup.GET("", userHandlers.List)
 		userGroup.GET("/:username", userHandlers.Get)
 		userGroup.DELETE("/:id", userHandlers.Delete)
+	}
+	ianGroup := g.Group("/ian")
+	{
+		ianGroup.POST("/addForm", ianHandlers.AddDayForm)
+		ianGroup.POST("/updateForm", ianHandlers.UpdateForm)
 	}
 	return g
 }
