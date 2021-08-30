@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/sirupsen/logrus"
-	"goOrigin/run"
+	"goOrigin/config"
 )
+
 
 type MongoConn struct {
 	*mgo.Session
+	*mgo.Database
 }
 
 func NewMongoConn() *MongoConn {
-	mongConf := run.Conf.Backend.MongoBackendConfig
+	mongConf := config.Conf.Backend.MongoBackendConfig
 	url := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", mongConf.User, mongConf.Password, mongConf.Address, mongConf.Port, mongConf.DB)
 	session, err := mgo.Dial(url)
 	if err != nil {
@@ -22,5 +24,12 @@ func NewMongoConn() *MongoConn {
 	if err != nil {
 		logrus.Errorf("init mongo db fail: %s", err)
 	}
-	return &MongoConn{Session: session}
+	return &MongoConn{
+		Session:  session,
+		Database: session.DB(config.Conf.Backend.MongoBackendConfig.DB),
+	}
+}
+
+func (c *MongoConn) SelectOne() {
+
 }

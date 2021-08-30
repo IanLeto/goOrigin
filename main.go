@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"goOrigin/config"
 	"goOrigin/define"
 	"goOrigin/event"
 	_ "goOrigin/init"
@@ -22,7 +23,7 @@ func main() {
 		}
 	}
 	g := gin.New()
-	gin.SetMode(run.Conf.RunMode)
+	gin.SetMode(config.Conf.RunMode)
 	router.Load(g, nil)
 	event.GlobalEventBus.PubPeriodicTask("ccPing", nil)
 	http.ListenAndServe(":"+utils.ConvOrDefaultString(viper.Get("port"), "8080"), g)

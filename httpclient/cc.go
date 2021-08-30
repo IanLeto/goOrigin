@@ -5,7 +5,6 @@ import (
 	"github.com/dghubble/sling"
 	"goOrigin/config"
 	"goOrigin/logging"
-	"goOrigin/run"
 	"sync"
 	"time"
 )
@@ -34,7 +33,7 @@ func (c *CCClient) Get(path string) *sling.Sling {
 
 // NewCCClient :
 func NewCCClient(ccConf *config.CCConf) *CCClient {
-	var address = run.Conf.Client.CC.Address
+	var address = config.Conf.Client.CC.Address
 	if ccConf != nil {
 		address = ccConf.Address
 	}
