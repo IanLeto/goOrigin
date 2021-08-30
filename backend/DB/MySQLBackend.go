@@ -24,7 +24,7 @@ func NewMySQLBackend(conf *config.Config) (*MySQLBackend, error) {
 	var logger = logging.GetStdLogger()
 
 	if conf == nil {
-		conf = config.GlobalConfig
+		conf = config.Conf
 	}
 	mysqlConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
 		conf.Backend.MySqlBackendConfig.User,

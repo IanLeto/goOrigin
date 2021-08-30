@@ -1,7 +1,10 @@
 package config
 
-var GlobalConfig *Config
+var Conf *Config
 
+func InitConf(path string) {
+	Conf = NewConfig(path)
+}
 func init() {
-	GlobalConfig = NewConfig("/Users/ian/go/src/goOrigin/config.yaml")
+
 }

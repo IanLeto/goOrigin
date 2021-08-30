@@ -33,7 +33,7 @@ func (c *CCClient) Get(path string) *sling.Sling {
 
 // NewCCClient :
 func NewCCClient(ccConf *config.CCConf) *CCClient {
-	var address = config.GlobalConfig.Client.CC.Address
+	var address = config.Conf.Client.CC.Address
 	if ccConf != nil {
 		address = ccConf.Address
 	}

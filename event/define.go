@@ -22,6 +22,17 @@ func (receiver *Event) PubPeriodicTask(topic string, args ...interface{}) {
 	receiver.event.Publish(topic, args...)
 }
 
+// 发布无回调事件
+func (receiver *Event) Pub(topic string) {
+	receiver.event.Publish(topic)
+}
+
+// 订阅无回调事件
+func (receiver *Event) Sub(topic string) {
+	//var fn func() error
+	//receiver.event.SubscribeAsync(topic, func() {}func, false)
+}
+
 func init() {
 	GlobalEventBus = &Event{
 		event: EventBus.New(),

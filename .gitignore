@@ -42,6 +42,7 @@ _test
 .vscode
 .DS_Store
 .cache-loader
+workspace.xml
 
 /n9e-*
 
