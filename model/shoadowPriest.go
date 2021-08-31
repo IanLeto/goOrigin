@@ -1,14 +1,12 @@
 package model
 
-import "time"
-
 type IanUI struct {
 	Id         string      `json:"id"`
 	Weight     int         `json:"weight"`
 	CodingLine int         `json:"coding_line"`
 	Task       []DailyTask `json:"task"`
-	GetUp      time.Time   `json:"get_up"`
-	Sleep      time.Time   `json:"sleep"`
+	GetUp      int         `json:"get_up"`
+	Sleep      int         `json:"sleep"`
 	Cost       int         `json:"cost"`
 	Deposit    int         `json:"deposit"`
 	DailyTask
@@ -16,10 +14,10 @@ type IanUI struct {
 }
 
 type DailyTask struct {
-	Expected string
-	Actual   string
+	Expected string `json:"expected"`
+	Actual   string `json:"actual"`
 }
 
 type HavingFun struct {
-	WithWho string
+	WithWho string `json:"with_who"`
 }

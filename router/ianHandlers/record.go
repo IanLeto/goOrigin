@@ -17,15 +17,14 @@ func AddDayForm(c *gin.Context) {
 
 	err = c.ShouldBindJSON(&ian)
 	if err != nil {
-		logrus.Errorf("%s", err)
-		baseHandlers.RenderResponse(c, nil, nil)
+		baseHandlers.RenderData(c, nil, err)
+		return
 	}
 	err = storage.Mongo.C("ian").Insert(ian)
 	if err != nil {
-		logrus.Errorf("%s", err)
-		baseHandlers.RenderResponse(c, nil, nil)
+		baseHandlers.RenderData(c, nil, err)
 	}
-	baseHandlers.RenderResponse(c, nil, nil)
+	baseHandlers.RenderData(c, nil, nil)
 
 }
 
