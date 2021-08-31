@@ -17,18 +17,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/storage/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/DB/MySQLBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/DB/MySQLBackend.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/event/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/event/define.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/httpclient/cc.go" beforeDir="false" afterPath="$PROJECT_DIR$/httpclient/cc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/preRun.go" beforeDir="false" afterPath="$PROJECT_DIR$/run/preRun.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/mongo.go" afterDir="false" />
+    <list default="true" id="384241d7-97f7-47f6-827a-bbdced1aa4a3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Version.md" beforeDir="false" afterPath="$PROJECT_DIR$/Version.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,16 +89,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build goOrigin">
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="goOrigin" />
-      <working_directory value="$PROJECT_DIR$" />
-      <go_parameters value="-i" />
-      <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$" />
-      <package value="goOrigin" />
-      <directory value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <configuration name="go build goOrigin" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="goOrigin" />
       <working_directory value="$PROJECT_DIR$" />
@@ -147,17 +127,6 @@
       <framework value="gotest" />
       <kind value="PACKAGE" />
       <package value="goLibrary/prometheusDemo" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="goOrigin" />
-      <working_directory value="$PROJECT_DIR$" />
-      <go_parameters value="-i" />
-      <framework value="gotest" />
-      <kind value="DIRECTORY" />
-      <package value="goOrigin" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
