@@ -1,0 +1,3 @@
+[submodule "goLibrary"]
+	path = goLibrary
+	url = https://github.com/IanLeto/goLibrary

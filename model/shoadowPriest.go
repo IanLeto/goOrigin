@@ -1,7 +1,7 @@
 package model
 
 type IanUI struct {
-	Id         string      `json:"id"`
+	Id         int         `json:"id"`
 	Weight     int         `json:"weight"`
 	CodingLine int         `json:"coding_line"`
 	Task       []DailyTask `json:"task"`
