@@ -1,12 +1,10 @@
 package model
 
-type IanUI struct {
+type ShadowPriest struct {
 	Id         int         `json:"id"`
 	Weight     int         `json:"weight"`
 	CodingLine int         `json:"coding_line"`
 	Task       []DailyTask `json:"task"`
-	GetUp      int         `json:"get_up"`
-	Sleep      int         `json:"sleep"`
 	Cost       int         `json:"cost"`
 	Deposit    int         `json:"deposit"`
 	DailyTask

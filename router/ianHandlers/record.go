@@ -9,9 +9,10 @@ import (
 	"goOrigin/storage"
 )
 
+
 func AddDayForm(c *gin.Context) {
 	var (
-		ian model.IanUI
+		ian model.ShadowPriest
 		err error
 	)
 
@@ -23,6 +24,7 @@ func AddDayForm(c *gin.Context) {
 	err = storage.Mongo.C("ian").Insert(ian)
 	if err != nil {
 		baseHandlers.RenderData(c, nil, err)
+		return
 	}
 	baseHandlers.RenderData(c, nil, nil)
 
@@ -30,7 +32,7 @@ func AddDayForm(c *gin.Context) {
 
 func UpdateForm(c *gin.Context) {
 	var (
-		ian model.IanUI
+		ian model.ShadowPriest
 		err error
 	)
 	err = c.ShouldBindJSON(&ian)
