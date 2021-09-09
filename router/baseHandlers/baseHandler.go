@@ -12,12 +12,14 @@ type Response struct {
 }
 
 func RenderData(c *gin.Context, data interface{}, err error) {
-	if err != nil {
+	if err == nil {
 		c.JSON(200, gin.H{
 			"data": data,
 			"err":  err,
 		})
+		return
 	}
+	renderMessage(c, err.Error())
 }
 
 func renderMessage(c *gin.Context, v interface{}) {
