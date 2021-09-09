@@ -2,7 +2,7 @@ package model
 
 type ShadowPriest struct {
 	Id         int         `json:"id"`
-	Weight     int         `json:"weight"`
+	Weight     float32     `json:"weight"`
 	CodingLine int         `json:"coding_line"`
 	Task       []DailyTask `json:"task"`
 	Cost       int         `json:"cost"`
