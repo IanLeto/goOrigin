@@ -30,3 +30,6 @@ func ConvBson(v interface{}) bson.M {
 	err = bson.Unmarshal(data, &doc)
 	return doc
 }
+
+func ConvJsonToBson()  {
+}

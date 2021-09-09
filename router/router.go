@@ -29,6 +29,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		ianGroup.POST("/addForm", ianHandlers.AddDayForm)
 		ianGroup.POST("/updateForm", ianHandlers.UpdateForm)
+		ianGroup.POST("/SelectForm", ianHandlers.SelectForm)
 	}
 	return g
 }

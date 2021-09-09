@@ -53,3 +53,26 @@ func UpdateForm(c *gin.Context) {
 	baseHandlers.RenderData(c, nil, err)
 
 }
+
+func SelectForm(c *gin.Context) {
+	var (
+		ian       model.ShadowPriest
+		queryInfo model.ShadowPriestQueryRequestInfo
+		err       error
+		selector  bson.M
+	)
+	if err = utils.EnsureJson(c, &queryInfo); err != nil {
+		goto ERR
+	}
+
+	if err = bson.UnmarshalJSON([]byte(queryInfo.Query), &selector); err != nil {
+		goto ERR
+	}
+	storage.Mongo.C("ian").Find(&selector).One(&ian)
+	baseHandlers.RenderData(c, ian, err)
+	return
+ERR:
+	baseHandlers.RenderData(c, nil, err)
+	return
+
+}
