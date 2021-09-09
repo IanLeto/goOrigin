@@ -7,8 +7,8 @@ import (
 	"goOrigin/model"
 	"goOrigin/router/baseHandlers"
 	"goOrigin/storage"
+	"goOrigin/utils"
 )
-
 
 func AddDayForm(c *gin.Context) {
 	var (
@@ -18,11 +18,13 @@ func AddDayForm(c *gin.Context) {
 
 	err = c.ShouldBindJSON(&ian)
 	if err != nil {
+		logrus.Errorf("%s", err)
 		baseHandlers.RenderData(c, nil, err)
 		return
 	}
 	err = storage.Mongo.C("ian").Insert(ian)
 	if err != nil {
+		logrus.Errorf("%s", err)
 		baseHandlers.RenderData(c, nil, err)
 		return
 	}
@@ -35,21 +37,19 @@ func UpdateForm(c *gin.Context) {
 		ian model.ShadowPriest
 		err error
 	)
-	err = c.ShouldBindJSON(&ian)
+	if err := utils.EnsureJson(c, &ian); err != nil {
+		baseHandlers.RenderData(c, nil, err)
+		return
+	}
+
+	err = storage.Mongo.C("ian").Update(bson.M{
+		"id": ian.Id,
+	}, bson.M{
+		"$set": utils.ConvBson(ian),
+	})
 	if err != nil {
 		logrus.Errorf("%s", err)
 	}
-	if ian.Weight != 0 {
-		info, err := storage.Mongo.C("ian").UpdateAll(bson.M{
-			"id": "1",
-		}, bson.M{
-			"$set": bson.M{
-				"weight": 120,
-			},
-		})
-		logrus.Errorf("%s", err)
-		baseHandlers.RenderResponse(c, info, nil)
-
-	}
+	baseHandlers.RenderData(c, nil, err)
 
 }
