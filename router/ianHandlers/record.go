@@ -64,11 +64,13 @@ func SelectForm(c *gin.Context) {
 	if err = utils.EnsureJson(c, &queryInfo); err != nil {
 		goto ERR
 	}
-
 	if err = bson.UnmarshalJSON([]byte(queryInfo.Query), &selector); err != nil {
 		goto ERR
 	}
-	storage.Mongo.C("ian").Find(&selector).One(&ian)
+	if err = storage.Mongo.C("ian").Find(&selector).One(&ian); err != nil {
+		goto ERR
+	}
+
 	baseHandlers.RenderData(c, ian, err)
 	return
 ERR:
