@@ -12,3 +12,7 @@ func EnsureJson(c *gin.Context, v interface{}) error {
 	}
 	return nil
 }
+
+func get()  {
+	
+}

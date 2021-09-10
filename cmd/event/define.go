@@ -2,10 +2,10 @@ package event
 
 import (
 	"github.com/asaskevich/EventBus"
-	"goOrigin/utils"
+	"goOrigin/pkg/utils"
 )
 
-var GlobalEventBus *Event
+var Bus *Event
 
 type Event struct {
 	event EventBus.Bus
@@ -33,9 +33,11 @@ func (receiver *Event) Sub(topic string) {
 	//receiver.event.SubscribeAsync(topic, func() {}func, false)
 }
 
+func InitEvent() error {
+	Bus = &Event{event: EventBus.New()}
+	return nil
+}
+
 func init() {
-	GlobalEventBus = &Event{
-		event: EventBus.New(),
-	}
 
 }

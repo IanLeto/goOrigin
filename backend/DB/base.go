@@ -1,6 +1,6 @@
 package DB
 
-import "goOrigin/errors"
+import "goOrigin/pkg/errors"
 
 var MySqlBackend *MySQLBackend
 

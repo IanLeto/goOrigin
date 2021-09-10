@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"goOrigin/config"
-	"goOrigin/logging"
+	"goOrigin/pkg/logging"
 )
 
 type MySQLBackend struct {

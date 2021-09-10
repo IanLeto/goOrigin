@@ -2,7 +2,7 @@ package httpclient_test
 
 import (
 	"goOrigin/config"
-	"goOrigin/httpclient"
+	"goOrigin/pkg/httpclient"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
