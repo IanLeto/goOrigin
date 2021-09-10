@@ -8,9 +8,34 @@
     <select />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
+    <list default="true" id="13d1063f-75f9-455c-98cc-9fee143cfe3a" name="Default Changelist" comment="">
+<<<<<<< HEAD
+      <change afterPath="$PROJECT_DIR$/router/ianHandlers/record.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/shoadowPriest.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/shoadowPriest.go" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/storage/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/DB/MySQLBackend.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/DB/MySQLBackend.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/define/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/define/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event/define.go" beforeDir="false" afterPath="$PROJECT_DIR$/event/define.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httpclient/cc.go" beforeDir="false" afterPath="$PROJECT_DIR$/httpclient/cc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/preRun.go" beforeDir="false" afterPath="$PROJECT_DIR$/run/preRun.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage/mongo.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/mongo.go" afterDir="false" />
+>>>>>>> main
+=======
     <list default="true" id="384241d7-97f7-47f6-827a-bbdced1aa4a3" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/ianHandlers/record.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/ianHandlers/record.go" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/Version.md" beforeDir="false" afterPath="$PROJECT_DIR$/Version.md" afterDir="false" />
+>>>>>>> main
+>>>>>>> d29be502b9084d07f7a09f7d702f05a35f061cca
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
