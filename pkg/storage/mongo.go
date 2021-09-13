@@ -28,3 +28,4 @@ func NewMongoConn() *MongoConn {
 		Database: session.DB(config.Conf.Backend.MongoBackendConfig.DB),
 	}
 }
+

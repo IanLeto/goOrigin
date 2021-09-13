@@ -38,7 +38,7 @@ client:
   CC:
     address: localhost:1129
     heart_beat: 10
-componse:
+components:
   - mongo
   - redis
   - mysql

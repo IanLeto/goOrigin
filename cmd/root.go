@@ -24,25 +24,25 @@ func paramCheck(cmd *cobra.Command) map[string]string {
 		commonFilePath       string
 	)
 	product, err = flags.GetString("product")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	configVersion, err = flags.GetString("configVersion")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	serverVersion, err = flags.GetString("serverVersion")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	serverName, err = flags.GetString("serverName")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	configTemplate, err = flags.GetString("configTemplate")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	configTemplatePath, err = flags.GetString("configTemplatePath")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	businessTemplate, err = flags.GetString("businessTemplate")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	businessTemplatePath, err = flags.GetString("businessTemplatePath")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	commonFile, err = flags.GetString("commonFile")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	commonFilePath, err = flags.GetString("commonFilePath")
-	utils.CheckNoError(err)
+	utils.NoError(err)
 	return map[string]string{
 		"product":              product,
 		"configVersion":        configVersion,
@@ -75,14 +75,14 @@ var RootCmd = &cobra.Command{
 		client := httpclient.NewCCClient(nil)
 		params := paramCheck(cmd)
 		path, err := cmd.Flags().GetString("output")
-		utils.CheckNoError(err)
+		utils.NoError(err)
 		if path == "" {
 			output = os.Stdout
 		} else {
 			output, err = os.OpenFile(path, os.O_RDWR|os.O_APPEND, 0777)
-			utils.CheckNoError(err)
+			utils.NoError(err)
 			defer func() {
-				utils.CheckNoError(err)
+				utils.NoError(err)
 			}()
 		}
 		_, err = io.WriteString(output, formatResponseInfo(client.Mkc(params["product"], params["configVersion"], params["serverVersion"], params["serverName"], params["configTemplate"], params["configTemplatePath"], params["businessTemplate"], params["businessTemplatePath"], params["commonFile"], params["commonFilePath"], false)))

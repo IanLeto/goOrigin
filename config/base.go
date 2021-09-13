@@ -14,7 +14,7 @@ type Config struct {
 	RunMode    string `yaml:"run_mode"`
 	Backend    *BackendConfig
 	Client     *HttpClientConfig
-	Components []string
+	Components []string `yaml:"components"`
 }
 
 func NewConfig(path string) *Config {
