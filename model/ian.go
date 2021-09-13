@@ -19,12 +19,9 @@ type DailyTask struct {
 type HavingFun struct {
 	WithWho string `json:"with_who"`
 }
-<<<<<<< HEAD
 
 //
 
 type ShadowPriestQueryRequestInfo struct {
 	Query string `json:"query"`
 }
-=======
->>>>>>> d29be502b9084d07f7a09f7d702f05a35f061cca

@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 	"github.com/sirupsen/logrus"
+	"goOrigin/internal/router/baseHandlers"
 	"goOrigin/model"
-	"goOrigin/router/baseHandlers"
-	"goOrigin/storage"
-	"goOrigin/utils"
+	"goOrigin/pkg/storage"
+	"goOrigin/pkg/utils"
 )
 
 func AddDayForm(c *gin.Context) {
