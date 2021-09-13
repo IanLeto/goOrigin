@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"goOrigin/httpclient"
-	"goOrigin/utils"
+	"goOrigin/pkg/httpclient"
+	"goOrigin/pkg/utils"
 	"io"
 	"os"
 )

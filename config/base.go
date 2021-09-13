@@ -3,17 +3,18 @@ package config
 import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"goOrigin/logging"
+	"goOrigin/pkg/logging"
 	"log"
 	"os"
 )
 
 type Config struct {
-	Name    string `yaml:"name"`
-	Port    string `yaml:"port"`
-	RunMode string `yaml:"run_mode"`
-	Backend *BackendConfig
-	Client  *HttpClientConfig
+	Name       string `yaml:"name"`
+	Port       string `yaml:"port"`
+	RunMode    string `yaml:"run_mode"`
+	Backend    *BackendConfig
+	Client     *HttpClientConfig
+	Components []string
 }
 
 func NewConfig(path string) *Config {
@@ -21,11 +22,12 @@ func NewConfig(path string) *Config {
 		panic("init config failed")
 	}
 	return &Config{
-		Name:    viper.GetString("name"),
-		Port:    viper.GetString("addr"),
-		RunMode: viper.GetString("run_mode"),
-		Backend: NewBackendConfig(),
-		Client:  NewHttpClientConfig(),
+		Name:       viper.GetString("name"),
+		Port:       viper.GetString("addr"),
+		RunMode:    viper.GetString("run_mode"),
+		Components: viper.GetStringSlice("components"),
+		Backend:    NewBackendConfig(),
+		Client:     NewHttpClientConfig(),
 	}
 }
 

@@ -1,8 +1,8 @@
 package event_test
 
 import (
+	"goOrigin/cmd/event"
 	"goOrigin/config"
-	"goOrigin/event"
 	"testing"
 	"time"
 
@@ -19,8 +19,8 @@ type eventBusSuite struct {
 }
 
 func (s *eventBusSuite) SetupTest() {
-	s.event = event.GlobalEventBus
-	s.conf = config.GlobalConfig
+	s.event = event.Bus
+	//s.conf = config.GlobalConfig
 }
 
 // TestMarshal :

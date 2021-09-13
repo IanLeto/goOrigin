@@ -1,6 +1,6 @@
 package utils
 
-import "goOrigin/logging"
+import "goOrigin/pkg/logging"
 
 func CheckError(err error) {
 	if err != nil {

@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"goOrigin/router/ianHandlers"
-	"goOrigin/router/indexHandlers"
-	"goOrigin/router/userHandlers"
+	"goOrigin/internal/router/ianHandlers"
+	"goOrigin/internal/router/indexHandlers"
+	"goOrigin/internal/router/userHandlers"
 )
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
@@ -14,7 +14,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)
-		indexGroup.GET("/hello", indexHandlers.BaseInformationHandler)
 
 	}
 	userGroup := g.Group("/v1/user")

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dghubble/sling"
 	"goOrigin/config"
-	"goOrigin/logging"
+	"goOrigin/pkg/logging"
 	"sync"
 	"time"
 )
