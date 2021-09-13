@@ -2,6 +2,7 @@ package storage
 
 var Mongo *MongoConn
 
-func InitMongo() {
+func InitMongo() error {
 	Mongo = NewMongoConn()
+	return nil
 }

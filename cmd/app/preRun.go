@@ -3,6 +3,7 @@ package main
 import (
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -11,6 +12,10 @@ var defaultConfigPath = "/Users/ian/go/src/goOrigin/config.yaml"
 
 var preCheck []func() error
 var mode string
+
+var compInit = map[string]func() error{
+	"mongo": storage.InitMongo,
+}
 
 // step 1 本地环境变量检查
 var envCheck = func() error {
@@ -32,7 +37,9 @@ var initConfig = func() error {
 // step 4 初始化组件
 var initComponents = func() error {
 	for _, component := range config.Conf.Components {
-		event.Bus.Pub(component)
+		if fn, ok := compInit[component]; ok {
+			utils.NoError(fn())
+		}
 	}
 	return nil
 }
@@ -47,15 +54,9 @@ var initMode = func() error {
 	return nil
 }
 
-//var initMongoSession = func() error {
-//	event.Bus.Pub("")
-//	storage.InitMongo()
-//	return nil
-//}
-
 func PreRun() string {
 	for _, f := range preCheck {
-		utils.CheckNoError(f())
+		utils.NoError(f())
 	}
 	return mode
 }

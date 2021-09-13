@@ -11,7 +11,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.CheckNoError(http.ListenAndServe(":"+utils.ConvOrDefaultString(viper.Get("port"), "8080"), g))
+	utils.NoError(http.ListenAndServe(":"+utils.ConvOrDefaultString(viper.Get("port"), "8080"), g))
 }
 
 func main() {
