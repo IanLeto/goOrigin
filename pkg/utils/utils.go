@@ -13,6 +13,11 @@ func EnsureJson(c *gin.Context, v interface{}) error {
 	return nil
 }
 
-func get()  {
-	
+func IncludeString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
