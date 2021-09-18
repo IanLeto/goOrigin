@@ -20,8 +20,6 @@ type HavingFun struct {
 	WithWho string `json:"with_who"`
 }
 
-//
-
 type ShadowPriestQueryRequestInfo struct {
 	Query string `json:"query"`
 }

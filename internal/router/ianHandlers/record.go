@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 	"github.com/sirupsen/logrus"
+	"goOrigin/internal/model"
 	"goOrigin/internal/router/baseHandlers"
-	"goOrigin/model"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 )
