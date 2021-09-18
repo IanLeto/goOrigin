@@ -15,6 +15,7 @@ var mode string
 
 var compInit = map[string]func() error{
 	"mongo": storage.InitMongo,
+	"zk":    storage.InitZk,
 }
 
 // step 1 本地环境变量检查

@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
-	github.com/cstockton/go-conv v0.0.0-20170524002450-66a2b2ba36e1
 	github.com/dghubble/sling v1.3.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.7.2
@@ -17,6 +16,7 @@ require (
 	github.com/hoisie/redis v0.0.0-20160730154456-b5c6e81454e0 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mattn/go-isatty v0.0.13 // indirect
+	github.com/samuel/go-zookeeper v0.0.0-20201211165307-7117e9ea2414
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.1
