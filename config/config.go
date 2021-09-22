@@ -10,12 +10,14 @@ type ComponentConfig interface {
 type BackendConfig struct {
 	*MySqlBackendConfig
 	*MongoBackendConfig
+	*ZKConfig
 }
 
 func NewBackendConfig() *BackendConfig {
 	return &BackendConfig{
 		NewMySqlBackendConfig(),
 		NewMongoBackendConfig(),
+		NewZkConfig(),
 	}
 }
 
@@ -64,6 +66,21 @@ func NewMongoBackendConfig() *MongoBackendConfig {
 		User:     viper.GetString("backend.mongo.user"),
 		Password: viper.GetString("backend.mongo.password"),
 		DB:       viper.GetString("backend.mongo.DB"),
+	}
+}
+
+// zookeeper 配置
+type ZKConfig struct {
+	Address []string
+	Master  string
+	Auth    string
+}
+
+func NewZkConfig() *ZKConfig {
+	return &ZKConfig{
+		Address: viper.GetStringSlice("backend.zk.Address"),
+		Master:  viper.GetString("backend.zk.Master"),
+		Auth:    viper.GetString("backend.zk.Auth"),
 	}
 }
 
