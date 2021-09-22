@@ -54,7 +54,7 @@ func NewMongoConn() *MongoConn {
 	}
 }
 
-func CreateSchema(mode string) error {
+func initSchema(mode string) error {
 	names, err := Mongo.DB("ian").CollectionNames()
 	if err != nil {
 		return err
@@ -74,6 +74,7 @@ func CreateSchema(mode string) error {
 		if err := init(); err != nil {
 			return err
 		}
+		Mongo.DB("ian").C("ian")
 	}
 	return nil
 }
