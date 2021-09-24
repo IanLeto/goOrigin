@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
 	"goOrigin/pkg/utils"
+	"io/ioutil"
 )
 
 var tables = []string{"ian", "todo"}
@@ -74,7 +75,15 @@ func initSchema(mode string) error {
 		if err := init(); err != nil {
 			return err
 		}
-		Mongo.DB("ian").C("ian")
+		res, err := ioutil.ReadFile(utils.GetFilePath("internal/model/ian.json"))
+		if err != nil {
+			logrus.Errorf("import data fail %s", err)
+		}
+		doc := utils.ConvBson(res)
+		err = Mongo.DB("ian").C("ian").Insert(doc)
+		if err != nil {
+			logrus.Errorf("insert data fail %s", err)
+		}
 	}
 	return nil
 }

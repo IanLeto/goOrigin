@@ -3,6 +3,8 @@ package utils
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 )
 
 func EnsureJson(c *gin.Context, v interface{}) error {
@@ -20,4 +22,13 @@ func IncludeString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func getRootPath() string {
+	path, _ := os.Getwd()
+	return filepath.Join(path, "")
+}
+
+func GetFilePath(path string) string {
+	return filepath.Join(getRootPath(), path)
 }

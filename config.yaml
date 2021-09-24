@@ -1,4 +1,4 @@
-run_mode: debug
+run_mode: init
 addr: 8080
 name: ccServer
 url: localhost:8080
@@ -37,7 +37,6 @@ backend:
     address:
       - localhost:2181
     auth: root
-
 client:
   CC:
     address: localhost:1129
