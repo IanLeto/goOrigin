@@ -47,6 +47,15 @@ components:
   - redis
   - mysql
   - cc
+logging:
+  fileName: .%Y%m%d%H
+  level: debug
+  path: logs
+  rotation:
+    time: 24 # 24 小时分割一次
+    count: 50 # 最多50个
+
+
 
 
 

@@ -14,6 +14,7 @@ type Config struct {
 	RunMode    string `yaml:"run_mode"`
 	Backend    *BackendConfig
 	Client     *HttpClientConfig
+	Logging    *LoggingConfig
 	Components []string `yaml:"components"`
 }
 
@@ -26,6 +27,7 @@ func NewConfig(path string) *Config {
 		Port:       viper.GetString("addr"),
 		RunMode:    viper.GetString("run_mode"),
 		Components: viper.GetStringSlice("components"),
+		Logging:    NewLoggingConfig(),
 		Backend:    NewBackendConfig(),
 		Client:     NewHttpClientConfig(),
 	}

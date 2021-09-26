@@ -98,3 +98,28 @@ func NewCCClientConf() *CCConf {
 	}
 
 }
+
+// logging 配置
+type LoggingConfig struct {
+	FileName string
+	Level    string
+	Path     string
+	Rotation RotationConfig
+}
+
+type RotationConfig struct {
+	Time  int
+	Count int
+}
+
+func NewLoggingConfig() *LoggingConfig {
+	return &LoggingConfig{
+		FileName: viper.GetString("logging.fileName"),
+		Level:    viper.GetString("logging.level"),
+		Path:     viper.GetString("logging.path"),
+		Rotation: RotationConfig{
+			Time:  viper.GetInt("logging.rotation.time"),
+			Count: viper.GetInt("logging.rotation.Count"),
+		},
+	}
+}
