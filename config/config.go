@@ -123,3 +123,9 @@ func NewLoggingConfig() *LoggingConfig {
 		},
 	}
 }
+
+// ssh
+type SSHConfig struct {
+	Address string
+	User    string
+}

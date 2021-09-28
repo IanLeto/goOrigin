@@ -23,5 +23,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		userGroup.GET("/:username", userHandlers.Get)
 		userGroup.DELETE("/:id", userHandlers.Delete)
 	}
+	execGroup := g.Group("/v1/exec")
+	{
+		execGroup.POST("/:id")
+	}
 	return g
 }
