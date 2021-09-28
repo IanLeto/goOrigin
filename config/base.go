@@ -12,6 +12,7 @@ type Config struct {
 	Name       string `yaml:"name"`
 	Port       string `yaml:"port"`
 	RunMode    string `yaml:"run_mode"`
+	SSH        *SSHConfig
 	Backend    *BackendConfig
 	Client     *HttpClientConfig
 	Logging    *LoggingConfig
@@ -30,6 +31,7 @@ func NewConfig(path string) *Config {
 		Logging:    NewLoggingConfig(),
 		Backend:    NewBackendConfig(),
 		Client:     NewHttpClientConfig(),
+		SSH:        NewSSHConfig(),
 	}
 }
 

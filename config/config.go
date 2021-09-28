@@ -128,4 +128,19 @@ func NewLoggingConfig() *LoggingConfig {
 type SSHConfig struct {
 	Address string
 	User    string
+	Type    string
+	KeyPath string // ssh_id 路径
+	Port    int
+	Auth    string
+}
+
+func NewSSHConfig() *SSHConfig {
+	return &SSHConfig{
+		Address: viper.GetString("ssh.address"),
+		User:    viper.GetString("ssh.user"),
+		Type:    viper.GetString("ssh.type"),
+		KeyPath: viper.GetString("ssh.key_path"),
+		Auth:    viper.GetString("ssh.auth"),
+		Port:    viper.GetInt("ssh.port"),
+	}
 }

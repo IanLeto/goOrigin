@@ -37,11 +37,11 @@ backend:
     address:
       - localhost:2181
     auth: root
-
 client:
   CC:
     address: localhost:1129
     heart_beat: 10
+    user: root
 components:
   - mongo
   - redis
@@ -54,7 +54,9 @@ logging:
   rotation:
     time: 24 # 24 小时分割一次
     count: 50 # 最多50个
-
+ssh:
+  address: 113.31.168.103
+  auth: 123qweasdzxc
 
 
 
