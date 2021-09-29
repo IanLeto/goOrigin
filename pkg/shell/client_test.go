@@ -1,7 +1,6 @@
 package shell_test
 
 import (
-	"fmt"
 	"goOrigin/config"
 	"goOrigin/pkg/shell"
 	"goOrigin/pkg/utils"
@@ -18,10 +17,9 @@ type SSHClientSuite struct {
 }
 
 func (s *SSHClientSuite) SetupTest() {
-	fmt.Println(utils.GetRootPath(""))
-	//config.InitConf(utils.GetRootPath("config.yaml"))
-	//shell.InitSSH()
-	//s.conn = shell.SSHConn
+	config.InitConf(utils.GetFilePath("config.yaml"))
+	shell.InitSSH()
+	s.conn = shell.SSHConn
 }
 
 // TestMarshal :

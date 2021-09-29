@@ -3,7 +3,18 @@ package utils
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
+	"runtime"
 )
+
+var (
+	_, b, _, _ = runtime.Caller(0)
+
+	// Root folder of this project
+	Root = filepath.Join(filepath.Dir(b), "../..")
+)
+var rootPath = getRootPath()
 
 func EnsureJson(c *gin.Context, v interface{}) error {
 	if err := c.ShouldBindJSON(v); err != nil {
@@ -13,6 +24,12 @@ func EnsureJson(c *gin.Context, v interface{}) error {
 	return nil
 }
 
-func get()  {
-	
+func getRootPath() string {
+
+	path, _ := os.Getwd()
+	return filepath.Join(path, "")
+}
+
+func GetFilePath(path string) string {
+	return filepath.Join(Root, path)
 }
