@@ -30,5 +30,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		ianGroup.POST("/updateForm", ianHandlers.UpdateForm)
 		ianGroup.POST("/SelectForm", ianHandlers.SelectForm)
 	}
+	execGroup := g.Group("/v1/exec")
+	{
+		execGroup.POST("/:id")
+	}
 	return g
 }

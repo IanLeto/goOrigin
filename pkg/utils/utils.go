@@ -5,7 +5,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
+	"runtime"
 )
+
+var (
+	_, b, _, _ = runtime.Caller(0)
+
+	// Root folder of this project
+	Root = filepath.Join(filepath.Dir(b), "../..")
+)
+var rootPath = getRootPath()
 
 func EnsureJson(c *gin.Context, v interface{}) error {
 	if err := c.ShouldBindJSON(v); err != nil {

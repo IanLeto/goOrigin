@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.NoError(http.ListenAndServe(":"+cast.ToString("8080"), g))
+	utils.NoError(http.ListenAndServe("localhost:8008", g))
 }
 
 func main() {

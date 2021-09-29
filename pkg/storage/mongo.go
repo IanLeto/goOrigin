@@ -80,7 +80,6 @@ func initSchema(mode string) error {
 			logrus.Errorf("import data fail %s", err)
 			return err
 		}
-
 		doc, err := utils.ConvBson(string(res))
 		if err != nil {
 			logrus.Errorf("conv data fail %s", err)

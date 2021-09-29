@@ -45,7 +45,9 @@ var initComponents = func() error {
 	return nil
 }
 
-// step 5 启动模式
+
+
+// step 6 启动模式
 
 var initMode = func() error {
 	switch mode {
