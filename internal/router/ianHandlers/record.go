@@ -45,7 +45,7 @@ func UpdateForm(c *gin.Context) {
 	err = storage.Mongo.C("ian").Update(bson.M{
 		"id": ian.Id,
 	}, bson.M{
-		"$set": utils.ConvBson(ian),
+		"$set": utils.ConvBsonNoErr(ian),
 	})
 	if err != nil {
 		logrus.Errorf("%s", err)

@@ -78,8 +78,14 @@ func initSchema(mode string) error {
 		res, err := ioutil.ReadFile(utils.GetFilePath("internal/model/ian.json"))
 		if err != nil {
 			logrus.Errorf("import data fail %s", err)
+			return err
 		}
-		doc := utils.ConvBson(res)
+
+		doc, err := utils.ConvBson(string(res))
+		if err != nil {
+			logrus.Errorf("conv data fail %s", err)
+			return err
+		}
 		err = Mongo.DB("ian").C("ian").Insert(doc)
 		if err != nil {
 			logrus.Errorf("insert data fail %s", err)

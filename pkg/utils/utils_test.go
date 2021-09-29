@@ -1,6 +1,8 @@
 package utils_test
 
 import (
+	"github.com/globalsign/mgo/bson"
+	"goOrigin/pkg/utils"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -16,15 +18,8 @@ func (s *UtilsSuite) SetupTest() {
 }
 
 // TestMarshal :
-func (s *UtilsSuite) TestConfig() {
-	//res := utils.ConvBson(map[string][]map[string]string{
-	//	"$or": {
-	//		{"severname": "test3"}, {"version": "ianLiuUpdate"},
-	//	},
-	//})
-	//s.Equal(bson.M{
-	//	"$or": bson.M{"severname": "test3", "version": "ianLiuUpdate"},
-	//}, res)
+func (s *UtilsSuite) TestConvBson() {
+	s.Equal(bson.M{"key": bson.M{"jk": "value"}}, utils.ConvBsonNoErr(map[string]map[string]interface{}{"key": {"jk": "value"}}))
 }
 
 // TestHttpClient :
