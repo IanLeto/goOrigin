@@ -1,6 +1,7 @@
 package shell_test
 
 import (
+	"fmt"
 	"goOrigin/config"
 	"goOrigin/pkg/shell"
 	"goOrigin/pkg/utils"
@@ -24,9 +25,9 @@ func (s *SSHClientSuite) SetupTest() {
 
 // TestMarshal :
 func (s *SSHClientSuite) TestConfig() {
-	//res, err := s.conn.Exec("ls -all")
-	//s.NoError(err)
-	//fmt.Println(string(res))
+	res, err := s.conn.Exec("pwd")
+	s.NoError(err)
+	fmt.Println(string(res))
 }
 
 // TestHttpClient :
