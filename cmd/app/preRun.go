@@ -3,6 +3,7 @@ package main
 import (
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/pkg/logging"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 	"os"
@@ -35,7 +36,12 @@ var initConfig = func() error {
 	return nil
 }
 
-// step 4 初始化组件
+// step 4 初始化配置
+var initLog = func() error {
+	return logging.InitLogging()
+}
+
+// step 5 初始化组件
 var initComponents = func() error {
 	for _, component := range config.Conf.Components {
 		if fn, ok := compInit[component]; ok {
@@ -44,8 +50,6 @@ var initComponents = func() error {
 	}
 	return nil
 }
-
-
 
 // step 6 启动模式
 
@@ -65,5 +69,5 @@ func PreRun() string {
 }
 
 func init() {
-	preCheck = append(preCheck, initEvent, envCheck, initConfig, initComponents, initMode)
+	preCheck = append(preCheck, initEvent, envCheck, initConfig, initLog, initComponents, initMode)
 }
