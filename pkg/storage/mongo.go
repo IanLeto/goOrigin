@@ -38,6 +38,16 @@ type MongoConn struct {
 	*mgo.Database
 }
 
+func (m *MongoConn) Close() error {
+	m.Session.Close()
+	return nil
+}
+
+func (m *MongoConn) InitData(mode string) error {
+	panic("")
+
+}
+
 func NewMongoConn() *MongoConn {
 	mongConf := config.Conf.Backend.MongoBackendConfig
 	url := fmt.Sprintf("mongodb://%s:%s/%s", mongConf.Address, mongConf.Port, mongConf.DB)
