@@ -28,4 +28,6 @@ require (
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	k8s.io/client-go v1.5.2
+
 )
