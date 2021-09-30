@@ -38,7 +38,7 @@ var initConfig = func() error {
 
 // step 4 初始化配置
 var initLog = func() error {
-	return logging.InitLogging()
+	return logging.InitLogger()
 }
 
 // step 5 初始化组件
