@@ -57,7 +57,9 @@ logging:
 ssh:
   address: 113.31.168.103
   auth: 123qweasdzxc
-
+data:
+  - mongo
+  - zk
 
 
 

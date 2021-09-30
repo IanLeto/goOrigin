@@ -14,7 +14,6 @@ var (
 	// Root folder of this project
 	Root = filepath.Join(filepath.Dir(b), "../..")
 )
-var rootPath = getRootPath()
 
 func EnsureJson(c *gin.Context, v interface{}) error {
 	if err := c.ShouldBindJSON(v); err != nil {
@@ -39,5 +38,5 @@ func getRootPath() string {
 }
 
 func GetFilePath(path string) string {
-	return filepath.Join(getRootPath(), path)
+	return filepath.Join(Root, path)
 }
