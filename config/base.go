@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"goOrigin/pkg/logging"
 	"log"
 	"os"
 )
@@ -42,7 +41,6 @@ func init() {
 	//define.InitHandler = append(define.InitHandler, initConfig)
 }
 func initConfig(path string) error {
-	var logger = logging.GetStdLogger()
 	if path == "" {
 		// 这里的配置文件一定要放到项目根目录上
 		// viper 读取文件的特性导致被不同包调用时，该路径会根据调用方变化
@@ -54,7 +52,8 @@ func initConfig(path string) error {
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-		logger.Debugf("error in init config %s", err)
+
+		log.Printf("error in init config %s", err)
 		dir, err := os.Getwd()
 		if err != nil {
 			log.Fatalf("reading config err %v", err)
