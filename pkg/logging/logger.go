@@ -2,7 +2,6 @@ package logging
 
 import (
 	"github.com/sirupsen/logrus"
-	"log"
 	"sync"
 )
 
@@ -56,18 +55,19 @@ func InitLogging() error {
 //}
 
 func init() {
-	// logrus 实例
-	logger := logrus.StandardLogger()
+	//// logrus 实例
+	//logger := logrus.StandardLogger()
+	//
+	//StdLogger = &Logger{
+	//	Logger: logger,
+	//}
+	//log.SetOutput(StdLogger.Writer()) // 将基础log 中的文件输出，定向到logrus
+	//
+	//logger = logrus.New()
+	////logrus.AddHook(newHook())
+	//logger.Level = logrus.PanicLevel
+	//NilLogger = &Logger{
+	//	Logger: logger,
+	//}
 
-	StdLogger = &Logger{
-		Logger: logger,
-	}
-	log.SetOutput(StdLogger.Writer()) // 将基础log 中的文件输出，定向到logrus
-
-	logger = logrus.New()
-	//logrus.AddHook(newHook())
-	logger.Level = logrus.PanicLevel
-	NilLogger = &Logger{
-		Logger: logger,
-	}
 }

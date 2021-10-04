@@ -38,6 +38,7 @@ func (m *MongoConn) InitData(mode string) error {
 			}
 		}
 	}
+	logrus.Debug("初始化mongoData完成")
 	return nil
 }
 
@@ -57,5 +58,3 @@ func NewMongoConn() *MongoConn {
 		Database: session.DB(config.Conf.Backend.MongoBackendConfig.DB),
 	}
 }
-
-
