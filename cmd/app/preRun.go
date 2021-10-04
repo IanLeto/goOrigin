@@ -3,6 +3,7 @@ package main
 import (
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/pkg/logging"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 	"os"
@@ -38,6 +39,10 @@ var initConfig = func() error {
 		mode = config.Conf.RunMode
 	}
 	return nil
+}
+
+var initLogger = func() error {
+	return logging.InitLogging()
 }
 
 // step 4 初始化组件
@@ -86,5 +91,5 @@ func PreRun() string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initComponents, initMode, initData)
+		initConfig, initLogger, initComponents, initMode, initData)
 }

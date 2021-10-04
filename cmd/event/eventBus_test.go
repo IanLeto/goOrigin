@@ -38,7 +38,7 @@ func (s *eventBusSuite) TestEventBus() {
 		}},
 	}
 	for _, v := range testCases {
-		s.event.SubPeriodicTask(v.topic, v.fn)
+		s.event.SubPeriodicTask(v.topic, v.fn) // tofix
 		s.event.PubPeriodicTask(v.topic, nil)
 		time.Sleep(1 * time.Second)
 		s.Equal(v.except, s.count)
