@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	cmd "goOrigin/cmd/app"
+	cmd "goOrigin/cmd"
 	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
 	"net/http"
