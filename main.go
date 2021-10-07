@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "goOrigin/cmd/app/docs"
+	"goOrigin/cmd"
+	_ "goOrigin/docs"
 	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
 	"net/http"
@@ -27,9 +28,12 @@ func DebugServer() {
 }
 
 func main() {
-	mode := PreRun()
-	switch mode {
-	default:
-		DebugServer()
-	}
+	cmd.PreRun()
+	DebugServer()
+
+	//mode := PreRun()
+	//switch mode {
+	//default:
+	//	DebugServer()
+	//}
 }

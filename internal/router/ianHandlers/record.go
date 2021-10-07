@@ -10,15 +10,16 @@ import (
 	"goOrigin/pkg/utils"
 )
 
+
+// @Summary 测试SayHello
+// @Description 向你说Hello
+// @Tags 测试
+// @Accept json
+// @Param who query string true "人名"
+// @Success 200 {string} string "{"msg": "hello Razeen"}"
+// @Failure 400 {string} string "{"msg": "who are you"}"
+// @Router /hello [get]
 func AddDayForm(c *gin.Context) {
-	// swagger:route GET /users/{id} users getSingleUser
-	//
-	// get a user by userID
-	//
-	// This will show a user info
-	//
-	//     Responses:
-	//       200: UserResponse
 
 	var (
 		ian model.ShadowPriest

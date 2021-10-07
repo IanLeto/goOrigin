@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	_ "goOrigin/cmd/app/docs"
 	"goOrigin/internal/router/ianHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/userHandlers"
