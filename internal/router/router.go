@@ -2,6 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+	_ "goOrigin/cmd/app/docs"
 	"goOrigin/internal/router/ianHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/userHandlers"
@@ -9,7 +12,7 @@ import (
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
-
+	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	g.NoRoute(indexHandlers.NoRouterHandler)
 	indexGroup := g.Group("/")
 	{

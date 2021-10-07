@@ -11,6 +11,15 @@ import (
 )
 
 func AddDayForm(c *gin.Context) {
+	// swagger:route GET /users/{id} users getSingleUser
+	//
+	// get a user by userID
+	//
+	// This will show a user info
+	//
+	//     Responses:
+	//       200: UserResponse
+
 	var (
 		ian model.ShadowPriest
 		err error
