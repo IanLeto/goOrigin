@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"github.com/globalsign/mgo"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
@@ -48,4 +49,19 @@ var ianInitSchema = func(m *MongoConn) error {
 		return err
 	}
 	return nil
+}
+
+var ianIndexCheck = func(m *MongoConn, collection string) bool {
+	c := m.DB(config.Conf.Backend.MongoBackendConfig.DB).C(collection)
+	index, err := c.Indexes()
+	if err != nil {
+		logrus.Errorf("获取index 失败 %s", err)
+	}
+	if len(index) == 0 {
+		return false
+	}
+	for _, i := range index {
+		logrus.Debug(json.Marshal(i))
+	}
+	return true
 }
