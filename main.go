@@ -15,9 +15,11 @@ func DebugServer() {
 }
 
 func main() {
-	mode := cmd.PreRun()
-	switch mode {
-	default:
-		DebugServer()
-	}
+
+	_ = cmd.PreRun()
+	utils.NoError(cmd.RootCmd.Execute())
+	//switch mode {
+	//default:
+	//	DebugServer()
+	//}
 }

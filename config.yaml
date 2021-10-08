@@ -1,4 +1,4 @@
-run_mode: init
+run_mode: debug
 addr: 8080
 name: ccServer
 url: localhost:8080
