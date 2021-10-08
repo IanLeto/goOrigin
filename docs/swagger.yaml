@@ -1,0 +1,374 @@
+definitions:
+  model.CreateMainJobRequestInfo:
+    properties:
+      id:
+        type: integer
+      isSql:
+        type: boolean
+      planId:
+        type: integer
+      planName:
+        type: string
+      productId:
+        type: integer
+      regionIds:
+        items:
+          type: integer
+        type: array
+      subJob:
+        items:
+          $ref: '#/definitions/model.SubJob'
+        type: array
+    type: object
+  model.CreateMainJobResInfo:
+    properties:
+      mainJobId:
+        type: integer
+    type: object
+  model.CreatePlanRequestInfo:
+    properties:
+      accessId:
+        type: integer
+      projectId:
+        type: integer
+      regionIds:
+        items:
+          type: integer
+        type: array
+      templateId:
+        type: integer
+    type: object
+  model.CreateSubJobReqInfo:
+    properties:
+      actions:
+        type: string
+      mainJobId:
+        type: integer
+      moduleId:
+        type: integer
+      rank:
+        type: string
+      state:
+        type: string
+      target:
+        type: string
+      type:
+        type: string
+    type: object
+  model.PlanResponseInfo:
+    properties:
+      planId:
+        type: integer
+    type: object
+  model.QueryMainJobResInfo:
+    properties:
+      id:
+        type: integer
+      isSql:
+        type: boolean
+      planId:
+        type: integer
+      planName:
+        type: string
+      productId:
+        type: integer
+      regionIds:
+        items:
+          type: integer
+        type: array
+      subJob:
+        items:
+          $ref: '#/definitions/model.SubJob'
+        type: array
+    type: object
+  model.QueryPlanResponseInfo:
+    type: object
+  model.QuerySubJobResInfo:
+    properties:
+      actions:
+        type: string
+      id:
+        type: integer
+      mainJobId:
+        type: integer
+      moduleId:
+        type: integer
+      rank:
+        type: string
+      state:
+        type: string
+      target:
+        type: string
+      type:
+        type: string
+    type: object
+  model.SubJob:
+    properties:
+      actions:
+        type: string
+      id:
+        type: integer
+      mainJobId:
+        type: integer
+      moduleId:
+        type: integer
+      rank:
+        type: string
+      state:
+        type: string
+      target:
+        type: string
+      type:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/ops/{plan_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 不支持批量删除
+      parameters:
+      - description: plan id
+        in: query
+        name: plan_id
+        type: integer
+      responses:
+        "200":
+          description: '{'
+          schema:
+            type: string
+      summary: 删除发布计划
+      tags:
+      - plan
+  /v1/ops/exec/{main_job_id}:
+    get:
+      parameters:
+      - description: main job
+        in: query
+        name: plan
+        required: true
+        type: integer
+      summary: 主任务执行
+      tags:
+      - MainJob
+  /v1/ops/exec/{plan_id}:
+    get:
+      parameters:
+      - description: plan id
+        in: query
+        name: plan_id
+        type: integer
+      responses:
+        "200":
+          description: '{'
+          schema:
+            type: string
+      summary: 执行发布计划
+      tags:
+      - plan
+  /v1/ops/exec/{version_id}:
+    get:
+      parameters:
+      - description: plan id
+        in: query
+        name: plan_id
+        type: integer
+      responses:
+        "200":
+          description: '{'
+          schema:
+            type: string
+      summary: 执行发布计划会滚
+      tags:
+      - plan
+  /v1/ops/exec/main_job:
+    post:
+      parameters:
+      - description: job
+        in: body
+        name: plan
+        schema:
+          $ref: '#/definitions/model.CreateMainJobRequestInfo'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CreateMainJobResInfo'
+      summary: 主任务生成
+      tags:
+      - MainJob
+  /v1/ops/main_job/{job_id}:
+    get:
+      parameters:
+      - description: job
+        in: query
+        name: job_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.QueryMainJobResInfo'
+      summary: 主任务查看
+      tags:
+      - MainJob
+  /v1/ops/plan:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        items:
+          type: integer
+        name: accessIds
+        type: array
+      - in: query
+        items:
+          type: integer
+        name: projectIds
+        type: array
+      - in: query
+        items:
+          type: integer
+        name: regionIds
+        type: array
+      - in: query
+        name: templateId
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.QueryPlanResponseInfo'
+      summary: 查看发布计划详情
+      tags:
+      - plan
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 计划
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreatePlanRequestInfo'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PlanResponseInfo'
+      summary: 创建发布计划
+      tags:
+      - plan
+  /v1/ops/revert/{version}:
+    get:
+      parameters:
+      - description: sub job
+        in: query
+        name: plan
+        required: true
+        type: integer
+      summary: 子任务回滚
+      tags:
+      - SubJob
+  /v1/ops/stop/{main_job_id}:
+    get:
+      parameters:
+      - description: main job
+        in: query
+        name: plan
+        required: true
+        type: integer
+      summary: 主任务暂停
+      tags:
+      - MainJob
+  /v1/ops/stop/{sub_job_id}:
+    get:
+      parameters:
+      - description: sub job
+        in: query
+        name: plan
+        required: true
+        type: integer
+      summary: 子任务暂停
+      tags:
+      - SubJob
+  /v1/ops/sub_job:
+    post:
+      parameters:
+      - description: job
+        in: body
+        name: sub_job
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateSubJobReqInfo'
+      summary: 子任务创建
+      tags:
+      - SubJob
+  /v1/ops/sub_job/:
+    put:
+      parameters:
+      - description: job
+        in: body
+        name: sub_job
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateSubJobReqInfo'
+      summary: 子任务更新
+      tags:
+      - SubJob
+  /v1/ops/sub_job/{id}:
+    delete:
+      parameters:
+      - description: sub_job
+        in: query
+        name: sub_job_id
+        required: true
+        type: integer
+      summary: 子任务删除
+      tags:
+      - SubJob
+    get:
+      parameters:
+      - in: query
+        name: mainJobId
+        type: integer
+      - description: 子任务 module 一对一
+        in: query
+        name: moduleId
+        type: integer
+      - description: 顺序
+        in: query
+        items:
+          type: string
+        name: rank
+        type: array
+      - description: 状态
+        in: query
+        name: state
+        type: string
+      - description: 执行目标
+        in: query
+        items:
+          type: string
+        name: target
+        type: array
+      - description: 类型
+        in: query
+        items:
+          type: string
+        name: type
+        type: array
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.QuerySubJobResInfo'
+      summary: 子任务详情
+      tags:
+      - SubJob
+swagger: "2.0"

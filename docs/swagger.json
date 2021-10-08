@@ -1,0 +1,585 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/v1/ops/exec/main_job": {
+            "post": {
+                "tags": [
+                    "MainJob"
+                ],
+                "summary": "主任务生成",
+                "parameters": [
+                    {
+                        "description": "job",
+                        "name": "plan",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateMainJobRequestInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateMainJobResInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ops/exec/{main_job_id}": {
+            "get": {
+                "tags": [
+                    "MainJob"
+                ],
+                "summary": "主任务执行",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "main job",
+                        "name": "plan",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/v1/ops/exec/{plan_id}": {
+            "get": {
+                "tags": [
+                    "plan"
+                ],
+                "summary": "执行发布计划",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "plan id",
+                        "name": "plan_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ops/exec/{version_id}": {
+            "get": {
+                "tags": [
+                    "plan"
+                ],
+                "summary": "执行发布计划会滚",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "plan id",
+                        "name": "plan_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ops/main_job/{job_id}": {
+            "get": {
+                "tags": [
+                    "MainJob"
+                ],
+                "summary": "主任务查看",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "job",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.QueryMainJobResInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ops/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plan"
+                ],
+                "summary": "查看发布计划详情",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "accessIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "projectIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "regionIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "templateId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.QueryPlanResponseInfo"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plan"
+                ],
+                "summary": "创建发布计划",
+                "parameters": [
+                    {
+                        "description": "计划",
+                        "name": "plan",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreatePlanRequestInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PlanResponseInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ops/revert/{version}": {
+            "get": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务回滚",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "sub job",
+                        "name": "plan",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/v1/ops/stop/{main_job_id}": {
+            "get": {
+                "tags": [
+                    "MainJob"
+                ],
+                "summary": "主任务暂停",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "main job",
+                        "name": "plan",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/v1/ops/stop/{sub_job_id}": {
+            "get": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务暂停",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "sub job",
+                        "name": "plan",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/v1/ops/sub_job": {
+            "post": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务创建",
+                "parameters": [
+                    {
+                        "description": "job",
+                        "name": "sub_job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateSubJobReqInfo"
+                        }
+                    }
+                ]
+            }
+        },
+        "/v1/ops/sub_job/": {
+            "put": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务更新",
+                "parameters": [
+                    {
+                        "description": "job",
+                        "name": "sub_job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateSubJobReqInfo"
+                        }
+                    }
+                ]
+            }
+        },
+        "/v1/ops/sub_job/{id}": {
+            "get": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "mainJobId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "子任务 module 一对一",
+                        "name": "moduleId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "顺序",
+                        "name": "rank",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "执行目标",
+                        "name": "target",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.QuerySubJobResInfo"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "SubJob"
+                ],
+                "summary": "子任务删除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "sub_job",
+                        "name": "sub_job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/v1/ops/{plan_id}": {
+            "delete": {
+                "description": "不支持批量删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plan"
+                ],
+                "summary": "删除发布计划",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "plan id",
+                        "name": "plan_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.CreateMainJobRequestInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isSql": {
+                    "type": "boolean"
+                },
+                "planId": {
+                    "type": "integer"
+                },
+                "planName": {
+                    "type": "string"
+                },
+                "productId": {
+                    "type": "integer"
+                },
+                "regionIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "subJob": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SubJob"
+                    }
+                }
+            }
+        },
+        "model.CreateMainJobResInfo": {
+            "type": "object",
+            "properties": {
+                "mainJobId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CreatePlanRequestInfo": {
+            "type": "object",
+            "properties": {
+                "accessId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "regionIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "templateId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CreateSubJobReqInfo": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "string"
+                },
+                "mainJobId": {
+                    "type": "integer"
+                },
+                "moduleId": {
+                    "type": "integer"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.PlanResponseInfo": {
+            "type": "object",
+            "properties": {
+                "planId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.QueryMainJobResInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isSql": {
+                    "type": "boolean"
+                },
+                "planId": {
+                    "type": "integer"
+                },
+                "planName": {
+                    "type": "string"
+                },
+                "productId": {
+                    "type": "integer"
+                },
+                "regionIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "subJob": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SubJob"
+                    }
+                }
+            }
+        },
+        "model.QueryPlanResponseInfo": {
+            "type": "object"
+        },
+        "model.QuerySubJobResInfo": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mainJobId": {
+                    "type": "integer"
+                },
+                "moduleId": {
+                    "type": "integer"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SubJob": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mainJobId": {
+                    "type": "integer"
+                },
+                "moduleId": {
+                    "type": "integer"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
