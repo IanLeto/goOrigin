@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	cmd "goOrigin/cmd"
+	"goOrigin/config"
+	_ "goOrigin/docs"
 	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
 	"net/http"
@@ -11,7 +14,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.NoError(http.ListenAndServe("localhost:8008", g))
+	utils.NoError(http.ListenAndServe(fmt.Sprintf("%s", config.Conf.Url), g))
 }
 
 func main() {
