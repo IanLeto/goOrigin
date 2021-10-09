@@ -1,20 +1,29 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
+	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
+	"net/http"
 )
 
+func DebugServer() {
+	g := gin.New()
+	router.Load(g, nil)
+	utils.NoError(http.ListenAndServe("localhost:8008", g))
+}
+
 var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "run",
+	Use: "run",
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			flags = cmd.Flags()
 		)
-		_, err := flags.GetBool("version")
-		utils.NoError(err)
-		print("1.0.1")
+		if v, err := flags.GetBool("version"); err != nil && v {
+			fmt.Println("1.1.1")
+		}
 	},
 }
 

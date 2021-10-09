@@ -60,7 +60,7 @@ var initComponents = func() error {
 var initMode = func() error {
 	switch mode {
 	default:
-		event.Bus.Pub("goDebug")
+		event.Bus.Publish("mode", "debug")
 	}
 	return nil
 }
@@ -82,14 +82,19 @@ var initData = func() error {
 	return nil
 }
 
-func PreRun() string {
+func PreRun(configPath string) string {
+	if configPath != "" {
+		defaultConfigPath = configPath
+	}
 	for _, f := range preCheck {
 		utils.NoError(f())
 	}
+	event.Bus.Publish("run_mode", "debug")
 	return mode
 }
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
 		initConfig, initLogger, initComponents, initMode, initData)
+
 }

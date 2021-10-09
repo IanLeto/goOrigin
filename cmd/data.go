@@ -1,24 +1,46 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"goOrigin/pkg/utils"
+	"goOrigin/pkg/storage"
 )
 
 var dataCmd = &cobra.Command{
-	Use: "config",
+	Use: "data",
 	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			flags = cmd.Flags()
-		)
-		_, err := flags.GetBool("version")
-		utils.NoError(err)
-		print("1.0.1")
+		PreRun("")
+		logrus.SetLevel(logrus.InfoLevel)
+		if err := storage.Mongo.Ping(); err != nil {
+			fmt.Println("无效的mongo链接")
+		}
+		c := storage.Mongo.C("ian")
+		switch paramsStr(cmd.Flags().GetString("mongo")) {
+		case "index":
+			indexes, err := c.Indexes()
+			if err != nil {
+				fmt.Println(err)
+			}
+			for _, index := range indexes {
+				v, _ := json.Marshal(index)
+				logrus.Infof("index:%s", string(v))
+			}
+		case "initData":
+			err := storage.InitSchema(storage.Mongo, paramsStr(cmd.Flags().GetString("collection")))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(dataCmd)
 	dataCmd.Flags().StringP("path", "", "", "run dev version")
+	dataCmd.Flags().StringP("mongo", "", "", "run dev version")
+	dataCmd.Flags().StringP("collection", "c", "", "run dev version")
 
 }

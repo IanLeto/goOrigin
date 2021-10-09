@@ -9,7 +9,7 @@ import (
 )
 
 var tables = map[string]func(m *MongoConn) error{
-	"ian": ianInitSchema,
+	"ian": IanInitSchema,
 }
 
 type MongoConn struct {

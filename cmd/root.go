@@ -1,11 +1,21 @@
 package cmd
 
 import (
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"goOrigin/pkg/httpclient"
 	"goOrigin/pkg/utils"
 )
 
+func paramsStr(v string, err error) string {
+	utils.NoError(err)
+	return v
+}
+
+func paramsBool(v bool, err error) bool {
+	utils.NoError(err)
+	return v
+}
 func paramCheck(cmd *cobra.Command) map[string]string {
 	var (
 		err                  error
@@ -57,31 +67,28 @@ func paramCheck(cmd *cobra.Command) map[string]string {
 }
 
 func formatResponseInfo(res *httpclient.CCResponseInfo, err error) string {
-
 	return ""
 }
 
 var RootCmd = &cobra.Command{
-	Use:   "goOrigin",
-	Short: "print details of cc",
+	Use:   "",
+	Short: "",
+	Run: func(cmd *cobra.Command, args []string) {
+		config := ""
+		if v, err := cmd.Flags().GetBool("debug"); err != nil && v {
+			config = paramsStr(cmd.Flags().GetString("config"))
+		}
+		logrus.Debugf(config)
+		PreRun(config)
+	},
 }
-
-
 
 func Execute() {
 	utils.NoError(RootCmd.Execute())
 }
 
 func init() {
-	//RootCmd.Flags().StringP("run", "d", "", "run dev version")
-	//RootCmd.Flags().StringP("compare", "", "", "run dev version")
-	//RootCmd.Flags().StringP("test", "", "", "run dev version")
-	//RootCmd.Flags().StringP("mkc", "", "", "run dev version")
-	//RootCmd.Flags().StringP("config_version", "c", "", "run dev version")
-	//RootCmd.Flags().StringP("server_version", "s", "", "run dev version")
-	//RootCmd.Flags().StringP("target_config_version", "", "", "run dev version")
-	//RootCmd.Flags().StringP("target_server_version", "", "", "run dev version")
-	//RootCmd.Flags().BoolP("version", "v", false, "current version")
-	//RootCmd.Flags().StringP("output", "", "", "run dev version")
+	RootCmd.Flags().StringP("config", "c", "", "config")
+	RootCmd.Flags().Bool("debug", false, "debug")
 
 }
