@@ -1,4 +1,34 @@
 definitions:
+  model.AddTemplateReq:
+    properties:
+      check:
+        description: check
+        type: boolean
+      config:
+        description: config 配置文件地址
+        type: string
+      content:
+        description: content  模板内容
+        type: string
+      server_name:
+        description: server_name 服务名 必填
+        type: string
+      set_id:
+        description: set_id  set id
+        type: string
+      tag:
+        description: tag  模板唯一标示 默认为 服务名+版本名+zone+set
+        type: string
+      type:
+        description: type  类型 default 为基础模板
+        type: string
+      version:
+        description: version  版本
+        type: string
+      zone_id:
+        description: zone_id  zone id
+        type: string
+    type: object
   model.CreateMainJobRequestInfo:
     properties:
       id:
@@ -142,17 +172,22 @@ paths:
       summary: 删除发布计划
       tags:
       - plan
-  /v1/ops/exec/{main_job_id}:
+  /v1/ops/exec:
     get:
       parameters:
-      - description: main job
+      - description: 任务id
         in: query
-        name: plan
+        name: id
         required: true
         type: integer
-      summary: 主任务执行
+      - description: 任务类型 包括主 子 计划 agent 任务 .etc
+        in: query
+        name: type
+        required: true
+        type: integer
+      summary: 执行
       tags:
-      - MainJob
+      - 任务
   /v1/ops/exec/{plan_id}:
     get:
       parameters:
@@ -199,7 +234,7 @@ paths:
       summary: 主任务生成
       tags:
       - MainJob
-  /v1/ops/main_job/{job_id}:
+  /v1/ops/main_job:
     get:
       parameters:
       - description: job
@@ -264,6 +299,22 @@ paths:
       summary: 创建发布计划
       tags:
       - plan
+  /v1/ops/revert:
+    get:
+      parameters:
+      - description: 任务id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 任务类型 包括主 子 计划 agent 任务 .etc
+        in: query
+        name: type
+        required: true
+        type: integer
+      summary: 回滚
+      tags:
+      - 任务
   /v1/ops/revert/{version}:
     get:
       parameters:
@@ -275,7 +326,18 @@ paths:
       summary: 子任务回滚
       tags:
       - SubJob
-  /v1/ops/stop/{main_job_id}:
+    post:
+      parameters:
+      - description: template
+        in: body
+        name: addTemplate
+        required: true
+        schema:
+          $ref: '#/definitions/model.AddTemplateReq'
+      summary: 添加模板
+      tags:
+      - CC
+  /v1/ops/stop:
     get:
       parameters:
       - description: main job

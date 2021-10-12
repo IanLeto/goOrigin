@@ -23,6 +23,30 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/ops/exec": {
+            "get": {
+                "tags": [
+                    "任务"
+                ],
+                "summary": "执行",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "任务类型 包括主 子 计划 agent 任务 .etc",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
         "/v1/ops/exec/main_job": {
             "post": {
                 "tags": [
@@ -47,23 +71,6 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/v1/ops/exec/{main_job_id}": {
-            "get": {
-                "tags": [
-                    "MainJob"
-                ],
-                "summary": "主任务执行",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "main job",
-                        "name": "plan",
-                        "in": "query",
-                        "required": true
-                    }
-                ]
             }
         },
         "/v1/ops/exec/{plan_id}": {
@@ -114,7 +121,7 @@ var doc = `{
                 }
             }
         },
-        "/v1/ops/main_job/{job_id}": {
+        "/v1/ops/main_job": {
             "get": {
                 "tags": [
                     "MainJob"
@@ -217,6 +224,30 @@ var doc = `{
                 }
             }
         },
+        "/v1/ops/revert": {
+            "get": {
+                "tags": [
+                    "任务"
+                ],
+                "summary": "回滚",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "任务类型 包括主 子 计划 agent 任务 .etc",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
         "/v1/ops/revert/{version}": {
             "get": {
                 "tags": [
@@ -232,9 +263,26 @@ var doc = `{
                         "required": true
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "CC"
+                ],
+                "summary": "添加模板",
+                "parameters": [
+                    {
+                        "description": "template",
+                        "name": "addTemplate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AddTemplateReq"
+                        }
+                    }
+                ]
             }
         },
-        "/v1/ops/stop/{main_job_id}": {
+        "/v1/ops/stop": {
             "get": {
                 "tags": [
                     "MainJob"
@@ -413,6 +461,47 @@ var doc = `{
         }
     },
     "definitions": {
+        "model.AddTemplateReq": {
+            "type": "object",
+            "properties": {
+                "check": {
+                    "description": "check",
+                    "type": "boolean"
+                },
+                "config": {
+                    "description": "config 配置文件地址",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "content  模板内容",
+                    "type": "string"
+                },
+                "server_name": {
+                    "description": "server_name 服务名 必填",
+                    "type": "string"
+                },
+                "set_id": {
+                    "description": "set_id  set id",
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "tag  模板唯一标示 默认为 服务名+版本名+zone+set",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "type  类型 default 为基础模板",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "version  版本",
+                    "type": "string"
+                },
+                "zone_id": {
+                    "description": "zone_id  zone id",
+                    "type": "string"
+                }
+            }
+        },
         "model.CreateMainJobRequestInfo": {
             "type": "object",
             "properties": {

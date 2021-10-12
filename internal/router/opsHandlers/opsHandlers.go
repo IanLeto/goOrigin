@@ -87,7 +87,7 @@ func MainJob() {
 // @Description
 // @Tags MainJob
 // @Param plan query int true "main job"
-// @Router /v1/ops/exec/{main_job_id} [get]
+// @Router /v1/ops/exec [get]
 func ExecMainJob() {
 
 }
@@ -96,7 +96,7 @@ func ExecMainJob() {
 // @Description
 // @Tags MainJob
 // @Param plan query int true "main job"
-// @Router /v1/ops/stop/{main_job_id} [get]
+// @Router /v1/ops/stop [get]
 func StopMainJob() {
 
 }
@@ -104,8 +104,8 @@ func StopMainJob() {
 // @Summary 主任务回滚
 // @Description
 // @Tags MainJob
-// @Param plan query int true "main job"
-// @Router /v1/ops/revert/{version} [get]
+// @Param version query string true "main job"
+// @Router /v1/ops/revert [get]
 func RevertMainJob() {
 
 }
@@ -115,7 +115,7 @@ func RevertMainJob() {
 // @Tags MainJob
 // @Param job_id query int true "job"
 // @Success 200  object model.QueryMainJobResInfo ""
-// @Router /v1/ops/main_job/{job_id} [get]
+// @Router /v1/ops/main_job [get]
 func QueryMainJob() {
 
 }
@@ -175,4 +175,31 @@ func RevertSubMainJob() {
 
 }
 
+// @Summary 回滚
+// @Description
+// @Tags 任务
+// @Param id query int true "任务id"
+// @Param type enum int[1,2,3] true "任务类型 包括主 子 计划 agent 任务 .etc"
+// @Router /v1/ops/revert [get]
+func RevertJob() {
 
+}
+
+// @Summary 执行
+// @Description
+// @Tags 任务
+// @Param id query int true "任务id"
+// @Param type query int true "任务类型 包括主 子 计划 agent 任务 .etc"
+// @Router /v1/ops/exec [get]
+func ExecJob() {
+
+}
+
+// @Summary 添加模板
+// @Description
+// @Tags CC
+// @Param  addTemplate body model.AddTemplateReq true "template"
+// @Router /v1/ops/revert/{version} [post]
+func CCTemplate() {
+
+}
