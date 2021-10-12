@@ -1,6 +1,8 @@
 package router
 
 import (
+	"github.com/DeanThompson/ginpprof"
+	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/userHandlers"
@@ -15,6 +17,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("ping", indexHandlers.Ping)
 
 	}
+
 	userGroup := g.Group("/v1/user")
 	{
 		userGroup.POST("", userHandlers.Create)
@@ -23,6 +26,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		userGroup.GET("/:username", userHandlers.Get)
 		userGroup.DELETE("/:id", userHandlers.Delete)
 	}
+	ginpprof.WrapGroup(userGroup)
 
 	execGroup := g.Group("/v1/exec")
 	{
