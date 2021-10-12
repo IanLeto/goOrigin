@@ -41,21 +41,21 @@ func DeletePlan() {
 
 }
 
-// @Summary 执行发布计划
-// @Description
-// @Tags plan
-// @Param plan_id query int false "plan id"
-// @Success 200 {string} string "{
-//    "retcode":0,
-//    "message":"",
-//    "data":{
-//			"plan_id": 1
-//    }
-//}"
-// @Router /v1/ops/exec/{plan_id} [get]
-func ExecPlan() {
-
-}
+//// @Summary 执行发布计划
+//// @Description
+//// @Tags plan
+//// @Param plan_id query int false "plan id"
+//// @Success 200 {string} string "{
+////    "retcode":0,
+////    "message":"",
+////    "data":{
+////			"plan_id": 1
+////    }
+////}"
+//// @Router /v1/ops/exec/{plan_id} [get]
+//func ExecPlan() {
+//
+//}
 
 // @Summary 执行发布计划会滚
 // @Description
@@ -166,20 +166,20 @@ func StopSubMainJob() {
 
 }
 
-// @Summary 子任务回滚
-// @Description
-// @Tags SubJob
-// @Param plan query int true "sub job"
-// @Router /v1/ops/revert/{version} [get]
-func RevertSubMainJob() {
-
-}
+//// @Summary 子任务回滚
+//// @Description
+//// @Tags SubJob
+//// @Param plan query int true "sub job"
+//// @Router /v1/ops/revert/{version} [get]
+//func RevertSubMainJob() {
+//
+//}
 
 // @Summary 回滚
 // @Description
 // @Tags 任务
 // @Param id query int true "任务id"
-// @Param type enum int[1,2,3] true "任务类型 包括主 子 计划 agent 任务 .etc"
+// @Param type query string true "任务类型 包括主 子 计划 agent 任务 .etc" Enums("plan","main_job")
 // @Router /v1/ops/revert [get]
 func RevertJob() {
 
@@ -189,8 +189,15 @@ func RevertJob() {
 // @Description
 // @Tags 任务
 // @Param id query int true "任务id"
-// @Param type query int true "任务类型 包括主 子 计划 agent 任务 .etc"
+// @Param type query string true "任务类型 包括主 子 计划 agent 任务 .etc" Enums("plan","main_job")
 // @Router /v1/ops/exec [get]
+// @Success 200 {string} string "{
+//   "retcode":0,
+//   "message":"",
+//   "data":{
+//			"plan_id": 1
+//   }
+// }"
 func ExecJob() {
 
 }

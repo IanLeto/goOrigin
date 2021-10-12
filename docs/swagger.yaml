@@ -181,28 +181,21 @@ paths:
         required: true
         type: integer
       - description: 任务类型 包括主 子 计划 agent 任务 .etc
+        enum:
+        - '"plan"'
+        - '"main_job"'
         in: query
         name: type
         required: true
-        type: integer
-      summary: 执行
-      tags:
-      - 任务
-  /v1/ops/exec/{plan_id}:
-    get:
-      parameters:
-      - description: plan id
-        in: query
-        name: plan_id
-        type: integer
+        type: string
       responses:
         "200":
           description: '{'
           schema:
             type: string
-      summary: 执行发布计划
+      summary: 执行
       tags:
-      - plan
+      - 任务
   /v1/ops/exec/{version_id}:
     get:
       parameters:
@@ -308,24 +301,17 @@ paths:
         required: true
         type: integer
       - description: 任务类型 包括主 子 计划 agent 任务 .etc
+        enum:
+        - '"plan"'
+        - '"main_job"'
         in: query
         name: type
         required: true
-        type: integer
+        type: string
       summary: 回滚
       tags:
       - 任务
   /v1/ops/revert/{version}:
-    get:
-      parameters:
-      - description: sub job
-        in: query
-        name: plan
-        required: true
-        type: integer
-      summary: 子任务回滚
-      tags:
-      - SubJob
     post:
       parameters:
       - description: template

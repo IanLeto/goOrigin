@@ -38,13 +38,25 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "enum": [
+                            "\"plan\"",
+                            "\"main_job\""
+                        ],
+                        "type": "string",
                         "description": "任务类型 包括主 子 计划 agent 任务 .etc",
                         "name": "type",
                         "in": "query",
                         "required": true
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/v1/ops/exec/main_job": {
@@ -68,30 +80,6 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.CreateMainJobResInfo"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/ops/exec/{plan_id}": {
-            "get": {
-                "tags": [
-                    "plan"
-                ],
-                "summary": "执行发布计划",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "plan id",
-                        "name": "plan_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{",
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 }
@@ -239,7 +227,11 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "enum": [
+                            "\"plan\"",
+                            "\"main_job\""
+                        ],
+                        "type": "string",
                         "description": "任务类型 包括主 子 计划 agent 任务 .etc",
                         "name": "type",
                         "in": "query",
@@ -249,21 +241,6 @@ var doc = `{
             }
         },
         "/v1/ops/revert/{version}": {
-            "get": {
-                "tags": [
-                    "SubJob"
-                ],
-                "summary": "子任务回滚",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "sub job",
-                        "name": "plan",
-                        "in": "query",
-                        "required": true
-                    }
-                ]
-            },
             "post": {
                 "tags": [
                     "CC"
