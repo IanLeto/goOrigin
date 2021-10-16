@@ -39,6 +39,7 @@ type MySqlBackendConfig struct {
 	Port     string
 	Password string
 	User     string
+	Name     string
 }
 
 func NewMySqlBackendConfig() *MySqlBackendConfig {
@@ -47,6 +48,7 @@ func NewMySqlBackendConfig() *MySqlBackendConfig {
 		Port:     viper.GetString("backend.MySql.port"),
 		User:     viper.GetString("backend.MySql.user"),
 		Password: viper.GetString("backend.MySql.password"),
+		Name:     viper.GetString("backend.MySql.name"),
 	}
 }
 

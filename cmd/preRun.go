@@ -17,6 +17,7 @@ var mode string
 var compInit = map[string]func() error{
 	"mongo": storage.InitMongo,
 	"zk":    storage.InitZk,
+	"mysql": storage.InitMySQL,
 }
 
 var connFactory = make([]storage.Conn, 0)

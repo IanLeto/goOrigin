@@ -2,6 +2,7 @@ package storage
 
 var Mongo *MongoConn
 var ZKConn *ZKConnection
+var MySQL *MySQLConn
 
 type Conn interface {
 	Close() error
@@ -10,6 +11,11 @@ type Conn interface {
 
 func InitMongo() error {
 	Mongo = NewMongoConn()
+	return nil
+}
+
+func InitMySQL() error {
+	MySQL = InitMySQConn()
 	return nil
 }
 
