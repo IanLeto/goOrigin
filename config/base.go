@@ -25,7 +25,7 @@ func NewConfig(path string) *Config {
 		panic("init config failed")
 	}
 	return &Config{
-		Name:       viper.GetString("name"),
+		Name:       viper.GetString( "name"),
 		Port:       viper.GetString("addr"),
 		RunMode:    viper.GetString("run_mode"),
 		Components: viper.GetStringSlice("components"),
