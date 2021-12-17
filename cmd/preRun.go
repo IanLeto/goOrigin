@@ -24,8 +24,8 @@ var compInit = map[string]func() error{
 }
 
 var cronTask = map[string]func() error{
-	"RedisCache": cron.RegisterDemoTask,
-	"HearBeat":   cron.RegisterHearBeatTask,
+	"demoCache": cron.RegisterDemoTask,
+	"HearBeat":  cron.RegisterHearBeatTask,
 }
 
 var connFactory = make([]storage.Conn, 0)

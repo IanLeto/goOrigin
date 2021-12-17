@@ -33,6 +33,7 @@ func NewConfig(path string) *Config {
 		Logging:    NewLoggingConfig(),
 		Backend:    NewBackendConfig(),
 		Client:     NewHttpClientConfig(),
+		Cron:       viper.GetStringSlice("cron"),
 		SSH:        NewSSHConfig(),
 	}
 }
