@@ -8,15 +8,15 @@ import (
 )
 
 type Config struct {
-	Name    string `yaml:"name"`
-	Port    string `yaml:"port"`
-	RunMode string `yaml:"run_mode"`
-	Data    []string
-	SSH     *SSHConfig
-	Backend *BackendConfig
-	Client  *HttpClientConfig
-	Logging *LoggingConfig
-
+	Name       string `yaml:"name"`
+	Port       string `yaml:"port"`
+	RunMode    string `yaml:"run_mode"`
+	Data       []string
+	SSH        *SSHConfig
+	Backend    *BackendConfig
+	Client     *HttpClientConfig
+	Logging    *LoggingConfig
+	Cron       []string
 	Components []string `yaml:"components"`
 }
 
@@ -25,7 +25,7 @@ func NewConfig(path string) *Config {
 		panic("init config failed")
 	}
 	return &Config{
-		Name:       viper.GetString( "name"),
+		Name:       viper.GetString("name"),
 		Port:       viper.GetString("addr"),
 		RunMode:    viper.GetString("run_mode"),
 		Components: viper.GetStringSlice("components"),
@@ -33,6 +33,7 @@ func NewConfig(path string) *Config {
 		Logging:    NewLoggingConfig(),
 		Backend:    NewBackendConfig(),
 		Client:     NewHttpClientConfig(),
+		Cron:       viper.GetStringSlice("cron"),
 		SSH:        NewSSHConfig(),
 	}
 }

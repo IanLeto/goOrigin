@@ -3,6 +3,7 @@ package storage
 var Mongo *MongoConn
 var ZKConn *ZKConnection
 var MySQL *MySQLConn
+var RedisCon *RedisConn
 
 type Conn interface {
 	Close() error
@@ -21,4 +22,9 @@ func InitMySQL() error {
 
 func InitZk() error {
 	return NewZkConn()
+}
+
+func InitRedis() error {
+	RedisCon = NewRedisConn()
+	return nil
 }

@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"context"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/pkg"
+	"goOrigin/pkg/cron"
 	"goOrigin/pkg/logging"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
@@ -18,6 +21,11 @@ var compInit = map[string]func() error{
 	"mongo": storage.InitMongo,
 	"zk":    storage.InitZk,
 	//"mysql": storage.InitMySQL,
+}
+
+var cronTask = map[string]func() error{
+	"demoCache": cron.RegisterDemoTask,
+	"HearBeat":  cron.RegisterHearBeatTask,
 }
 
 var connFactory = make([]storage.Conn, 0)
@@ -57,7 +65,6 @@ var initComponents = func() error {
 }
 
 // step 6 启动模式
-
 var initMode = func() error {
 	switch mode {
 	default:
@@ -83,6 +90,22 @@ var initData = func() error {
 	return nil
 }
 
+// step 8 初始化定时任务
+var initCronTask = func() error {
+	var taskRootCtx = context.Background()
+	for _, t := range config.Conf.Cron {
+		if err := cronTask[t](); err != nil {
+			return err
+		}
+	}
+	for _, t := range cron.QueueCron {
+		go func(task pkg.Task) {
+			_ = task.Run(taskRootCtx)
+		}(t)
+	}
+	return nil
+}
+
 func PreRun(configPath string) string {
 	if configPath != "" {
 		defaultConfigPath = configPath
@@ -96,6 +119,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initLogger, initComponents, initMode, initData)
+		initConfig, initLogger, initComponents, initMode, initData, initCronTask)
 
 }
