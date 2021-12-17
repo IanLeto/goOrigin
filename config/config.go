@@ -11,6 +11,7 @@ type BackendConfig struct {
 	*MySqlBackendConfig
 	*MongoBackendConfig
 	*ZKConfig
+	*RedisConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -18,6 +19,7 @@ func NewBackendConfig() *BackendConfig {
 		NewMySqlBackendConfig(),
 		NewMongoBackendConfig(),
 		NewZkConfig(),
+		NewRedisConfig(),
 	}
 }
 
@@ -83,6 +85,24 @@ func NewZkConfig() *ZKConfig {
 		Address: viper.GetStringSlice("backend.zk.Address"),
 		Master:  viper.GetString("backend.zk.Master"),
 		Auth:    viper.GetString("backend.zk.Auth"),
+	}
+}
+
+// redis
+
+type RedisConfig struct {
+	DB         int
+	Addr       string
+	IsSentinel bool
+	Auth       string
+}
+
+func NewRedisConfig() *RedisConfig {
+	return &RedisConfig{
+		DB:         viper.GetInt("backend.redis.DB"),
+		Addr:       viper.GetString("backend.redis.Addr"),
+		IsSentinel: viper.GetBool("backend.redis.IsSentinel"),
+		Auth:       viper.GetString("backend.redis.Auth"),
 	}
 }
 

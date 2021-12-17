@@ -16,30 +16,26 @@ type CacheTask interface {
 
 // redis cache
 type RedisTask struct {
-	RedisClient goRedis.Client
-	Pipeline    goRedis.Pipeline
+	RedisClient *goRedis.Client
+	Pipeline    goRedis.Pipeliner
 }
 
 func NewCacheTask(interval time.Time) *RedisTask {
 	cli := goRedis.NewClient(&goRedis.Options{
-		Network:            "tcp",
-		Addr:               "",
-		Dialer:             nil,
-		OnConnect:          nil,
-		Password:           "",
-		DB:                 0,
-		MaxRetries:         0,
+		Network: "tcp",
+		Addr:    config.Conf.Backend.RedisConfig.Addr,
 	})
+	pipe := cli.Pipeline()
 	return &RedisTask{
-		RedisClient: goRedis.Client{},
-		Pipeline:    goRedis.Pipeline{},
+		RedisClient: cli,
+		Pipeline:    pipe,
 	}
 }
 
 // demo 定时redis 任务
 type DemoTask struct {
-	RedisClient goRedis.Client
-	Pipeline    goRedis.Pipeline
+	RedisClient *goRedis.Client
+	Pipeline    goRedis.Pipeliner
 }
 
 func (d *DemoTask) Run(ctx context.Context) error {
@@ -47,9 +43,14 @@ func (d *DemoTask) Run(ctx context.Context) error {
 }
 
 func NewDemoTask() (*DemoTask, error) {
+	cli := goRedis.NewClient(&goRedis.Options{
+		Network: "tcp",
+		Addr:    config.Conf.Backend.RedisConfig.Addr,
+	})
+	pipe := cli.Pipeline()
 	return &DemoTask{
-		RedisClient: goRedis.Client{},
-		Pipeline:    goRedis.Pipeline{},
+		RedisClient: cli,
+		Pipeline:    pipe,
 	}, nil
 }
 
