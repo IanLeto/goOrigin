@@ -1,0 +1,68 @@
+syntax = "proto3";
+package service.v1;
+
+option go_package = "./service";
+
+
+enum TypeEnum {
+  Default = 0;
+  RemoteCMD = 1;
+  K8S = 2;
+}
+
+// 主任务启动请求
+message StartTaskRequest {
+  string TaskID = 1;
+  string Host = 2;
+  string Module = 3;
+  string ShellContent = 4;
+  map<string, string> Params = 6;
+}
+
+message StartTaskResponse {
+  string TaskID = 1;
+  uint64 Status = 2;
+}
+// 任务停止请求
+message StopTaskRequest {
+  string TaskID = 1;
+  string Host = 2;
+  TypeEnum Type = 4;
+}
+
+// 任务停止返回
+message StopTaskResponse {
+  string TaskID = 1;
+  int64 Status = 2;
+}
+
+// 获取任务详情请求
+message GetTaskDetailRequest {
+  string TaskID = 1;
+  string Module = 2;
+  string IP = 3;
+}
+
+// 获取任务详情返回
+message GetTaskDetailResponse {
+  string TaskID = 1;
+  string Module = 2;
+  string IP = 3;
+  int64 Status = 4;
+  repeated string Console = 5;
+}
+
+message Ping{
+
+}
+
+message Pong{
+  string version = 1;
+}
+
+service Agent {
+  rpc StartTask(StartTaskRequest) returns (StartTaskResponse);
+  rpc StopTask(StopTaskRequest) returns (StopTaskResponse);
+  rpc GetTaskDetailOne(GetTaskDetailRequest) returns (GetTaskDetailResponse);
+  rpc PingTask(Ping) returns (Pong);
+}
