@@ -5,6 +5,7 @@ import (
 	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"goOrigin/internal/router/indexHandlers"
+	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/userHandlers"
 )
 
@@ -31,6 +32,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	execGroup := g.Group("/v1/exec")
 	{
 		execGroup.POST("/:id")
+	}
+	recordGroup := g.Group("/v1/record")
+	{
+		recordGroup.POST("/", recordHandlers.CreateRecord)
 	}
 	return g
 }
