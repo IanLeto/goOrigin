@@ -4,6 +4,7 @@ import (
 	"github.com/DeanThompson/ginpprof"
 	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
+	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/userHandlers"
@@ -36,6 +37,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	recordGroup := g.Group("/v1/record")
 	{
 		recordGroup.POST("/", recordHandlers.CreateRecord)
+	}
+
+	cmdGroup := g.Group("/v1/cmd")
+	{
+		cmdGroup.POST("ping", cmdHandlers.Ping)
+		cmdGroup.POST("sync", cmdHandlers.StartTask)
 	}
 	return g
 }

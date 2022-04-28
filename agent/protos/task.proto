@@ -16,12 +16,28 @@ message StartTaskRequest {
   string Host = 2;
   string Module = 3;
   string ShellContent = 4;
+  string Sync = 5;
   map<string, string> Params = 6;
 }
 
 message StartTaskResponse {
   string TaskID = 1;
   uint64 Status = 2;
+  string Sync = 3;
+}
+message StartSyncTaskRequest {
+  string TaskID = 1;
+  string Host = 2;
+  string Module = 3;
+  string ShellContent = 4;
+  string Sync = 5;
+  map<string, string> Params = 6;
+}
+
+message StartSyncTaskResponse {
+  bytes output = 1001;
+  string result = 1002; // 看看哪个结果更合适
+
 }
 // 任务停止请求
 message StopTaskRequest {
@@ -62,6 +78,7 @@ message Pong{
 
 service Agent {
   rpc StartTask(StartTaskRequest) returns (StartTaskResponse);
+  rpc StartSyncTask(StartSyncTaskRequest) returns (StartSyncTaskResponse);
   rpc StopTask(StopTaskRequest) returns (StopTaskResponse);
   rpc GetTaskDetailOne(GetTaskDetailRequest) returns (GetTaskDetailResponse);
   rpc PingTask(Ping) returns (Pong);
