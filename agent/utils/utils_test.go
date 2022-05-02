@@ -3,6 +3,7 @@ package utils_test
 import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
+	utils2 "goOrigin/agent/utils"
 	"goOrigin/pkg/utils"
 	"os/exec"
 	"testing"
@@ -19,7 +20,7 @@ func (s *HttpClientSuite) SetupTest() {
 
 // TestMarshal :
 func (s *HttpClientSuite) TestConfig() {
-
+	utils2.RunShell("")
 }
 
 // TestHttpClient :

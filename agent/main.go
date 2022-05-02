@@ -1,8 +1,8 @@
 package main
 
 import (
+	"goOrigin/agent/handlers"
 	pb "goOrigin/agent/pbs/service"
-	"goOrigin/agent/task"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 	server := grpc.NewServer()
-	pb.RegisterAgentServer(server, &task.Task{})
+	pb.RegisterAgentServer(server, &handlers.Task{})
 	if err := server.Serve(listen); err != nil {
 		panic(err)
 	}

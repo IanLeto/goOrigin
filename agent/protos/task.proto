@@ -27,10 +27,9 @@ message StartTaskResponse {
 }
 message StartSyncTaskRequest {
   string TaskID = 1;
-  string Host = 2;
-  string Module = 3;
   string ShellContent = 4;
   string Sync = 5;
+  string Path = 7;
   map<string, string> Params = 6;
 }
 

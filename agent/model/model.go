@@ -8,10 +8,22 @@ import (
 	"time"
 )
 
+type TaskPool struct {
+	Tasks []Task
+}
+
+func (t *TaskPool) Reg(j Task)  {
+	t.Tasks = append(t.Tasks, j)
+}
+
 type Task interface {
+	Exec() error
 }
 
 type ShellTask struct {
+	Content string
+	Path string
+	Timeout string
 }
 
 type SyncTask struct {
@@ -58,15 +70,7 @@ func (t *SyncTask) ExecSingle(ctx context.Context) (res []byte, err error) {
 
 func (t *AsyncTask) ExecSingle(ctx context.Context) (res []byte, err error) {
 
-	var r = &TaskResult{}
-	var (
 
-	)
-	select {
-	case <-ctx.Done():
-		return
-	}
-	r.Result, r.Err = exec.Command("/bin/bash", utils.GetFilePath("template/test.sh")).CombinedOutput()
-	ch <- r
 
 }
+
