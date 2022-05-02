@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"goOrigin/agent/pbs/service"
+	service2 "goOrigin/agent/service"
 	"goOrigin/pkg/utils"
 	"sync"
 )
@@ -12,6 +13,23 @@ var TaskPool sync.Map
 
 type TaskHandler struct {
 	Content string
+}
+
+func (t *TaskHandler) MakeShell(ctx context.Context, request *service.MakeShellRequest) ( *service.MakeShellResponse,  error) {
+	var (
+		res = &service.MakeShellResponse{}
+		err error
+		content []byte
+	)
+
+	res.TaskID = request.TaskID
+	content ,err = service2.MakeShell(ctx,request)
+	if err != nil {
+		goto ERR
+	}
+	res.Content = string(content)
+	ERR:
+		return res, err
 }
 
 func (t *TaskHandler) PingTask(ctx context.Context, ping *service.Ping) (*service.Pong, error) {
@@ -27,7 +45,8 @@ func (t *TaskHandler) StartTask(ctx context.Context, request *service.StartTaskR
 }
 
 func (t *TaskHandler) StartSyncTask(ctx context.Context, request *service.StartSyncTaskRequest) (*service.StartSyncTaskResponse, error) {
-	return service.StartSyncTask(ctx, request)
+	panic(1)
+	//return service.StartSyncTask(ctx, request)
 
 }
 

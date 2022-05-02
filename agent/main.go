@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 	server := grpc.NewServer()
-	pb.RegisterAgentServer(server, &handlers.Task{})
+	pb.RegisterAgentServer(server, &handlers.TaskHandler{})
 	if err := server.Serve(listen); err != nil {
 		panic(err)
 	}

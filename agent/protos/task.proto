@@ -10,6 +10,23 @@ enum TypeEnum {
   K8S = 2;
 }
 
+// shellTask
+message MakeShellRequest{
+  string TaskID = 101;
+  string Module = 103;
+  string ShellContent = 104;
+  string Path = 105;
+  int64 Timeout = 108;
+}
+
+//
+message MakeShellResponse{
+  string TaskID = 101;
+  string Content = 104;
+  string ErrContent = 107;
+
+}
+
 // 主任务启动请求
 message StartTaskRequest {
   string TaskID = 1;
@@ -76,6 +93,7 @@ message Pong{
 }
 
 service Agent {
+  rpc MakeShell(MakeShellRequest) returns (MakeShellResponse);
   rpc StartTask(StartTaskRequest) returns (StartTaskResponse);
   rpc StartSyncTask(StartSyncTaskRequest) returns (StartSyncTaskResponse);
   rpc StopTask(StopTaskRequest) returns (StopTaskResponse);

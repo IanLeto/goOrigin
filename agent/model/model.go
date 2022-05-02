@@ -24,6 +24,7 @@ type ShellTask struct {
 	Content string
 	Path string
 	Timeout string
+
 }
 
 type SyncTask struct {
@@ -68,9 +69,4 @@ func (t *SyncTask) ExecSingle(ctx context.Context) (res []byte, err error) {
 
 }
 
-func (t *AsyncTask) ExecSingle(ctx context.Context) (res []byte, err error) {
-
-
-
-}
 
