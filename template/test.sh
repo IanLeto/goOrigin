@@ -1,6 +1,6 @@
-max=10
+max=1000
 for i in `seq 2 $max`
 do
     sleep 1
-    echo "$i"
+    echo "test xxx: $i"
 done

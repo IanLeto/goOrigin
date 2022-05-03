@@ -2,7 +2,7 @@ package main
 
 import (
 	"goOrigin/agent/handlers"
-	"goOrigin/agent/pbs"
+	pbs "goOrigin/agent/pb"
 	"google.golang.org/grpc"
 	"net"
 )

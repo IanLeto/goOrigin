@@ -4,7 +4,7 @@ import (
 	"context"
 	"goOrigin/agent/service"
 	"goOrigin/pkg/utils"
-	pbs "goOrigin/agent/pbs"
+	pbs "goOrigin/agent/pb"
 	"sync"
 )
 
