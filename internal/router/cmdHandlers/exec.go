@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	pb "goOrigin/agent/pbs/service"
+	pbs "goOrigin/agent/pb"
 	"goOrigin/backend"
 	"goOrigin/internal/params"
 )
@@ -19,20 +19,20 @@ type JobGroup struct {
 type Job struct {
 	JobID   string `json:"job_id"`
 	Content string `json:"content"`
-	Client  pb.AgentClient
+	Client  pbs.AgentClient
 }
 
 func Ping(c *gin.Context) {
 	var (
 		err error
 		ctx = context.Background()
-		res *pb.Pong
+		res *pbs.Pong
 	)
 	cli, err := backend.NewAgentClient()
 	if err != nil {
 		goto ERR
 	}
-	res, err = cli.PingTask(ctx, &pb.Ping{})
+	res, err = cli.PingTask(ctx, &pbs.Ping{})
 	if err != nil {
 		goto ERR
 	}
@@ -46,13 +46,13 @@ func StartTask(c *gin.Context) {
 	var (
 		err error
 		ctx = context.Background()
-		res *pb.StartSyncTaskResponse
+		res *pbs.StartSyncTaskResponse
 	)
 	cli, err := backend.NewAgentClient()
 	if err != nil {
 		goto ERR
 	}
-	res, err = cli.StartSyncTask(ctx, &pb.StartSyncTaskRequest{
+	res, err = cli.StartSyncTask(ctx, &pbs.StartSyncTaskRequest{
 		TaskID:       "",
 		ShellContent: "",
 		Sync:         "",
@@ -71,8 +71,8 @@ func MakeShell(c *gin.Context) {
 	var (
 		err error
 		ctx = context.Background()
-		res *pb.MakeShellResponse
-		req = &pb.MakeShellRequest{}
+		res *pbs.MakeShellResponse
+		req = &pbs.MakeShellRequest{}
 	)
 	cli, err := backend.NewAgentClient()
 	if err != nil {
@@ -82,7 +82,7 @@ func MakeShell(c *gin.Context) {
 		goto ERR
 	}
 
-	res, err = cli.MakeShell(ctx, &pb.MakeShellRequest{
+	res, err = cli.MakeShell(ctx, &pbs.MakeShellRequest{
 		TaskID:       "1",
 		ShellContent: "",
 		Timeout:      req.Timeout,

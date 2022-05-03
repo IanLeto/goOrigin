@@ -1,15 +1,16 @@
 package backend
 
 import (
-	pb "goOrigin/agent/pbs/service"
+	pbs "goOrigin/agent/pb"
 	"google.golang.org/grpc"
 )
 
-func NewAgentClient() (pb.AgentClient,error) {
+func NewAgentClient() (pbs.AgentClient,error) {
+
 	conn, err := grpc.Dial("localhost:9991", grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
 
-	return pb.NewAgentClient(conn), nil
+	return pbs.NewAgentClient(conn), nil
 }

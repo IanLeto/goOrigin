@@ -3,22 +3,23 @@ package service
 import (
 	"context"
 	"errors"
-	"goOrigin/agent/pbs/service"
+	pbs "goOrigin/agent/pb"
 	"goOrigin/pkg/utils"
 	"os/exec"
 	"time"
 )
 
-func StartSyncTask(ctx context.Context, request *service.StartSyncTaskRequest) (*service.StartSyncTaskResponse, error) {
+func StartSyncTask(ctx context.Context, request *pbs.StartSyncTaskRequest) (*pbs.StartSyncTaskResponse, error) {
 	//var task = model.ShellTask{}
 	//res ,err := task.Exec()
 	//if err != nil {
 	//	return nil, err
 	//}
+
 	return nil, nil
 }
 
-func MakeShell(ctx context.Context, request *service.MakeShellRequest) (res []byte, err error) {
+func MakeShell(ctx context.Context, request *pbs.MakeShellRequest) (res []byte, err error) {
 	type taskResult struct {
 		Err    error
 		Result []byte
