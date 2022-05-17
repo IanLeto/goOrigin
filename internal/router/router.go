@@ -44,6 +44,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		cmdGroup.POST("ping", cmdHandlers.Ping)
 		cmdGroup.POST("sync", cmdHandlers.StartTask)
 		cmdGroup.POST("shell", cmdHandlers.MakeShell)
+		cmdGroup.POST("stream", cmdHandlers.MakeStream)
 	}
 	return g
 }

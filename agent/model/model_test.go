@@ -27,7 +27,7 @@ func (s *ModelSuite) TestConfig() {
 		Ctx:     context.Background(),
 		Status:  "",
 	}
-	_, err := a.Exec(context.Background())
+	_, err := a.Exec2(context.Background())
 	s.NoError(err)
 }
 // TestMarshal :

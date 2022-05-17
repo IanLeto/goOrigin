@@ -156,8 +156,11 @@ func (t *AsyncTask) Exec2(ctx context.Context)  (res []byte, err error) {
 	if err != nil {
 		logrus.Fatalf("cmd.Start() failed with '%s'\n", err)
 	}
+	scanner := bufio.NewScanner(t.Stdout)
 	go func() {
-		_, errStderr = io.Copy(outWriter, t.Stdout)
+		for scanner.Scan(){
+			fmt.Println(scanner.Text())
+		}
 	}()
 	err = cmd.Wait()
 	if err != nil {
