@@ -10,10 +10,6 @@ import (
 	"io"
 )
 
-func ssh(c *gin.Context) {
-
-}
-
 type JobGroup struct {
 }
 
