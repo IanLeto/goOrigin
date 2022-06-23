@@ -26,10 +26,6 @@ func (tp *TaskPool) Reg(j Task) {
 	tp.Tasks = append(tp.Tasks, j)
 }
 
-type Task interface {
-	Exec() error
-}
-
 type ShellTask struct {
 	Content string
 	Path    string
@@ -44,15 +40,15 @@ type SyncTask struct {
 }
 
 type AsyncTask struct {
-	ID      string
-	Url     string
-	Content string
-	Timeout int
-	Ctx     context.Context
-	Status  string
-	Writer *bufio.Writer
+	ID       string
+	Url      string
+	Content  string
+	Timeout  int
+	Ctx      context.Context
+	Status   string
+	Writer   *bufio.Writer
 	FilePath string
-	Stdout io.ReadCloser
+	Stdout   io.ReadCloser
 }
 
 type TaskResult struct {
@@ -133,7 +129,7 @@ wait:
 	return nil, nil
 }
 
-func (t *AsyncTask) Exec2(ctx context.Context)  (res []byte, err error) {
+func (t *AsyncTask) Exec2(ctx context.Context) (res []byte, err error) {
 
 	var (
 		fileObj, fileErr = os.OpenFile("test", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -158,7 +154,7 @@ func (t *AsyncTask) Exec2(ctx context.Context)  (res []byte, err error) {
 	}
 	scanner := bufio.NewScanner(t.Stdout)
 	go func() {
-		for scanner.Scan(){
+		for scanner.Scan() {
 			fmt.Println(scanner.Text())
 		}
 	}()
@@ -173,30 +169,29 @@ func (t *AsyncTask) Exec2(ctx context.Context)  (res []byte, err error) {
 	return nil, nil
 }
 
-func Query(id string)  {
+func Query(id string) {
 	res, ok := Pool.TaskMap.Load(id)
-	if ! ok{
+	if !ok {
 		fmt.Println("任务已完成")
 	}
 	buf := make([]byte, 62)
-	t,ok := res.(*AsyncTask)
+	t, ok := res.(*AsyncTask)
 	t.FilePath = utils.GetFilePath("agent/model/test")
-	fileObj,err := os.Open(t.FilePath)
+	fileObj, err := os.Open(t.FilePath)
 	if err != nil {
 		fmt.Printf("read file %s", err)
 	}
-	defer func() {_ = fileObj.Close()}()
+	defer func() { _ = fileObj.Close() }()
 	stat, err := os.Stat(t.FilePath)
 	if err != nil {
 		return
 	}
 	start := stat.Size() - 62
-	_ ,err = fileObj.ReadAt(buf, start)
+	_, err = fileObj.ReadAt(buf, start)
 	if err != nil {
 		fmt.Println()
 	}
 	fmt.Println(string(buf))
-
 
 }
 func (t *AsyncTask) Reg() bool {

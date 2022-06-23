@@ -1,0 +1,17 @@
+syntax = "proto3";
+package service.v1;
+
+option go_package = "./";
+
+
+message Ping {
+
+}
+
+message Pong {
+    string version = 1;
+}
+
+service Agent {
+    rpc PingTask(Ping) returns (Pong);
+}
