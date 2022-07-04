@@ -2,6 +2,7 @@
 自用golang 服务原型
 
 #### logs
+    proto 三方库问题
     add log init  9/30
     add gorm mysql init 10/16
 #### 常用命令

@@ -1,5 +1,7 @@
 syntax = "proto3";
 package service.v1;
+import "google/protobuf/wrappers.proto";
+
 
 option go_package = "./";
 
@@ -12,6 +14,13 @@ message Pong {
     string version = 1;
 }
 
+// 客户端流
+message UpdateArr {
+    repeated int64 data = 1;
+}
+
+
 service Agent {
     rpc PingTask(Ping) returns (Pong);
+    rpc AddArray(UpdateArr) returns (google.protobuf.Int64Value);
 }
