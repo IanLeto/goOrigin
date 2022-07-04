@@ -24,8 +24,9 @@ var compInit = map[string]func() error{
 }
 
 var cronTask = map[string]func() error{
-	"demoCache": cron.RegisterDemoTask,
-	"HearBeat":  cron.RegisterHearBeatTask,
+	//"demoCache": cron.RegisterDemoTask,
+	//"HearBeat":  cron.RegisterHearBeatTask,
+	"ian": cron.RegisterNoteIan, // 定期创建日报
 }
 
 var connFactory = make([]storage.Conn, 0)
@@ -99,8 +100,8 @@ var initCronTask = func() error {
 		}
 	}
 	for _, t := range cron.QueueCron {
-		go func(task pkg.Task) {
-			_ = task.Run(taskRootCtx)
+		go func(task pkg.Job) {
+			_ = task.Exec(taskRootCtx, nil)
 		}(t)
 	}
 	return nil

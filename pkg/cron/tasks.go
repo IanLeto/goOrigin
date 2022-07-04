@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var QueueCron []pkg.Task
+var QueueCron []pkg.Job
 
 // 定时刷新缓存
 type CacheTask interface {
@@ -56,8 +56,8 @@ func (d *DemoJob) Stop(ctx context.Context, kill chan struct{}) error {
 }
 
 func RegisterDemoTask() error {
-	demoTask, _ := NewDemoTask()
-	QueueCron = append(QueueCron, demoTask)
+	DemoJob := &DemoJob{}
+	QueueCron = append(QueueCron, DemoJob)
 	return nil
 }
 
@@ -107,12 +107,11 @@ func (h *HearBeatTask) Run(ctx context.Context) error {
 }
 
 func NewHearBeatTask() (*HearBeatTask, error) {
-	return &HearBeatTask{
-	}, nil
+	return &HearBeatTask{}, nil
 }
 
 func RegisterHearBeatTask() error {
-	demoTask, _ := NewHearBeatTask()
-	QueueCron = append(QueueCron, demoTask)
+
+	QueueCron = append(QueueCron, nil)
 	return nil
 }
