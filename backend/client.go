@@ -2,7 +2,6 @@ package backend
 
 type Client interface {
 	Close() error
-	// 返回该client 类型
 	ShowType() string
 }
 
@@ -21,4 +20,3 @@ func (b BaseClient) NewClient() interface{} {
 func (b BaseClient) ShowType() string {
 	return b.ClientType
 }
-

@@ -29,7 +29,7 @@ backend:
     address: localhost
     port: 2379
   mongo:
-    address: localhost
+    address: 124.222.48.125
     port: 27017
     user: root
     password: root
@@ -47,6 +47,7 @@ components:
   - redis
   - mysql
   - cc
+  - mongo
 logging:
   fileName: .%Y%m%d%H
   level: debug

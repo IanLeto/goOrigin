@@ -38,7 +38,9 @@ func (n *NoteIan) Stop(ctx context.Context, kill chan struct{}) error {
 }
 
 func RegisterNoteIan() error {
-	task := &NoteIan{}
+	task := &NoteIan{
+		time.NewTicker(24 * time.Hour),
+	}
 	QueueCron = append(QueueCron, task)
 	return nil
 }

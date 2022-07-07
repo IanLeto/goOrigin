@@ -74,7 +74,7 @@ var initMode = func() error {
 	return nil
 }
 
-// step 7 初始化factory
+// step 7 初始化factory 初始数据
 var initData = func() error {
 	for _, d := range config.Conf.Data {
 		switch d {

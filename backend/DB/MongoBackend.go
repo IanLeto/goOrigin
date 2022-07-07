@@ -8,8 +8,6 @@ import (
 	"goOrigin/config"
 )
 
-const IanLeto = "template"
-
 type MonBackend struct {
 	*mgo.Session
 }

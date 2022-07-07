@@ -35,7 +35,7 @@ func NewHttpClientConfig() *HttpClientConfig {
 	}
 }
 
-// mysql backend config
+// MySqlBackendConfig mysql backend config
 type MySqlBackendConfig struct {
 	Address  string
 	Port     string
