@@ -1,5 +1,7 @@
 package storage
 
+import "context"
+
 var Mongo *MongoConn
 var ZKConn *ZKConnection
 var MySQL *MySQLConn
@@ -11,7 +13,8 @@ type Conn interface {
 }
 
 func InitMongo() error {
-	Mongo = NewMongoConn()
+	// 这里应该加上根ctx
+	Mongo = NewMongoConn(context.TODO(), nil)
 	return nil
 }
 

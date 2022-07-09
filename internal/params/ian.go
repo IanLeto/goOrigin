@@ -5,9 +5,13 @@ type CreateIanRequestInfo struct {
 		Weight int `json:"weight"`
 	} `json:"body"`
 	BETre struct {
-		Runner  int `json:"runner"`
-		Core    int `json:"core"`
-		Support int `json:"support"`
+		Core       int `json:"core"`
+		Runner     int `json:"runner"`
+		Support    int `json:"support"`
+		Squat      int `json:"squat"`
+		EasyBurpee int `json:"easy_burpee"`
+		Chair      int `json:"chair"`
+		Stretch    int `json:"stretch"`
 	} `json:"BETre"`
 	Worker struct {
 		Vol1 string `json:"vol1"`

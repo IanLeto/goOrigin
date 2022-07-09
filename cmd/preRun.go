@@ -76,18 +76,18 @@ var initMode = func() error {
 
 // step 7 初始化factory 初始数据
 var initData = func() error {
-	for _, d := range config.Conf.Data {
-		switch d {
-		case "mongo":
-			connFactory = append(connFactory, storage.Mongo)
-		}
-	}
-	// factory 行为执行
-	for _, conn := range connFactory {
-		if err := conn.InitData(mode); err != nil {
-			return err
-		}
-	}
+	//for _, d := range config.Conf.Data {
+	//	switch d {
+	//	case "mongo":
+	//		connFactory = append(connFactory, storage.Mongo)
+	//	}
+	//}
+	//// factory 行为执行
+	//for _, conn := range connFactory {
+	//	if err := conn.InitData(mode); err != nil {
+	//		return err
+	//	}
+	//}
 	return nil
 }
 
