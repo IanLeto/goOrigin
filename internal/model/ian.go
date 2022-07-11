@@ -3,6 +3,7 @@ package model
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/params"
+	"time"
 )
 
 type Base struct {
@@ -13,6 +14,7 @@ type Base struct {
 
 type Ian struct {
 	*Base
+	Name   string `json:"name" bson:"name"`
 	Body   `json:"body" bson:"body"`
 	BETre  `json:"BETre" bson:"BETre"`
 	Worker `json:"worker" bson:"worker"`
@@ -40,6 +42,13 @@ type Worker struct {
 
 func NewIan(req params.CreateIanRequestInfo) *Ian {
 	return &Ian{
+		Name: req.Name,
+		Base: &Base{
+			CreateDate: primitive.Timestamp{
+				T: uint32(time.Now().Unix()),
+				I: 0,
+			},
+		},
 		Body: Body{
 			Weight: req.Body.Weight,
 		},

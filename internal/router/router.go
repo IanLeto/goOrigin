@@ -38,7 +38,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		recordGroup.POST("/", recordHandlers.CreateIanRecord)
 		recordGroup.DELETE("/", recordHandlers.DeleteIanRecord)
-		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
+		recordGroup.PUT("/", recordHandlers.UpdateIanRecord)
+		recordGroup.GET("/", recordHandlers.SelectIanRecord)
+		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 	}
