@@ -15,11 +15,9 @@ require (
 	github.com/heralight/logrus_mate v1.0.1
 	github.com/hoisie/redis v0.0.0-20160730154456-b5c6e81454e0 // indirect
 	github.com/jinzhu/gorm v1.9.16
-	github.com/kr/text v0.2.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.17.0 // indirect
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
@@ -30,10 +28,10 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.9.1
-	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f
-	google.golang.org/grpc v1.33.2
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.28.0
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	k8s.io/apimachinery v0.24.3
+	k8s.io/client-go v0.24.3
 
 )

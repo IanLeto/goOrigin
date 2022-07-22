@@ -6,6 +6,7 @@ import (
 	"goOrigin/config"
 	"goOrigin/pkg"
 	"goOrigin/pkg/cron"
+	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/logging"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
@@ -20,6 +21,7 @@ var mode string
 var compInit = map[string]func() error{
 	"mongo": storage.InitMongo,
 	"zk":    storage.InitZk,
+	"k8s":   k8s.InitK8s,
 	//"mysql": storage.InitMySQL,
 }
 

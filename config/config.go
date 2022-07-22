@@ -12,6 +12,7 @@ type BackendConfig struct {
 	*MongoBackendConfig
 	*ZKConfig
 	*RedisConfig
+	*K8sConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -20,6 +21,7 @@ func NewBackendConfig() *BackendConfig {
 		NewMongoBackendConfig(),
 		NewZkConfig(),
 		NewRedisConfig(),
+		NewK8sConfig(),
 	}
 }
 
@@ -103,6 +105,19 @@ func NewRedisConfig() *RedisConfig {
 		Addr:       viper.GetString("backend.redis.Addr"),
 		IsSentinel: viper.GetBool("backend.redis.IsSentinel"),
 		Auth:       viper.GetString("backend.redis.Auth"),
+	}
+}
+
+// k8s
+
+type K8sConfig struct {
+	Address string
+	NS      string
+}
+
+func NewK8sConfig() *K8sConfig {
+	return &K8sConfig{
+		Address: viper.GetString("backend.redis.DB"),
 	}
 }
 

@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/storage"
@@ -20,7 +21,7 @@ func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 		logrus.Errorf("创建日常数据失败")
 		goto ERR
 	}
-	return res.InsertedID, nil
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 ERR:
 	return "", nil
 }
@@ -53,6 +54,11 @@ func UpdateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 	return req.Name, nil
 ERR:
 	return "", res.Err()
+}
+
+// SelectIanRecordDetail 详细过滤的demo
+func SelectIanRecordDetail() {
+	
 }
 
 func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {

@@ -38,6 +38,9 @@ backend:
     address:
       - localhost:2181
     auth: root
+  k8s:
+    address: /Users/ian/.kube/config
+
 client:
   CC:
     address: localhost:1129
@@ -47,7 +50,8 @@ components:
   - redis
   - mysql
   - cc
-  - mongo
+#  - mongo
+  - k8s
 logging:
   fileName: .%Y%m%d%H
   level: debug

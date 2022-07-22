@@ -44,6 +44,13 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 	}
+	k8sGroup := g.Group("/k8s")
+	{
+		k8sGroup.GET("/pod")
+		k8sGroup.GET("/deploy")
+		k8sGroup.GET("/svc")
+		k8sGroup.GET("/config")
+	}
 
 	cmdGroup := g.Group("/v1/cmd")
 	{
