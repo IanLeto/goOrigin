@@ -35,8 +35,13 @@ func getRootPath() string {
 	return filepath.Join(path, "")
 }
 
-
-
 func GetFilePath(path string) string {
 	return filepath.Join(Root, path)
+}
+
+func StrDefault(str, def string) string {
+	if str == "" {
+		return def
+	}
+	return str
 }

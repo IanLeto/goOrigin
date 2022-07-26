@@ -3,9 +3,7 @@ package k8s
 import (
 	"context"
 	"flag"
-	"fmt"
 	"goOrigin/config"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -47,6 +45,6 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(client.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{}))
+	//fmt.Println(client.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{}))
 	return &KubeConn{Client: client}
 }

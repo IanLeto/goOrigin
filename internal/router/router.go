@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
+	"goOrigin/internal/router/k8sHandlers"
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/userHandlers"
 )
@@ -44,12 +45,13 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 	}
-	k8sGroup := g.Group("/k8s")
+	k8sGroup := g.Group("v1/k8s/deploy")
 	{
-		k8sGroup.GET("/pod")
-		k8sGroup.GET("/deploy")
-		k8sGroup.GET("/svc")
-		k8sGroup.GET("/config")
+		k8sGroup.GET("", k8sHandlers.ListDeploy)
+		k8sGroup.POST("", k8sHandlers.CreateDeploy)
+		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
+		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)
+
 	}
 
 	cmdGroup := g.Group("/v1/cmd")
