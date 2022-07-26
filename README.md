@@ -5,6 +5,7 @@
     proto 三方库问题
     add log init  9/30
     add gorm mysql init 10/16
+    增加 k8s curd api 2022/7/26 未测试
 #### 常用命令
     cd  /Users/ian/go/src/goOrigin/agent/protos
     protoc -I ../protos --go_out=plugins=grpc:../pbs ../protos/task.proto
