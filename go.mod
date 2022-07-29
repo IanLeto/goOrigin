@@ -6,6 +6,7 @@ require (
 	github.com/DeanThompson/ginpprof v0.0.0-20201112072838-007b1e56b2e1
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/dghubble/sling v1.3.0
+	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.7.2
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8

@@ -1,3 +1,0 @@
-time="2021-10-16T18:17:01+08:00" level=error msg="init mongo db fail: no reachable servers"
-time="2021-10-16T18:17:18+08:00" level=error msg="init db conn fail sql: unknown driver \"TCP\" (forgotten import?)"
-time="2021-10-16T18:17:47+08:00" level=error msg="init db conn fail sql: unknown driver \"TCP\" (forgotten import?)"

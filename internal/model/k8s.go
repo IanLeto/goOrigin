@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"github.com/fatih/structs"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/utils"
@@ -51,4 +52,13 @@ func NewDeployParams(req *params.CreateDeploymentReq) (*Deploy, error) {
 		Containers: containers,
 	}
 	return dep, err
+}
+
+// NewDeployParamsV2 : 非结构化数据，k8s 结构化处理太多了学习过程中不适合，交给前端处理吧
+func NewDeployParamsV2(req *params.CreateDeploymentReq) (map[string]interface{}, error) {
+	var (
+		err error
+	)
+
+	return structs.Map(req.Content), err
 }

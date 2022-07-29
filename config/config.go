@@ -6,7 +6,6 @@ type ComponentConfig interface {
 	NewComponent() ComponentConfig
 }
 
-// base Backend
 type BackendConfig struct {
 	*MySqlBackendConfig
 	*MongoBackendConfig

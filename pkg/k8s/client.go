@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"goOrigin/config"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -13,7 +14,8 @@ import (
 var K8S *KubeConn
 
 type KubeConn struct {
-	Client *kubernetes.Clientset
+	Client        *kubernetes.Clientset
+	DynamicClient dynamic.Interface
 }
 
 func (k *KubeConn) Close() error {
@@ -45,6 +47,11 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if err != nil {
 		log.Fatal(err)
 	}
+	dyClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//fmt.Println(client.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{}))
-	return &KubeConn{Client: client}
+	return &KubeConn{Client: client, DynamicClient: dyClient}
 }

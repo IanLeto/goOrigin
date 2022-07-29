@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine
+FROM golang:1.17-alpine
 # 指定工作目录
 # 工作目录 也就是起始目录 毕竟我们不能吧 / 作为根目录吧
 WORKDIR /root
