@@ -4,6 +4,7 @@ import (
 	"context"
 	"goOrigin/pkg/utils"
 	v1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -51,4 +52,15 @@ func (k *KubeConn) ListDeploy(ctx context.Context, ns string) ([]map[string]inte
 		return nil, err
 	}
 	return res, err
+}
+
+func (k *KubeConn) GetConfigMapDetail(ctx context.Context, ns, name string) (*corev1.ConfigMap, error) {
+
+	configClient := k.Client.CoreV1().ConfigMaps(ns)
+	configMap, err := configClient.Get(ctx, name, metav1.GetOptions{})
+
+	if err != nil {
+		return nil, err
+	}
+	return configMap, err
 }

@@ -19,15 +19,11 @@ type CreateUnStruct struct {
 	Spec struct {
 		Replicas int `json:"replicas"`
 		Selector struct {
-			MatchLabels struct {
-				App string `json:"app"`
-			} `json:"matchLabels"`
+			MatchLabels string `json:"matchLabels"`
 		} `json:"selector"`
 		Template struct {
 			Metadata struct {
-				Labels struct {
-					App string `json:"app"`
-				} `json:"labels"`
+				Labels string `json:"labels"`
 			} `json:"metadata"`
 			Spec struct {
 				Containers []struct {
@@ -48,4 +44,16 @@ type UpdateDeploymentReq struct {
 	Name      string
 	Namespace string
 	Image     string
+}
+
+//  ---------------------------------------configmap-----------------------------------------------------
+
+type CreateConfigMapRequestInfo struct {
+	Name string
+}
+
+type GetConfigMapRequestInfo struct {
+	Name string `json:"name"`
+	NS   string `json:"NS"`
+	*BaseK8sRequestInfo
 }

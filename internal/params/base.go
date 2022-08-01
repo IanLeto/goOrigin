@@ -12,6 +12,10 @@ type BaseErrResponseInfo struct {
 	*BaseResponseInfo
 }
 
+type BaseK8sRequestInfo struct {
+	Selector string
+}
+
 func BuildErrResponse(c *gin.Context, info *BaseErrResponseInfo) {
 	c.JSON(400, gin.H{
 		"Data":    nil,

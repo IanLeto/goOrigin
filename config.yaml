@@ -5,7 +5,7 @@ url: localhost:8080
 version: v1
 port: 8080
 log:
-  wirter: file,stdout
+  writer: file,stdout
   logger_level: DEBUG
   logger_file: ~/log/goOrigin.log
   log_format_text: false
@@ -50,7 +50,7 @@ components:
   - redis
   - mysql
   - cc
-  - mongo
+#  - mongo
   - k8s
 logging:
   fileName: .%Y%m%d%H

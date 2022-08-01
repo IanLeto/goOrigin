@@ -4,9 +4,9 @@ FROM golang:1.17-alpine
 WORKDIR /root
 COPY . /root
 # run go build build 因为我们已经指定工作目录了，相当于在/root 下执行go huild
-RUN go build  main.go
-EXPOSE 1919
-ENTRYPOINT ["./main"]
+RUN go build  -o ori main.go
+EXPOSE 8008
+ENTRYPOINT ["./ori"]
 
 #FROM scratch
 #COPY --from=busybox:1.28 /bin/busybox /bin/busybox

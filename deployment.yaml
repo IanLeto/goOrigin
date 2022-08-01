@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: # pod 的元数据，就是标签，注解，名称
+  name: goorigin # pod 名
+  labels:
+    app: ian  # k get po --all-namespaces --selector app=demo
+    env: debug  # k get deploy --all-namespaces -l app=demo,env=debug
+spec: # pod 的规格，也就是内部容器中的详细定义
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ian
+  template: # 容器模板 也就是生成的pod的定义； rc 会以此模板来创建pod
+    metadata:
+      labels:
+        app: ian
+    spec:
+      nodeSelector: # 指定我们的容器调度到 master=ian 的这个node上
+        master: ian
+      containers:
+        - name: goOri
+          image: ian/ori
+          imagePullPolicy: Never # 如果这个image 不存在本地则拉取
+          livenessProbe: # 存活探针
+            httpGet: # 心跳方式为http
+              path: /ping
+              port: 8008
+          ports:
+            - containerPort: 8008
+          volumeMounts: # 我们建立了一个挂载vol 与该容器共生
+            - mountPath: root/config #
+              name: goorigin # 告诉我们要挂载叫goroign 的vol 与下面的vol 呼应
+              readOnly: true
+      volumes: # vol数据卷
+        - name: goorigin # 这个vol 的名字叫goorigin
+          configMap: # 意味着这个vol的数据是从一个configmap导入的
+            name: goorigin # 这个configmap 叫goorign
+            items:
+              - key: config.yaml
+                path: config.yaml
+
+
+

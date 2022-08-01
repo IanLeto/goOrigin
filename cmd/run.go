@@ -12,7 +12,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.NoError(http.ListenAndServe("localhost:8008", g))
+	utils.NoError(http.ListenAndServe("0.0.0.0:8008", g))
 }
 
 var runCmd = &cobra.Command{

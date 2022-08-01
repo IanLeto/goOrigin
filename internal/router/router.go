@@ -47,10 +47,16 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{
+
 		k8sGroup.POST("", k8sHandlers.CreateDeploy)
 		k8sGroup.GET("", k8sHandlers.ListDeploy)
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
 		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)
+
+	}
+	k8sConfigGroup := g.Group("v1/k8s/configmap")
+	{
+		k8sConfigGroup.POST("")
 	}
 
 	k8sV2Group := g.Group("v2/k8s/deploy")

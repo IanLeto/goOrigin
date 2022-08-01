@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-var K8S *KubeConn
+var K8SConn *KubeConn
 
 type KubeConn struct {
 	Client        *kubernetes.Clientset
@@ -29,7 +29,7 @@ func (k *KubeConn) InitData(mode string) error {
 }
 
 func InitK8s() error {
-	K8S = NewK8sConn(context.TODO(), nil)
+	K8SConn = NewK8sConn(context.TODO(), nil)
 	return nil
 }
 

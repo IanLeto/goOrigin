@@ -76,3 +76,37 @@ func ListDeploy(c *gin.Context) {
 ERR:
 	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
+func CreateConfigMap(c *gin.Context) {
+	var (
+		req  = params.CreateDeploymentReq{}
+		name interface{}
+		err  error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	name, err = service.CreateDeployment(c, &req)
+	params.BuildResponse(c, params.BuildInfo(name))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func SelectConfigMap(c *gin.Context) {
+	var (
+		req  = params.GetConfigMapRequestInfo{}
+		name interface{}
+		err  error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	name, err = service.GetConfigMapDetail(c, &req)
+	params.BuildResponse(c, params.BuildInfo(name))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
