@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"github.com/fatih/structs"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/utils"
@@ -20,57 +22,132 @@ type Deploy struct {
 	*appsv1.Deployment
 }
 
+func convJson(s string) map[string]string {
+	var res map[string]string
+	_ = json.Unmarshal([]byte(s), &res)
+	return res
+}
+
 func NewDeployParams(req *params.CreateDeploymentReq) (*Deploy, error) {
+
+	var (
+		dep = &Deploy{
+			Id:         primitive.ObjectID{},
+			CreateDate: primitive.Timestamp{},
+			UpdateDate: primitive.Timestamp{},
+			Name:       "",
+			NS:         "",
+			Deployment: &appsv1.Deployment{
+				TypeMeta:   metav1.TypeMeta{},
+				ObjectMeta: metav1.ObjectMeta{},
+				Spec:       appsv1.DeploymentSpec{},
+				Status:     appsv1.DeploymentStatus{},
+			},
+		}
+	)
+	dep.NS = req.Namespace
+	dep.Name = req.Name
+	dep.Deployment.ObjectMeta = metav1.ObjectMeta{
+		Name:   req.MetadataName,
+		Labels: convJson(req.MetadataSelectorLabels),
+	}
+	replicas := cast.ToInt32(req.RepNums)
+	dep.Deployment.Spec = appsv1.DeploymentSpec{
+		Replicas: &replicas,
+		Selector: &metav1.LabelSelector{
+			MatchLabels: convJson(req.SpecSelectorLabels),
+		},
+		Template: v1.PodTemplateSpec{
+			ObjectMeta: metav1.ObjectMeta{
+				Labels: convJson(req.TemplateSelectorMatchLabels),
+			},
+			Spec: v1.PodSpec{
+				Containers: []v1.Container{{
+					Name:  req.ContainerName,
+					Image: req.ContainerImage,
+				}},
+			},
+		},
+	}
+	return dep, nil
+}
+
+func NewDeployParamsDetail(req *params.CreateDeploymentReq) (*Deploy, error) {
 	var (
 		dep                   = &Deploy{}
 		err                   error
-		selector              = map[string]string{}
-		labels                = map[string]string{}
 		containers            []v1.Container
 		templateMetadataLabel = map[string]string{}
+		specSelectorLabel     = map[string]string{}
 	)
 
-	err = json.Unmarshal([]byte(req.RepSelector), &selector)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal([]byte(req.TemplateLabels), &labels)
-	if err != nil {
-		return nil, err
-	}
 	err = json.Unmarshal([]byte(req.Containers), &containers)
 	r := int32(req.Content.Spec.Replicas)
 	err = json.Unmarshal([]byte(req.Content.Spec.Template.Metadata.Labels), &templateMetadataLabel)
-
+	if err != nil {
+		logrus.Errorf("格式化容器规格-模板-元数据-标签 err %s", err)
+	}
+	err = json.Unmarshal([]byte(req.Content.Spec.Selector.MatchLabels), &specSelectorLabel)
+	if err != nil {
+		logrus.Errorf("格式化容器规格-Selector-标签 err %s", err)
+	}
 	dep.ObjectMeta.Name = req.Content.Metadata.Name
 	dep.ObjectMeta.Namespace = utils.StrDefault(req.Namespace, "default")
 	dep.NS = req.Namespace
 	dep.Spec = appsv1.DeploymentSpec{ // pod 中的容器的详细定义
 		Replicas: &r, // 副本数量
 		Selector: &metav1.LabelSelector{
-			MatchLabels:      templateMetadataLabel,
+			MatchLabels:      specSelectorLabel,
 			MatchExpressions: nil,
 		},
 		Template: v1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{ // ObjectMeta 元数据信息
-				Name:                       "",
-				GenerateName:               "",
-				Namespace:                  "",
-				UID:                        "",
-				ResourceVersion:            "",
-				Generation:                 0,
-				CreationTimestamp:          metav1.Time{},
-				DeletionTimestamp:          nil,
-				DeletionGracePeriodSeconds: nil,
-				Labels:                     nil,
-				Annotations:                nil,
-				OwnerReferences:            nil,
-				Finalizers:                 nil,
-				ManagedFields:              nil,
+				Name:         req.Content.Spec.Template.Metadata.Name,  // todo
+				GenerateName: "",                                       // prefix
+				Namespace:    req.Content.Spec.Template.Metadata.NS,    //
+				Labels:       cast.ToStringMapString(req.Content.Spec), // todo
 			},
-			Spec: v1.PodSpec{
-				Volumes:                       nil,
+			Spec: v1.PodSpec{ // 数据卷配置
+				Volumes: []v1.Volume{
+					{
+						Name: "", // 数据卷名称
+						VolumeSource: v1.VolumeSource{
+							HostPath: &v1.HostPathVolumeSource{
+								Path: "",  //
+								Type: nil, //
+							}, // 挂载主机的路径
+							EmptyDir: &v1.EmptyDirVolumeSource{
+								Medium:    "",
+								SizeLimit: nil,
+							},
+							GCEPersistentDisk:     nil, // 一种 数据类型
+							AWSElasticBlockStore:  nil, // 一种 数据类型
+							Secret:                nil,
+							NFS:                   nil,
+							ISCSI:                 nil,
+							Glusterfs:             nil,
+							PersistentVolumeClaim: nil,
+							RBD:                   nil,
+							FlexVolume:            nil,
+							Cinder:                nil,
+							CephFS:                nil,
+							Flocker:               nil,
+							DownwardAPI:           nil,
+							FC:                    nil,
+							AzureFile:             nil,
+							ConfigMap:             nil,
+							VsphereVolume:         nil,
+							Quobyte:               nil,
+							AzureDisk:             nil,
+							PhotonPersistentDisk:  nil,
+							Projected:             nil,
+							PortworxVolume:        nil,
+							ScaleIO:               nil,
+							StorageOS:             nil,
+							CSI:                   nil,
+							Ephemeral:             nil,
+						},
+					}},
 				InitContainers:                nil,
 				Containers:                    nil,
 				EphemeralContainers:           nil,
@@ -106,7 +183,7 @@ func NewDeployParams(req *params.CreateDeploymentReq) (*Deploy, error) {
 				SetHostnameAsFQDN:             nil,
 				OS:                            nil,
 			},
-		}, // 定义容器模板，dep 会以此来生成相关的容器
+		},                                                    // 定义容器模板，dep 会以此来生成相关的容器
 		Strategy:                appsv1.DeploymentStrategy{}, // 升级策略
 		MinReadySeconds:         0,
 		RevisionHistoryLimit:    nil,
@@ -139,4 +216,8 @@ func NewDeployParamsV2(req *params.CreateDeploymentReq) (map[string]interface{},
 	)
 
 	return structs.Map(req.Content), err
+}
+
+func SchemeUse() {
+
 }

@@ -1,13 +1,18 @@
 package params
 
 type CreateDeploymentReq struct {
-	Name           string
-	Namespace      string
-	RepNums        int32
-	RepSelector    string
-	TemplateLabels string
-	Containers     string
-	Content        *CreateUnStruct `json:"content"`
+	Name                        string `json:"name"`
+	Namespace                   string `json:"namespace"`
+	MetadataName                string `json:"metadata_name"`
+	RepNums                     int32  `json:"rep_nums"`
+	MetadataSelectorLabels      string `json:"metadata_selector_labels"`
+	SpecSelectorLabels          string `json:"spec_selector_labels"`
+	TemplateSelectorMatchLabels string `json:"template_selector_match_labels"`
+	ContainerImage              string `json:"container_images"`
+	ContainerName               string `json:"container_name"`
+
+	Containers string          `json:"containers"`
+	Content    *CreateUnStruct `json:"content"`
 }
 
 type CreateUnStruct struct {
@@ -24,8 +29,12 @@ type CreateUnStruct struct {
 		Template struct {
 			Metadata struct {
 				Labels string `json:"labels"`
+				Name   string `json:"name"`
+				NS     string `json:"NS"`
 			} `json:"metadata"`
 			Spec struct {
+				Volume []struct {
+				}
 				Containers []struct {
 					Image string `json:"image"`
 					Name  string `json:"name"`

@@ -50,7 +50,7 @@ components:
   - redis
   - mysql
   - cc
-#  - mongo
+  - mongo
   - k8s
 logging:
   fileName: .%Y%m%d%H
