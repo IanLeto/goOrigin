@@ -52,6 +52,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		k8sGroup.GET("", k8sHandlers.ListDeploy)
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
 		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)
+		k8sGroup.POST("dynamic", k8sHandlers.CreateDeployDynamic)
+		//k8sGroup.GET("dynamic", k8sHandlers.ListDeployDynamic)
+		k8sGroup.DELETE("dynamic", k8sHandlers.DeleteDeployDynamic)
+		k8sGroup.PUT("dynamic", k8sHandlers.UpdateDeployDynamic)
 
 	}
 	k8sConfigGroup := g.Group("v1/k8s/configmap")

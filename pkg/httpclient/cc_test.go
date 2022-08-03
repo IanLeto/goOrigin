@@ -15,7 +15,6 @@ type HttpClientSuite struct {
 }
 
 func (s *HttpClientSuite) SetupTest() {
-	s.conf = config.GlobalConfig
 
 }
 

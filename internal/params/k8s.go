@@ -50,9 +50,9 @@ type CreateUnStruct struct {
 }
 
 type UpdateDeploymentReq struct {
-	Name      string
-	Namespace string
-	Image     string
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Image     string `json:"image"`
 }
 
 //  ---------------------------------------configmap-----------------------------------------------------
@@ -65,4 +65,19 @@ type GetConfigMapRequestInfo struct {
 	Name string `json:"name"`
 	NS   string `json:"NS"`
 	*BaseK8sRequestInfo
+}
+
+//  ---------------------------------------dynamic-----------------------------------------------------
+
+type CreateDeploymentDynamicRequest struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Object    string `json:"Object"`
+}
+
+// UpdateDeploymentDynamicRequest 仅支持单一镜像修改
+type UpdateDeploymentDynamicRequest struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Image     string `json:"Image"`
 }

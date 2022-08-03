@@ -14,8 +14,9 @@ import (
 var K8SConn *KubeConn
 
 type KubeConn struct {
-	Client        *kubernetes.Clientset
+	Client        kubernetes.Interface
 	DynamicClient dynamic.Interface
+	ClientSet     kubernetes.Interface
 }
 
 func (k *KubeConn) Close() error {

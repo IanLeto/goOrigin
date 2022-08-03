@@ -110,3 +110,55 @@ func SelectConfigMap(c *gin.Context) {
 ERR:
 	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
+func CreateDeployDynamic(c *gin.Context) {
+	var (
+		req  = params.CreateDeploymentDynamicRequest{}
+		name interface{}
+		err  error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	name, err = service.CreateDeploymentDynamic(c, &req)
+	params.BuildResponse(c, params.BuildInfo(name))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func DeleteDeployDynamic(c *gin.Context) {
+	var (
+		name = c.GetString("name")
+		ns   = c.GetString("namespace")
+		res  string
+		err  error
+	)
+	err = service.DeleteDeploymentDynamic(c, name, ns)
+	if err != nil {
+		goto ERR
+	}
+
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func UpdateDeployDynamic(c *gin.Context) {
+	var (
+		req  = params.UpdateDeploymentDynamicRequest{}
+		name interface{}
+		err  error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	name, err = service.UpdateDeploymentDynamicRequest(c, &req)
+	params.BuildResponse(c, params.BuildInfo(name))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}

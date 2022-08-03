@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"goOrigin/internal/model"
@@ -119,4 +121,69 @@ func GetConfigMapDetail(c *gin.Context, req *params.GetConfigMapRequestInfo) (in
 	)
 	return k8s.K8SConn.GetConfigMapDetail(c, ns, name)
 
+}
+
+func CreateDeploymentDynamic(c *gin.Context, req *params.CreateDeploymentDynamicRequest) (interface{}, error) {
+	var (
+		err error
+		obj map[string]interface{}
+	)
+	deploymentRes := schema.GroupVersionResource{
+		Group:    "apps",
+		Version:  "v1",
+		Resource: "deployments",
+	}
+	err = json.Unmarshal([]byte(req.Object), &obj)
+	deployment := &unstructured.Unstructured{Object: map[string]interface{}{}}
+	result, err := k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Create(c, deployment, metav1.CreateOptions{})
+	return result, err
+}
+func DeleteDeploymentDynamic(c *gin.Context, name, namespace string) error {
+	var (
+		err error
+	)
+	deploymentRes := schema.GroupVersionResource{
+		Group:    "apps",
+		Version:  "v1",
+		Resource: "deployments",
+	}
+
+	deletePolicy := metav1.DeletePropagationForeground
+	err = k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(namespace).Delete(c, name, metav1.DeleteOptions{
+		PropagationPolicy: &deletePolicy,
+	})
+	logrus.Errorf("delete deploy error: %s", err)
+	return err
+}
+
+func UpdateDeploymentDynamicRequest(c *gin.Context, req *params.UpdateDeploymentDynamicRequest) (interface{}, error) {
+	var (
+		err error
+	)
+	deploymentRes := schema.GroupVersionResource{
+		Group:    "apps",
+		Version:  "v1",
+		Resource: "deployments",
+	}
+	deployment, err := k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Get(c, req.Name, metav1.GetOptions{})
+	containers, found, err := unstructured.NestedSlice(deployment.Object, "spec", "template", "spec", "containers")
+	if err != nil || !found || containers == nil {
+		logrus.Errorf("deployment containers not found or error in spec: %v", err)
+		goto ERR
+	}
+	err = unstructured.SetNestedField(containers[0].(map[string]interface{}), req.Image, "image")
+	if err != nil {
+		goto ERR
+	}
+	err = unstructured.SetNestedField(deployment.Object, containers, "spec", "template", "spec", "containers")
+	if err != nil {
+		goto ERR
+	}
+	_, err = k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Update(c, deployment, metav1.UpdateOptions{})
+	return nil, err
+
+ERR:
+	{
+		return deployment, err
+	}
 }
