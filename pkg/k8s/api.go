@@ -54,13 +54,31 @@ func (k *KubeConn) ListDeploy(ctx context.Context, ns string) ([]map[string]inte
 	return res, err
 }
 
+func (k *KubeConn) CreateService(ctx context.Context, ns string, dep *v1.Deployment) (*v1.Deployment, error) {
+	//svcClient := k.Client.CoreV1().Services(ns)
+	//res, err := svcClient.Create(ctx, corev1.Service{
+	//	TypeMeta:   metav1.TypeMeta{},
+	//	ObjectMeta: metav1.ObjectMeta{},
+	//	Spec:       corev1.ServiceSpec{},
+	//	Status:     corev1.ServiceStatus{},
+	//}, metav1.CreateOptions{})
+	//if err != nil {
+	//	return nil, err
+	//}
+	panic(1)
+	//return res, err
+}
+
 func (k *KubeConn) GetConfigMapDetail(ctx context.Context, ns, name string) (*corev1.ConfigMap, error) {
 
 	configClient := k.Client.CoreV1().ConfigMaps(ns)
 	configMap, err := configClient.Get(ctx, name, metav1.GetOptions{})
-
 	if err != nil {
 		return nil, err
 	}
 	return configMap, err
+}
+
+func (k *KubeConn) LeaderElection(ctx context.Context, name, ns string) {
+
 }

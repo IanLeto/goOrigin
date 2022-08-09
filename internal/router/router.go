@@ -42,8 +42,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		recordGroup.PUT("/", recordHandlers.UpdateIanRecord)
 		recordGroup.GET("/", recordHandlers.SelectIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
-		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
-		//recordGroup.POST("/", recordHandlers.CreateIanRecord)
 	}
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{

@@ -12,7 +12,7 @@ func (e Errno) Error() string {
 
 }
 
-// 替换 golang 初始error pkg
+// Err 替换 golang 初始error pkg
 type Err struct {
 	Code    int
 	Message string
