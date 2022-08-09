@@ -1,11 +1,9 @@
 package storage_test
 
 import (
-	"github.com/globalsign/mgo/bson"
 	"goOrigin/config"
 	"goOrigin/pkg/storage"
 	"goOrigin/testsuit"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -40,14 +38,10 @@ func (s *MongoSuite) SetupTest() {
 }
 
 type testIndex struct {
-
 }
+
 // TestMarshal :
 func (s *MongoSuite) TestConfig() {
-
-	storage.Mongo.DB("ian").C("testIndex").Find(bson.M{
-		"i": rand.Intn(1000000),
-	})
 }
 
 // TestHttpClient :

@@ -20,8 +20,9 @@ func (r *RedisConn) Exec() ([]byte, error) {
 func NewRedisConn() *RedisConn {
 	return &RedisConn{
 		goredis.NewClient(&goredis.Options{
-			Network: "tcp",
-			Addr:    config.Conf.Backend.RedisConfig.Addr,
+			Network:  "tcp",
+			Addr:     config.Conf.Backend.RedisConfig.Addr,
+			Password: config.Conf.Backend.RedisConfig.Auth,
 		}),
 	}
 }

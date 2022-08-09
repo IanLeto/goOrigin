@@ -21,19 +21,20 @@ backend:
     password: root
     name: ianTest
   redis:
-    address: localhost
+    addr: 124.222.48.125:6379
     port: 6379
     isSentinal: false
+    auth: i012nsl9
     masterName: master
   etcd:
     address: localhost
     port: 2379
   mongo:
-#    address: 124.222.48.125
+    #    address: 124.222.48.125
     address: localhost
     port: 27017
     user: root
-    password: ijijl3l0@
+    password: rkkijoorkkiss312joo
     db: goOrigin
   zk:
     address:
@@ -49,9 +50,9 @@ client:
     user: root
 components:
   - redis
-  - mysql
+#  - mysql
   - cc
-  - mongo
+#  - mongo
   - k8s
 logging:
   fileName: .%Y%m%d%H

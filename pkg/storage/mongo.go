@@ -11,7 +11,7 @@ import (
 
 type MongoConn struct {
 	*mongo.Client
-	DB *mongo.Database
+	DB *mongo.Database // 默认db
 }
 
 func (m *MongoConn) Close() error {

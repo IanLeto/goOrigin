@@ -18,10 +18,12 @@ var defaultConfigPath = "/Users/ian/go/src/goOrigin/config.yaml"
 var preCheck []func() error
 var mode string
 
+// 初始化组件
 var compInit = map[string]func() error{
 	"mongo": storage.InitMongo,
 	"zk":    storage.InitZk,
 	"k8s":   k8s.InitK8s,
+	"redis": storage.InitRedis,
 	//"mysql": storage.InitMySQL,
 }
 
