@@ -154,6 +154,8 @@ func (m *TaskManager) Stop() error {
 	logrus.Debugf("耗时%ds", time.Since(m.startTime))
 	return nil
 }
+
+// NewTaskManager ctx , cancelctx, 任务列表, 任务队列， 令牌桶， 回调函数，如何执行
 func NewTaskManager(ctx context.Context, cancelFunc context.CancelFunc, taskList []pkg.Job,
 	jobQueue chan pkg.Job, tokenBucket chan interface{}, callBack CallBackFuncType) *TaskManager {
 	return &TaskManager{

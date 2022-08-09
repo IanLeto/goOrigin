@@ -34,7 +34,7 @@ func NewCacheTask(interval time.Time) *RedisTask {
 	}
 }
 
-// demo 定时redis 任务 定时更新某个key
+// DemoTask 定时redis 任务 定时更新某个key
 type DemoTask struct {
 	Manager *TaskManager
 }
