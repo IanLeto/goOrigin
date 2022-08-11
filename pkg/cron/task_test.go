@@ -64,8 +64,8 @@ func (s *JobSuite) SetupTest() {
 // TestMarshal :
 func (s *JobSuite) TestConfig() {
 	s.jobs.PushTask()
-	s.jobs.Wait()
-	s.jobs.WaitJob()
+	s.NoError(s.jobs.Wait())
+	s.NoError(s.jobs.WaitJob())
 
 }
 

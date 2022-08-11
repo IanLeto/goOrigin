@@ -82,3 +82,25 @@ func (k *KubeConn) GetConfigMapDetail(ctx context.Context, ns, name string) (*co
 func (k *KubeConn) LeaderElection(ctx context.Context, name, ns string) {
 
 }
+
+func (k *KubeConn) CreateServiceAccount(ctx context.Context, obj ModelObjectMeta, refs []ModelObjectRef, ns string) (*corev1.ServiceAccount, error) {
+	var (
+		err              error
+		objectReferences []corev1.ObjectReference
+	)
+	for _, r := range refs {
+		objectReferences = append(objectReferences, *r.ToK8sModel())
+	}
+
+	account, err := k.Client.CoreV1().ServiceAccounts(ns).Create(ctx, &corev1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceAccount",
+			APIVersion: "",
+		},
+		ObjectMeta: *obj.ToK8sModel(),
+		Secrets:    objectReferences,
+		//ImagePullSecrets: ,
+		AutomountServiceAccountToken: nil,
+	}, metav1.CreateOptions{})
+	return account, err
+}
