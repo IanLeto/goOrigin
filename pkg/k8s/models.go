@@ -45,3 +45,14 @@ func (m *ModelLocalObjectRef) ToK8sModel() *corev1.LocalObjectReference {
 		Name: m.Name,
 	}
 }
+
+type ModelRole struct {
+}
+
+type ModelServiceAccount struct {
+	Kind     string
+	Metadata *ModelObjectMeta
+}
+
+type ModelRoleBinding struct {
+}
