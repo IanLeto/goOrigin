@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
 	"goOrigin/pkg/k8s"
+	v1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -29,7 +30,130 @@ func (s *k8sClientSuite) SetupTest() {
 }
 
 func (s *k8sClientSuite) TestAPIs() {
-
+	k8s.K8SConn.ClientSet.AppsV1().Deployments("").Create(s.ctx, &v1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "",
+			APIVersion: "",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:                       "",
+			GenerateName:               "",
+			Namespace:                  "",
+			SelfLink:                   "",
+			UID:                        "",
+			ResourceVersion:            "",
+			Generation:                 0,
+			CreationTimestamp:          metav1.Time{},
+			DeletionTimestamp:          nil,
+			DeletionGracePeriodSeconds: nil,
+			Labels:                     nil,
+			Annotations:                nil,
+			OwnerReferences:            nil,
+			Finalizers:                 nil,
+			ZZZ_DeprecatedClusterName:  "",
+			ManagedFields:              nil,
+		},
+		Spec: v1.DeploymentSpec{
+			Replicas: nil,
+			Selector: nil,
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{},
+				Spec: corev1.PodSpec{
+					Volumes: nil,
+					InitContainers: []corev1.Container{{
+						Name:                     "",
+						Image:                    "",
+						Command:                  nil,
+						Args:                     nil,
+						WorkingDir:               "",
+						Ports:                    nil,
+						EnvFrom:                  nil,
+						Env:                      nil,
+						Resources:                corev1.ResourceRequirements{},
+						VolumeMounts:             nil,
+						VolumeDevices:            nil,
+						LivenessProbe:            nil,
+						ReadinessProbe:           nil,
+						StartupProbe:             nil,
+						Lifecycle:                nil,
+						TerminationMessagePath:   "",
+						TerminationMessagePolicy: "",
+						ImagePullPolicy:          "",
+						SecurityContext:          nil,
+						Stdin:                    false,
+						StdinOnce:                false,
+						TTY:                      false,
+					}},
+					Containers: []corev1.Container{{
+						Name:                     "",
+						Image:                    "",
+						Command:                  nil,
+						Args:                     nil,
+						WorkingDir:               "",
+						Ports:                    nil,
+						EnvFrom:                  nil,
+						Env:                      nil,
+						Resources:                corev1.ResourceRequirements{},
+						VolumeMounts:             nil,
+						VolumeDevices:            nil,
+						LivenessProbe:            nil,
+						ReadinessProbe:           nil,
+						StartupProbe:             nil,
+						Lifecycle:                nil,
+						TerminationMessagePath:   "",
+						TerminationMessagePolicy: "",
+						ImagePullPolicy:          "",
+						SecurityContext:          nil,
+						Stdin:                    false,
+						StdinOnce:                false,
+						TTY:                      false,
+					}},
+					EphemeralContainers:           nil,
+					RestartPolicy:                 "",
+					TerminationGracePeriodSeconds: nil,
+					ActiveDeadlineSeconds:         nil,
+					DNSPolicy:                     "",
+					NodeSelector:                  nil,
+					ServiceAccountName:            "",
+					DeprecatedServiceAccount:      "",
+					AutomountServiceAccountToken:  nil,
+					NodeName:                      "",
+					HostNetwork:                   false,
+					HostPID:                       false,
+					HostIPC:                       false,
+					ShareProcessNamespace:         nil,
+					SecurityContext:               nil,
+					ImagePullSecrets:              nil,
+					Hostname:                      "",
+					Subdomain:                     "",
+					Affinity:                      nil,
+					SchedulerName:                 "",
+					Tolerations:                   nil,
+					HostAliases:                   nil,
+					PriorityClassName:             "",
+					Priority:                      nil,
+					DNSConfig:                     nil,
+					ReadinessGates:                nil,
+					RuntimeClassName:              nil,
+					EnableServiceLinks:            nil,
+					PreemptionPolicy:              nil,
+					Overhead:                      nil,
+					TopologySpreadConstraints:     nil,
+					SetHostnameAsFQDN:             nil,
+					OS:                            nil,
+				},
+			},
+			Strategy: v1.DeploymentStrategy{
+				Type:          "",
+				RollingUpdate: nil,
+			},
+			MinReadySeconds:         0,
+			RevisionHistoryLimit:    nil,
+			Paused:                  false,
+			ProgressDeadlineSeconds: nil,
+		},
+		Status: v1.DeploymentStatus{},
+	}, metav1.CreateOptions{})
 }
 
 // 赋予一个pod 读写k8s api权限
@@ -42,7 +166,7 @@ func (s *k8sClientSuite) TestInner() {
 		err         error
 	)
 	//rabcClient = s.Clientset.RbacV1()
-	sa, err = k8s.K8SConn.Client.CoreV1().ServiceAccounts("rbac-demo").Create(s.ctx, &corev1.ServiceAccount{
+	sa, err = k8s.K8SConn.ClientSet.CoreV1().ServiceAccounts("rbac-demo").Create(s.ctx, &corev1.ServiceAccount{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ServiceAccount",
 			APIVersion: "",
@@ -57,7 +181,7 @@ func (s *k8sClientSuite) TestInner() {
 		AutomountServiceAccountToken: nil,
 	}, metav1.CreateOptions{})
 	s.NoError(err)
-	role, err = k8s.K8SConn.Client.RbacV1().Roles("rbac-demo").Create(s.ctx, &rbacv1.Role{
+	role, err = k8s.K8SConn.ClientSet.RbacV1().Roles("rbac-demo").Create(s.ctx, &rbacv1.Role{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:         "hello-role",
@@ -72,7 +196,7 @@ func (s *k8sClientSuite) TestInner() {
 	}, metav1.CreateOptions{})
 	s.NoError(err)
 
-	roleBinding, err = k8s.K8SConn.Client.RbacV1().RoleBindings("rbac-demo").Create(s.ctx, &rbacv1.RoleBinding{
+	roleBinding, err = k8s.K8SConn.ClientSet.RbacV1().RoleBindings("rbac-demo").Create(s.ctx, &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:         "rb",
 			GenerateName: "",
@@ -120,7 +244,7 @@ func (s *k8sClientSuite) TestConfig() {
 		fmt.Println(12)
 		return false, nil, err
 	})
-	var mockClient = k8s.KubeConn{Client: s.Clientset}
+	var mockClient = k8s.KubeConn{ClientSet: s.Clientset}
 	res, err := mockClient.ListDeploy(context.TODO(), "")
 	s.NoError(err)
 	fmt.Println(res)

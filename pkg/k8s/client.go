@@ -14,9 +14,8 @@ import (
 var K8SConn *KubeConn
 
 type KubeConn struct {
-	Client        kubernetes.Interface
-	DynamicClient dynamic.Interface
 	ClientSet     kubernetes.Interface
+	DynamicClient dynamic.Interface
 }
 
 func (k *KubeConn) Close() error {
@@ -52,7 +51,5 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//fmt.Println(client.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{}))
-	return &KubeConn{Client: client, DynamicClient: dyClient}
+	return &KubeConn{ClientSet: client, DynamicClient: dyClient}
 }

@@ -4,6 +4,8 @@ import (
 	"github.com/DeanThompson/ginpprof"
 	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/k8sHandlers"
@@ -15,6 +17,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
 
 	g.NoRoute(indexHandlers.NoRouterHandler)
+	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)

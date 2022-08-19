@@ -16,7 +16,7 @@ func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 	var (
 		ian = model.NewIan(req)
 	)
-	res, err := storage.Mongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
+	res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
 	if err != nil {
 		logrus.Errorf("创建日常数据失败")
 		goto ERR
@@ -28,7 +28,7 @@ ERR:
 
 func DeleteIanRecord(c *gin.Context, id string) (delCount int64, err error) {
 
-	res, err := storage.Mongo.DB.Collection("ian").DeleteMany(context.TODO(), bson.M{"name": id})
+	res, err := storage.GlobalMongo.DB.Collection("ian").DeleteMany(context.TODO(), bson.M{"name": id})
 	if err != nil {
 		logrus.Errorf("删除日常数据失败 %s", err)
 		goto ERR
@@ -44,7 +44,7 @@ func UpdateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 		ian = model.NewIan(req)
 	)
 
-	res := storage.Mongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.Name},
+	res := storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.Name},
 		&ian)
 
 	if res.Err() != nil {
@@ -58,7 +58,7 @@ ERR:
 
 // SelectIanRecordDetail 详细过滤的demo
 func SelectIanRecordDetail() {
-	
+
 }
 
 func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {
@@ -70,7 +70,7 @@ func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*para
 	if req.Name == "" {
 		filter = bson.M{}
 	}
-	curs, err := storage.Mongo.DB.Collection("ian").Find(context.TODO(), filter)
+	curs, err := storage.GlobalMongo.DB.Collection("ian").Find(context.TODO(), filter)
 	if curs.Err() != nil {
 		logrus.Errorf("查询日常数据失败 %s", curs.Err())
 		goto ERR
@@ -92,7 +92,7 @@ func AppendIanRecord(c *gin.Context, req *params.AppendRequestInfo) (*model.Ian,
 	filter := bson.M{
 		"name": req.Name,
 	}
-	res := storage.Mongo.DB.Collection("ian").FindOne(context.TODO(), filter)
+	res := storage.GlobalMongo.DB.Collection("ian").FindOne(context.TODO(), filter)
 	if res.Err() != nil {
 		logrus.Errorf("查询日常数据失败 %s", res.Err())
 		goto ERR
@@ -112,7 +112,7 @@ func AppendIanRecord(c *gin.Context, req *params.AppendRequestInfo) (*model.Ian,
 	ian.Worker.Vol3 = fmt.Sprintf("%s;%s", ian.Worker.Vol3, req.Worker.Vol3)
 	ian.Worker.Vol4 = fmt.Sprintf("%s;%s", ian.Worker.Vol4, req.Worker.Vol4)
 
-	if storage.Mongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), filter, &ian).Err() != nil {
+	if storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), filter, &ian).Err() != nil {
 		goto ERR
 	}
 	return &ian, nil
@@ -132,7 +132,7 @@ ERR:
 //		baseHandlers.RenderData(c, nil, err)
 //		return
 //	}
-//	err = storage.Mongo.C("ian").Insert(ian)
+//	err = storage.GloablMongo.C("ian").Insert(ian)
 //	if err != nil {
 //		logrus.Errorf("%s", err)
 //		baseHandlers.RenderData(c, nil, err)
@@ -152,7 +152,7 @@ ERR:
 //		return
 //	}
 //
-//	err = storage.Mongo.C("ian").Update(bson.M{
+//	err = storage.GloablMongo.C("ian").Update(bson.M{
 //		"id": ian.Id,
 //	}, bson.M{
 //		"$set": utils.ConvBsonNoErr(ian),
@@ -177,7 +177,7 @@ ERR:
 //	if err = bson.UnmarshalJSON([]byte(queryInfo.Query), &selector); err != nil {
 //		goto ERR
 //	}
-//	if err = storage.Mongo.C("ian").Find(&selector).One(&ian); err != nil {
+//	if err = storage.GloablMongo.C("ian").Find(&selector).One(&ian); err != nil {
 //		goto ERR
 //	}
 //

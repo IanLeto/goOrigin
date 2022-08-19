@@ -28,8 +28,6 @@ var compInit = map[string]func() error{
 }
 
 var cronTask = map[string]func() error{
-	//"demoCache": cron.RegisterDemoTask,
-	//"HearBeat":  cron.RegisterHearBeatTask,
 	"ian": cron.RegisterNoteIan, // 定期创建日报
 }
 
@@ -83,7 +81,7 @@ var initData = func() error {
 	//for _, d := range config.Conf.Data {
 	//	switch d {
 	//	case "mongo":
-	//		connFactory = append(connFactory, storage.Mongo)
+	//		connFactory = append(connFactory, storage.GloablMongo)
 	//	}
 	//}
 	//// factory 行为执行

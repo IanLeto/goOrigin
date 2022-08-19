@@ -22,7 +22,7 @@ func NewZkConn() error {
 	if err != nil {
 		return err
 	}
-	ZKConn.Conn = conn
+	GlobalZKConn.Conn = conn
 	return nil
 }
 

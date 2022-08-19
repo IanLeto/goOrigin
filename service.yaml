@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: go-origin-svc
   labels:
-    app: go-origin
+    app: goorigin
 spec:
   # NOTE: depending on which version of the book you have, this may say port 9999. The latest version of the book uses 8888 to match the pod.
   type: LoadBalancer # 一个负载均衡类型的资源 nodeport 的扩展类型
@@ -12,5 +12,8 @@ spec:
       port: 8008
       protocol: TCP
       targetPort: 8008
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
   selector:
     app: go-origin # 凡是 app=ian 的都会被匹配到

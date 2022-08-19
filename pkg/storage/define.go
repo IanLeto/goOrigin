@@ -2,10 +2,10 @@ package storage
 
 import "context"
 
-var Mongo *MongoConn
-var ZKConn *ZKConnection
-var MySQL *MySQLConn
-var RedisCon *RedisConn
+var GlobalMongo *MongoConn
+var GlobalZKConn *ZKConnection
+var GlobalMySQL *MySQLConn
+var GlobalRedisCon *RedisConn
 
 type Conn interface {
 	Close() error
@@ -14,12 +14,12 @@ type Conn interface {
 
 func InitMongo() error {
 	// 这里应该加上根ctx
-	Mongo = NewMongoConn(context.TODO(), nil)
+	GlobalMongo = NewMongoConn(context.TODO(), nil)
 	return nil
 }
 
 func InitMySQL() error {
-	MySQL = InitMySQConn()
+	GlobalMySQL = InitMySQConn()
 	return nil
 }
 
@@ -28,6 +28,6 @@ func InitZk() error {
 }
 
 func InitRedis() error {
-	RedisCon = NewRedisConn()
+	GlobalRedisCon = NewRedisConn()
 	return nil
 }

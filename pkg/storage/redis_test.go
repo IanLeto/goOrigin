@@ -38,8 +38,8 @@ func (s *RedisSuite) SetupTest() {
 
 // TestMarshal :
 func (s *RedisSuite) TestConfig() {
-	s.NoError(storage.RedisCon.Ping().Err())
-	pong, err := storage.RedisCon.Ping().Result()
+	s.NoError(storage.GlobalRedisCon.Ping().Err())
+	pong, err := storage.GlobalRedisCon.Ping().Result()
 	s.Equal("PONG", pong)
 	s.NoError(err)
 }

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goorigin-mongodb
+  labels:
+    app: go-origin
+    kind: base-components
+    demo: inner
+spec:
+  containers:
+    - name: goorigin-mongo-db-1
+      image: mongo
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - name: goorigin-db-data
+          mountPath: /data/db
+      ports:
+        - containerPort: 27017
+#          protocol: TCP
+  volumes:
+    - name: goorigin-db-data
+      persistentVolumeClaim:
+        claimName: goorigin-db-pvc
+

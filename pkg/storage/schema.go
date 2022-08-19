@@ -34,7 +34,7 @@ package storage
 //		logrus.Errorf("conv data fail %s", err)
 //		return err
 //	}
-//	err = Mongo.DB("ian").C("ian").Insert(doc)
+//	err = GloablMongo.DB("ian").C("ian").Insert(doc)
 //	if err != nil {
 //		logrus.Errorf("insert data fail %s", err)
 //		return err
@@ -80,7 +80,7 @@ package storage
 //		logrus.Errorf("conv data fail %s", err)
 //		return err
 //	}
-//	err = Mongo.DB("ian").C(collectionName).Insert(doc)
+//	err = GloablMongo.DB("ian").C(collectionName).Insert(doc)
 //	if err != nil {
 //		logrus.Errorf("insert data fail %s", err)
 //		return err

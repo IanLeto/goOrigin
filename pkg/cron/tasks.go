@@ -12,10 +12,6 @@ import (
 
 var QueueCron []pkg.Job
 
-// 定时刷新缓存
-type CacheTask interface {
-}
-
 // redis cache
 type RedisTask struct {
 	RedisClient *goRedis.Client

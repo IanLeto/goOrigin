@@ -76,7 +76,7 @@ func PingCCClient(c *CCClient, ch chan struct{}) func(args ...interface{}) error
 	return func(args ...interface{}) error {
 		var (
 			logger = logging.GetStdLogger()
-			//ticker = time.NewTicker(time.Duration(utils.ConvOrDefaultInt(config.GlobalConfig.Client.CC.HeartBeat, 100)) * time.Second)
+			//ticker = time.NewTicker(time.Duration(utils.ConvOrDefaultInt(config.GlobalConfig.ClientSet.CC.HeartBeat, 100)) * time.Second)
 			ticker = time.NewTicker(2000 * time.Second)
 			once   = &sync.Once{}
 		)

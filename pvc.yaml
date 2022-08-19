@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: goorigin-db-pvc
+  labels:
+    app: goorigin
+    kind: pvc
+spec:
+  resources:
+    requests:
+      storage: 300Mi
+  accessModes:
+    - ReadWriteMany # 可以被多个nodes 上的pod 读写
+  storageClassName: ""

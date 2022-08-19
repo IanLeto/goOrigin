@@ -3,7 +3,7 @@ kind: Deployment
 metadata: # pod 的元数据，就是标签，注解，名称
   name: goorigin # pod 名
   labels:
-    app: go-origin  # k get po --all-namespaces --selector app=demo
+    app: goorigin  # k get po --all-namespaces --selector app=demo
     env: debug  # k get deploy --all-namespaces -l app=demo,env=debug
 spec: # pod 的规格，也就是内部容器中的详细定义
   replicas: 2
@@ -38,7 +38,3 @@ spec: # pod 的规格，也就是内部容器中的详细定义
             items:
               - key: config.yaml
                 path: config.yaml
-      
-
-
-
