@@ -1,5 +1,57 @@
+definitions:
+  params.CreateIanRequestInfo:
+    properties:
+      BETre:
+        properties:
+          chair:
+            type: integer
+          core:
+            type: integer
+          easy_burpee:
+            type: integer
+          runner:
+            type: integer
+          squat:
+            type: integer
+          stretch:
+            type: integer
+          support:
+            type: integer
+        type: object
+      body:
+        properties:
+          weight:
+            type: integer
+        type: object
+      name:
+        type: string
+      worker:
+        properties:
+          vol1:
+            type: string
+          vol2:
+            type: string
+          vol3:
+            type: string
+          vol4:
+            type: string
+        type: object
+    type: object
 info:
   contact: {}
   license: {}
-paths: {}
+paths:
+  /v1/record:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: "1"
+        in: body
+        name: record
+        required: true
+        schema:
+          $ref: '#/definitions/params.CreateIanRequestInfo'
+      tags:
+      - Ian
 swagger: "2.0"

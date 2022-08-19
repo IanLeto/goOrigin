@@ -4,5 +4,88 @@
         "contact": {},
         "license": {}
     },
-    "paths": {}
+    "paths": {
+        "/v1/record": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ian"
+                ],
+                "parameters": [
+                    {
+                        "description": "1",
+                        "name": "record",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CreateIanRequestInfo"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "params.CreateIanRequestInfo": {
+            "type": "object",
+            "properties": {
+                "BETre": {
+                    "type": "object",
+                    "properties": {
+                        "chair": {
+                            "type": "integer"
+                        },
+                        "core": {
+                            "type": "integer"
+                        },
+                        "easy_burpee": {
+                            "type": "integer"
+                        },
+                        "runner": {
+                            "type": "integer"
+                        },
+                        "squat": {
+                            "type": "integer"
+                        },
+                        "stretch": {
+                            "type": "integer"
+                        },
+                        "support": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "weight": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "worker": {
+                    "type": "object",
+                    "properties": {
+                        "vol1": {
+                            "type": "string"
+                        },
+                        "vol2": {
+                            "type": "string"
+                        },
+                        "vol3": {
+                            "type": "string"
+                        },
+                        "vol4": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -9,27 +9,19 @@ import (
 	"goOrigin/internal/service"
 )
 
-// @title Swagger Example API
-// @version 1.0
-// @description This is a sample server celler server.
-// @termsOfService https://www.topgoer.com
+// param $参数名 参数类型 参数数据类型 是否必须 描述 其他
 
-// @contact.name www.topgoer.com
-// @contact.url https://www.topgoer.com
-// @contact.email me@razeen.me
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host 127.0.0.1:8080
-// @BasePath /api/v1
+// CreateIanRecord @Summary
+// @Description
+// @Tags Ian
+// @Accept json
+// @param record body params.CreateIanRequestInfo true "1"
+// @Router /v1/record [POST]
 func CreateIanRecord(c *gin.Context) {
 	var (
-		req = params.CreateIanRequestInfo{}
-		//res   = params.CreatRecordResInfo{}
+		req   = params.CreateIanRequestInfo{}
 		objID interface{}
-		//objID string
-		err error
+		err   error
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
