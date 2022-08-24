@@ -52,7 +52,7 @@ components:
   #  - mysql
   - cc
 #  - mongo
-  - k8s
+#  - k8s
 logging:
   fileName: .%Y%m%d%H
   level: debug

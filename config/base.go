@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+const k8sConfigMap = "/root/config/config.yaml"
+const tencentLocal = "/root/config/config.yaml"
+const debug = "/Users/ian/go/src/goOrigin/config.yaml"
+
 type Config struct {
 	Name       string `yaml:"name"`
 	Port       string `yaml:"port"`
@@ -41,19 +45,32 @@ func NewConfig(path string) *Config {
 func init() {
 	//define.InitHandler = append(define.InitHandler, initConfig)
 }
+
 func initConfig(path string) error {
+	var configPath = ""
+	switch os.Getenv("mode") {
+	case "k8s":
+		configPath = k8sConfigMap
+	case "debug":
+		configPath = debug
+	case "tencent":
+		configPath = tencentLocal
+	default:
+		configPath = debug
+
+	}
 	if path == "" {
-		// 这里的配置文件一定要放到项目根目录上
-		// viper 读取文件的特性导致被不同包调用时，该路径会根据调用方变化
-		viper.AddConfigPath("../")
-		viper.SetConfigName("config") // 配置文件名称(无扩展名)
-		viper.SetConfigType("yaml")
+		//// 这里的配置文件一定要放到项目根目录上
+		//// viper 读取文件的特性导致被不同包调用时，该路径会根据调用方变化
+		//viper.AddConfigPath("../")
+		//viper.SetConfigName("config") // 配置文件名称(无扩展名)
+		//viper.SetConfigType("yaml")
+		viper.SetConfigFile(configPath)
 	} else {
 		viper.SetConfigFile(path)
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-
 		log.Printf("error in init config %s", err)
 		dir, err := os.Getwd()
 		if err != nil {

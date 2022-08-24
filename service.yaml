@@ -10,10 +10,12 @@ spec:
   ports:
     - name: init #
       port: 8008
-      protocol: TCP
       targetPort: 8008
     - name: mongodb
       port: 27017
       targetPort: 27017
+    - port: 2345
+      name: dlv
+      targetPort: 2345
   selector:
     app: go-origin # 凡是 app=ian 的都会被匹配到

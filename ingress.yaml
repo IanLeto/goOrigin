@@ -1,0 +1,13 @@
+apiVersion: extensions/v1
+kind: Ingress
+metadata:
+  name: ianhello-ingress
+spec:
+  rules:
+    - host: ian.demo.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: go-origin-svc
+              servicePort: 8008
