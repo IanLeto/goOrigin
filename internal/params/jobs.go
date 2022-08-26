@@ -1,11 +1,5 @@
 package params
 
-import "goOrigin/internal/model"
-
-type RequestParams interface {
-	ToModel() (*model.Model, error)
-}
-
 type CreateJobRequest struct {
 	ID         uint   `json:"id"`
 	Name       string `json:"name"`
@@ -13,4 +7,6 @@ type CreateJobRequest struct {
 	StrategyID uint   `json:"strategy_id"`
 	TimeOut    int64  `json:"timeOut"`
 	Content    string `json:"content"`
+	FilePath   string `json:"filePath"`
+	Target     string `json:"target"`
 }

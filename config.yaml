@@ -19,7 +19,7 @@ backend:
     port: 3306
     user: ian
     password: l99l8ymm,e
-    name: ianTest
+    name: job
   redis:
     addr: 124.222.48.125:6379
     port: 6379

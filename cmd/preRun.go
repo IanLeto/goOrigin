@@ -15,9 +15,9 @@ import (
 
 //var defaultConfigPath = "/Users/ian/go/src/goOrigin/config.yaml"
 var defaultConfigPath = ""
-
 var preCheck []func() error
 var mode string
+var migrate = map[string]interface{}{}
 
 // 初始化组件
 var compInit = map[string]func() error{

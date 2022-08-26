@@ -8,6 +8,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
+	"goOrigin/internal/router/jobsHandlers"
 	"goOrigin/internal/router/k8sHandlers"
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/userHandlers"
@@ -76,7 +77,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	jobGroup := g.Group("/v1/job")
 	{
-		jobGroup.POST("/", cmdHandlers.Ping)
+		jobGroup.POST("/", jobsHandlers.CreateJob)
 		jobGroup.PUT("ping", cmdHandlers.Ping)
 		jobGroup.GET("ping", cmdHandlers.Ping)
 		jobGroup.DELETE("ping", cmdHandlers.Ping)

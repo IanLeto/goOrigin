@@ -1,18 +1,24 @@
 package model
 
-import "goOrigin/internal/params"
-
-type Model interface {
-	ToParams() (*params.RequestParams, error)
-}
-
-type MySqlModel interface {
-	Create() error
-	Update(id uint) error
-	Delete(id uint) error
-}
+import (
+	"goOrigin/internal/params"
+	"goOrigin/pkg/storage"
+)
 
 type Job struct {
+	ID       uint
+	Target   string
+	FilePath string
 }
-type Strategy struct {
+
+func NewJob(req params.CreateJobRequest) *Job {
+	return &Job{
+		ID:       req.ID,
+		Target:   req.Target,
+		FilePath: req.FilePath,
+	}
+}
+
+func (j *Job) Create() error {
+	return storage.GlobalMySQL.Create(j).Error
 }

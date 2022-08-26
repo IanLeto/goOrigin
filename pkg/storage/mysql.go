@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
@@ -12,7 +13,7 @@ type MySQLConn struct {
 }
 
 func InitMySQConn() *MySQLConn {
-	db, err := gorm.Open("TCP", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
+	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		config.Conf.Backend.MySqlBackendConfig.User, config.Conf.Backend.MySqlBackendConfig.Password,
 		config.Conf.Backend.MySqlBackendConfig.Address, config.Conf.Backend.MySqlBackendConfig.Name, "Asia%2FShanghai"))
 	if err != nil {
