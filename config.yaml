@@ -15,10 +15,10 @@ log:
   log_backup_count: 7
 backend:
   MySql:
-    address: localhost:3306
+    address: 124.222.48.125:3306
     port: 3306
-    user: root
-    password: root
+    user: ian
+    password: l99l8ymm,e
     name: ianTest
   redis:
     addr: 124.222.48.125:6379
@@ -48,8 +48,8 @@ client:
     heart_beat: 10
     user: root
 components:
-#  - redis
-  #  - mysql
+  #  - redis
+  - mysql
   - cc
 #  - mongo
 #  - k8s

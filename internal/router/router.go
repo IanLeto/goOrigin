@@ -73,5 +73,13 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		cmdGroup.POST("ping", cmdHandlers.Ping)
 	}
+
+	jobGroup := g.Group("/v1/job")
+	{
+		jobGroup.POST("/", cmdHandlers.Ping)
+		jobGroup.PUT("ping", cmdHandlers.Ping)
+		jobGroup.GET("ping", cmdHandlers.Ping)
+		jobGroup.DELETE("ping", cmdHandlers.Ping)
+	}
 	return g
 }

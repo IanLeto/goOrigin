@@ -25,7 +25,7 @@ var compInit = map[string]func() error{
 	"zk":    storage.InitZk,
 	"k8s":   k8s.InitK8s,
 	"redis": storage.InitRedis,
-	//"mysql": storage.InitMySQL,
+	"mysql": storage.InitMySQL,
 }
 
 var cronTask = map[string]func() error{
