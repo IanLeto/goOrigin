@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/internal/db"
 	"goOrigin/pkg"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
@@ -17,7 +19,9 @@ import (
 var defaultConfigPath = ""
 var preCheck []func() error
 var mode string
-var migrate = map[string]interface{}{}
+var migrate = map[string]interface{}{
+	"t_jobs": &db.TJob{},
+}
 
 // 初始化组件
 var compInit = map[string]func() error{
@@ -109,6 +113,14 @@ var initCronTask = func() error {
 	}
 	return nil
 }
+var dbMigrate = func() error {
+	for name, i := range migrate {
+		if err := storage.GlobalMySQL.AutoMigrate(i); err != nil {
+			logrus.Errorf("初始化 table %s failed: %s", name, err.Error)
+		}
+	}
+	return nil
+}
 
 func PreRun(configPath string) string {
 	if configPath != "" {
@@ -123,6 +135,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initLogger, initComponents, initMode, initData, initCronTask)
+		initConfig, initLogger, initComponents, initMode, initData, initCronTask, dbMigrate)
 
 }
