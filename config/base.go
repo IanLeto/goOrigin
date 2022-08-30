@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
@@ -48,6 +49,7 @@ func init() {
 
 func initConfig(path string) error {
 	var configPath = ""
+	fmt.Println(os.Getenv("mode"))
 	switch os.Getenv("mode") {
 	case "k8s":
 		configPath = k8sConfigMap

@@ -15,7 +15,7 @@ type MysqlBackendSuite struct {
 }
 
 func (s *MysqlBackendSuite) SetupTest() {
-	s.conf = config.GlobalConfig
+	s.conf = nil
 
 }
 
