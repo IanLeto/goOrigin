@@ -43,6 +43,20 @@ ERR:
 // @Router /v1/record [POST]
 func UpdateJob(c *gin.Context) {
 
+	var (
+		req = &params.UpdateJobRequest{}
+		id  uint
+		err error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	id, err = service.UpdateJob(c, req)
+	params.BuildResponse(c, params.BuildInfo(id))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 // DeleteJob  @Summary

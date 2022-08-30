@@ -3,7 +3,6 @@ package model
 import (
 	"goOrigin/internal/db"
 	"goOrigin/internal/params"
-	"goOrigin/pkg/storage"
 )
 
 type Job struct {
@@ -30,6 +29,21 @@ func (j *Job) ToTable() *db.TJob {
 	}
 }
 func (j *Job) Create() error {
+	tJob := j.ToTable()
+	_, err := tJob.Create()
+	if err != nil {
+		return err
+	}
+	j.ID = tJob.ID
+	return nil
+}
 
-	return storage.GlobalMySQL.Create(j.ToTable()).Error
+func (j *Job) Update() error {
+	tJob := j.ToTable()
+	_, err := tJob.Update()
+	if err != nil {
+		return err
+	}
+	j.ID = tJob.ID
+	return nil
 }
