@@ -7,6 +7,7 @@ type TJob struct {
 	Name     string `json:"name"`
 	Target   string `json:"target"`
 	FilePath string `json:"file_path"`
+	Type     string `json:"type"`
 }
 
 func (t *TJob) Create() (DBOpt, error) {
@@ -18,8 +19,7 @@ func (t *TJob) Update() (DBOpt, error) {
 }
 
 func (t *TJob) Delete() (DBOpt, error) {
-	//TODO implement me
-	panic("implement me")
+	return nil, storage.GlobalMySQL.Delete(t).Error
 }
 
 func (t *TJob) List() (DBOpt, error) {
@@ -35,4 +35,13 @@ func (t *TJob) BatchCreate(dbOpts []DBOpt) error {
 func (t *TJob) BatchUpdate(opts []DBOpt) {
 	//TODO implement me
 	panic("implement me")
+}
+
+func DeleteJobByID(id uint) error {
+	tJob := TJob{
+		Meta: &Meta{
+			ID: id,
+		},
+	}
+	return storage.GlobalMySQL.Delete(tJob).Error
 }

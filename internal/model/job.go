@@ -2,30 +2,24 @@ package model
 
 import (
 	"goOrigin/internal/db"
-	"goOrigin/internal/params"
+	"strings"
 )
 
 type Job struct {
-	ID       uint
-	Target   string
-	FilePath string
-	Name     string
-}
-
-func NewJob(req params.CreateJobRequest) *Job {
-	return &Job{
-		ID:       req.ID,
-		Target:   req.Target,
-		Name:     req.Name,
-		FilePath: req.FilePath,
-	}
+	ID         uint
+	Targets    []string
+	FilePath   string
+	Name       string
+	Type       string
+	StrategyID uint
 }
 
 func (j *Job) ToTable() *db.TJob {
 	return &db.TJob{
 		Name:     j.Name,
-		Target:   j.Target,
+		Target:   strings.Join(j.Targets, ","),
 		FilePath: j.FilePath,
+		Type:     j.Type,
 	}
 }
 func (j *Job) Create() error {
@@ -46,4 +40,8 @@ func (j *Job) Update() error {
 	}
 	j.ID = tJob.ID
 	return nil
+}
+
+func (j *Job) Delete() error {
+	return db.DeleteJobByID(j.ID)
 }

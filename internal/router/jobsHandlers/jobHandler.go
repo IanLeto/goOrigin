@@ -67,6 +67,18 @@ ERR:
 // @param res body params.BaseResponseInfo true "1"
 // @Router /v1/record [POST]
 func DeleteJob(c *gin.Context) {
+	var (
+		id  = c.GetInt("id")
+		err error
+	)
+	err = service.DeleteJob(c, id)
+	if err != nil {
+		goto ERR
+	}
+	params.BuildResponse(c, params.BuildInfo(id))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
 

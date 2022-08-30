@@ -9,7 +9,13 @@ import (
 
 func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
 	var (
-		job = model.NewJob(req)
+		job = model.Job{
+			Targets:    req.Targets,
+			FilePath:   req.FilePath,
+			Name:       req.Name,
+			Type:       req.Type,
+			StrategyID: req.StrategyID,
+		}
 		err error
 	)
 	if err != nil {
@@ -30,8 +36,8 @@ ERR:
 func UpdateJob(c *gin.Context, req *params.UpdateJobRequest) (uint, error) {
 	var (
 		job = model.Job{
-			ID:       req.ID,
-			Target:   req.Target,
+			ID: req.ID,
+			//Target:   req.Target,
 			FilePath: req.FilePath,
 			Name:     req.Name,
 		}
@@ -50,4 +56,15 @@ ERR:
 	{
 		return uint(0), nil
 	}
+}
+
+func DeleteJob(c *gin.Context, id int) error {
+	var (
+		err error
+		job = &model.Job{
+			ID: uint(id),
+		}
+	)
+	err = job.Delete()
+	return err
 }
