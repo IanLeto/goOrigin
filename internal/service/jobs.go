@@ -1,10 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
+	"goOrigin/pkg/logger"
 )
 
 func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
@@ -49,6 +51,7 @@ func UpdateJob(c *gin.Context, req *params.UpdateJobRequest) (uint, error) {
 	}
 	err = job.Update()
 	if err != nil {
+		logger.Logger.Error(fmt.Sprintf("errors : %s", err))
 		goto ERR
 	}
 	return job.ID, err
@@ -67,4 +70,22 @@ func DeleteJob(c *gin.Context, id int) error {
 	)
 	err = job.Delete()
 	return err
+}
+func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
+	var (
+		err error
+		job = &model.Job{ID: uint(id)}
+	)
+	tJob, err := job.QueryDetail()
+	if err != nil {
+		return nil, err
+	}
+	response := &params.GetJobResponse{
+		ID:       tJob.ID,
+		Name:     tJob.Name,
+		FilePath: tJob.FilePath,
+	}
+
+	return response, err
+
 }

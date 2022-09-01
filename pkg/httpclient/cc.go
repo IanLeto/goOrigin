@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dghubble/sling"
 	"goOrigin/config"
-	"goOrigin/pkg/logging"
 	"sync"
 	"time"
 )
@@ -75,7 +74,6 @@ func PingCCClient(c *CCClient, ch chan struct{}) func(args ...interface{}) error
 
 	return func(args ...interface{}) error {
 		var (
-			logger = logging.GetStdLogger()
 			//ticker = time.NewTicker(time.Duration(utils.ConvOrDefaultInt(config.GlobalConfig.ClientSet.CC.HeartBeat, 100)) * time.Second)
 			ticker = time.NewTicker(2000 * time.Second)
 			once   = &sync.Once{}
@@ -90,7 +88,6 @@ func PingCCClient(c *CCClient, ch chan struct{}) func(args ...interface{}) error
 				case <-ticker.C:
 					response, err := c.Agent().Get("ping").Receive(&result, &result)
 					if err != nil || response.StatusCode != 200 {
-						logger.Errorf("cc 启动失败 %v", err)
 					}
 					once.Do(func() {
 						ch <- struct{}{}

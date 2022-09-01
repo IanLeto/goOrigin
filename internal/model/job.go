@@ -2,6 +2,7 @@ package model
 
 import (
 	"goOrigin/internal/db"
+	"goOrigin/pkg/storage"
 	"strings"
 )
 
@@ -22,6 +23,7 @@ func (j *Job) ToTable() *db.TJob {
 		Type:     j.Type,
 	}
 }
+
 func (j *Job) Create() error {
 	tJob := j.ToTable()
 	_, err := tJob.Create()
@@ -44,4 +46,14 @@ func (j *Job) Update() error {
 
 func (j *Job) Delete() error {
 	return db.DeleteJobByID(j.ID)
+}
+
+func (j *Job) QueryDetail() (*db.TJob, error) {
+	tJob := j.ToTable()
+	err := storage.GlobalMySQL.Model(tJob).First(tJob).Error
+	if err != nil {
+		return nil, err
+	}
+	return tJob, err
+
 }

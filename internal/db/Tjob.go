@@ -15,7 +15,7 @@ func (t *TJob) Create() (DBOpt, error) {
 }
 
 func (t *TJob) Update() (DBOpt, error) {
-	return nil, storage.GlobalMySQL.Update(t).Error
+	return nil, storage.GlobalMySQL.Model(t).Update(t).Error
 }
 
 func (t *TJob) Delete() (DBOpt, error) {
@@ -38,10 +38,6 @@ func (t *TJob) BatchUpdate(opts []DBOpt) {
 }
 
 func DeleteJobByID(id uint) error {
-	tJob := TJob{
-		Meta: &Meta{
-			ID: id,
-		},
-	}
-	return storage.GlobalMySQL.Delete(tJob).Error
+	tJob := TJob{}
+	return storage.GlobalMySQL.Model(tJob).Delete(tJob, id).Error
 }

@@ -2,6 +2,8 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -44,4 +46,21 @@ func StrDefault(str, def string) string {
 		return def
 	}
 	return str
+}
+
+func QueryInt(c *gin.Context, key string, defaultVal ...int) int {
+	strv := c.Query(key)
+	if strv != "" {
+		intv, err := cast.ToIntE(strv)
+		if err != nil {
+			logrus.Errorf("cannot convert [%s] to int", strv)
+		}
+		return intv
+	}
+
+	if len(defaultVal) == 0 {
+		logrus.Errorf("query param[%s] is necessary", key)
+	}
+
+	return defaultVal[0]
 }

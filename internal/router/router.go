@@ -78,9 +78,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	jobGroup := g.Group("/v1/job")
 	{
 		jobGroup.POST("/", jobsHandlers.CreateJob)
-		jobGroup.DELETE("/", jobsHandlers.DeleteJob)
+		jobGroup.DELETE(":id", jobsHandlers.DeleteJob)
 		jobGroup.PUT("/", jobsHandlers.UpdateJob)
-		jobGroup.GET("ping", cmdHandlers.Ping)
+		jobGroup.GET(":id", jobsHandlers.GetJobDetail)
 	}
 	return g
 }

@@ -9,7 +9,6 @@ import (
 	"goOrigin/pkg"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
-	"goOrigin/pkg/logging"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 	"os"
@@ -19,6 +18,8 @@ import (
 var defaultConfigPath = ""
 var preCheck []func() error
 var mode string
+var connFactory = make([]storage.Conn, 0)
+
 var migrate = map[string]interface{}{
 	"t_jobs": &db.TJob{},
 }
@@ -35,8 +36,6 @@ var compInit = map[string]func() error{
 var cronTask = map[string]func() error{
 	"ian": cron.RegisterNoteIan, // 定期创建日报
 }
-
-var connFactory = make([]storage.Conn, 0)
 
 // step 1 本地环境变量检查
 var envCheck = func() error {
@@ -59,7 +58,7 @@ var initConfig = func() error {
 }
 
 var initLogger = func() error {
-	return logging.InitLogging()
+	return nil
 }
 
 // step 4 初始化组件
@@ -70,6 +69,7 @@ var initComponents = func() error {
 		}
 	}
 	return nil
+
 }
 
 // step 6 启动模式
