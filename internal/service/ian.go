@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/model"
@@ -16,11 +19,29 @@ func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 	var (
 		ian = model.NewIan(req)
 	)
+
+	// 不另启dao了
+	info := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "ianRecord",
+		Help: "record ian ",
+	}, []string{
+		"BF", "LUN", "DIN", "EX",
+	}).WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
+	info.Set(cast.ToFloat64(req.Body.Weight))
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(info)
+	// 这个job 对应的是config 中的job_name
+	pusher := push.New("http://124.222.48.125:9090", "ian").Gatherer(reg)
 	res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
 	if err != nil {
 		logrus.Errorf("创建日常数据失败")
 		goto ERR
 	}
+	if err := pusher.Push(); err != nil {
+		logrus.Errorf("push prom failed %s", err)
+		goto ERR
+	}
+
 	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 ERR:
 	return "", nil

@@ -30,8 +30,8 @@ backend:
     address: localhost
     port: 2379
   mongo:
-    #    address: 124.222.48.125
-    address: localhost
+    address: 124.222.48.125
+    #    address: localhost
     port: 27017
     user: root
     password: rkkijoorkkiss312joo
@@ -51,7 +51,7 @@ components:
   #  - redis
   - mysql
   - cc
-#  - mongo
+  - mongo
 #  - k8s
 logging:
   fileName: .%Y%m%d%H

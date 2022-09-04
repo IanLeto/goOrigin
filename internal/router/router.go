@@ -55,7 +55,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
 		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)
 		k8sGroup.POST("dynamic", k8sHandlers.CreateDeployDynamic)
-		//k8sGroup.GET("dynamic", k8sHandlers.ListDeployDynamic)
 		k8sGroup.DELETE("dynamic", k8sHandlers.DeleteDeployDynamic)
 		k8sGroup.PUT("dynamic", k8sHandlers.UpdateDeployDynamic)
 
@@ -82,5 +81,22 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		jobGroup.PUT("/", jobsHandlers.UpdateJob)
 		jobGroup.GET(":id", jobsHandlers.GetJobDetail)
 	}
+	// 远程prom数据展示
+	tencentGroup := g.Group("/v1/dashboard")
+	{
+		// 基础数据
+		tencentGroup.POST(":id", jobsHandlers.GetJobDetail)
+	}
+
+	scriptGroup := g.Group("v1/script/summary")
+	{
+		// 基础数据
+		scriptGroup.POST(":id")
+	}
+	promGroup := g.Group("v1/prom")
+	{
+		promGroup.POST("weight")
+	}
+
 	return g
 }
