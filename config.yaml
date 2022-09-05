@@ -42,6 +42,9 @@ backend:
     auth: root
   k8s:
     address: /Users/ian/.kube/config
+  prom:
+    address: http://124.222.48.125:9090
+    push: http://124.222.48.125:9091
 client:
   CC:
     address: localhost:1129
@@ -51,6 +54,7 @@ components:
   #  - redis
   - mysql
   - cc
+  - prom
   - mongo
 #  - k8s
 logging:

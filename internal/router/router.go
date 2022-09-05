@@ -10,6 +10,7 @@ import (
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/jobsHandlers"
 	"goOrigin/internal/router/k8sHandlers"
+	"goOrigin/internal/router/promHandlers"
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/userHandlers"
 )
@@ -95,7 +96,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 	promGroup := g.Group("v1/prom")
 	{
-		promGroup.POST("weight")
+		promGroup.POST("weight", promHandlers.QueryWeight)
 	}
 
 	return g

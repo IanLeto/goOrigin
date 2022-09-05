@@ -12,6 +12,7 @@ type BackendConfig struct {
 	*ZKConfig
 	*RedisConfig
 	*K8sConfig
+	*PromConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -21,6 +22,7 @@ func NewBackendConfig() *BackendConfig {
 		NewZkConfig(),
 		NewRedisConfig(),
 		NewK8sConfig(),
+		NewPromConfig(),
 	}
 }
 
@@ -117,6 +119,20 @@ type K8sConfig struct {
 func NewK8sConfig() *K8sConfig {
 	return &K8sConfig{
 		Address: viper.GetString("backend.redis.DB"),
+	}
+}
+
+// prom
+
+type PromConfig struct {
+	Address string
+	Push    string
+}
+
+func NewPromConfig() *PromConfig {
+	return &PromConfig{
+		Push:    viper.GetString("backend.prom.push"),
+		Address: viper.GetString("backend.prom.address"),
 	}
 }
 
