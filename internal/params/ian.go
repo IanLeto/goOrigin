@@ -3,11 +3,11 @@ package params
 type CreateIanRequestInfo struct {
 	Name string `json:"name"`
 	Body struct {
-		Weight int    `json:"weight"`
-		BF     string `json:"bf"`
-		LUN    string `json:"lun"`
-		DIN    string `json:"din"`
-		EXTRA  string `json:"extra"`
+		Weight float32 `json:"weight"`
+		BF     string  `json:"bf"`
+		LUN    string  `json:"lun"`
+		DIN    string  `json:"din"`
+		EXTRA  string  `json:"extra"`
 	} `json:"body"`
 	BETre struct {
 		Core       int `json:"core"`

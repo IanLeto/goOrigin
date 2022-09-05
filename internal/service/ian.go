@@ -15,29 +15,30 @@ import (
 	"goOrigin/pkg/storage"
 )
 
+var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	Name: "ianRecord",
+	Help: "record ian",
+}, []string{"BF", "LUN", "DIN", "EX"})
+
+func newPusher(info prometheus.Gauge) *push.Pusher {
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(info)
+	return push.New("http://124.222.48.125:9091", "ian").Gatherer(reg)
+}
+
 func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
 		ian = model.NewIan(req)
 	)
-
 	// 不另启dao了
-	info := prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "ianRecord",
-		Help: "record ian ",
-	}, []string{
-		"BF", "LUN", "DIN", "EX",
-	}).WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
+	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
 	info.Set(cast.ToFloat64(req.Body.Weight))
-	reg := prometheus.NewRegistry()
-	reg.MustRegister(info)
-	// 这个job 对应的是config 中的job_name
-	pusher := push.New("http://124.222.48.125:9090", "ian").Gatherer(reg)
 	res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
 	if err != nil {
 		logrus.Errorf("创建日常数据失败")
 		goto ERR
 	}
-	if err := pusher.Push(); err != nil {
+	if err := newPusher(info).Push(); err != nil {
 		logrus.Errorf("push prom failed %s", err)
 		goto ERR
 	}
@@ -64,7 +65,8 @@ func UpdateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 	var (
 		ian = model.NewIan(req)
 	)
-
+	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
+	info.Set(cast.ToFloat64(req.Body.Weight))
 	res := storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.Name},
 		&ian)
 
@@ -72,6 +74,11 @@ func UpdateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interf
 		logrus.Errorf("创建日常数据失败 %s", res.Err())
 		goto ERR
 	}
+	if err := newPusher(info).Push(); err != nil {
+		logrus.Errorf("push prom failed %s", err)
+		goto ERR
+	}
+
 	return req.Name, nil
 ERR:
 	return "", res.Err()
