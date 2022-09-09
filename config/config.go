@@ -127,12 +127,14 @@ func NewK8sConfig() *K8sConfig {
 type PromConfig struct {
 	Address string
 	Push    string
+	Group   string
 }
 
 func NewPromConfig() *PromConfig {
 	return &PromConfig{
 		Push:    viper.GetString("backend.prom.push"),
 		Address: viper.GetString("backend.prom.address"),
+		Group:   viper.GetString("backend.prom.group"),
 	}
 }
 

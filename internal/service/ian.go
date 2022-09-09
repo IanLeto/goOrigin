@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/storage"
@@ -23,16 +24,17 @@ var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 func newPusher(info prometheus.Gauge) *push.Pusher {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(info)
-	return push.New("http://124.222.48.125:9091", "ian").Gatherer(reg)
+	return push.New(config.Conf.Backend.PromConfig.Address, config.Conf.Backend.PromConfig.Address).Gatherer(reg)
 }
 
 func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
 		ian = model.NewIan(req)
 	)
-	// 不另启dao了
+	// 不另启dao了 写入prometheus
 	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
 	info.Set(cast.ToFloat64(req.Body.Weight))
+
 	res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
 	if err != nil {
 		logrus.Errorf("创建日常数据失败")
