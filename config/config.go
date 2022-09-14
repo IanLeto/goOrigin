@@ -13,6 +13,7 @@ type BackendConfig struct {
 	*RedisConfig
 	*K8sConfig
 	*PromConfig
+	*EsConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -23,6 +24,7 @@ func NewBackendConfig() *BackendConfig {
 		NewRedisConfig(),
 		NewK8sConfig(),
 		NewPromConfig(),
+		NewEsConfig(),
 	}
 }
 
@@ -136,6 +138,16 @@ func NewPromConfig() *PromConfig {
 		Address: viper.GetString("backend.prom.address"),
 		Group:   viper.GetString("backend.prom.group"),
 	}
+}
+
+// es
+
+type EsConfig struct {
+	Address string
+}
+
+func NewEsConfig() *EsConfig {
+	return &EsConfig{Address: viper.GetString("backend.es.address")}
 }
 
 // 配置中心httpclient 配置参数

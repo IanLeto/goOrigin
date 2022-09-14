@@ -8,6 +8,10 @@ import (
 
 var Logger *zap.Logger
 
+func NewLogger() *zap.Logger {
+	return Logger
+}
+
 func InitLogger() {
 	var (
 		encoder        zapcore.Encoder

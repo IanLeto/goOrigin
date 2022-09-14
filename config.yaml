@@ -37,6 +37,8 @@ backend:
     address: http://124.222.48.125:9090
     push: http://124.222.48.125:9091
     group: ian
+  es:
+    address: http://124.222.48.125:9200/
 client:
   CC:
     address: localhost:1129
@@ -47,7 +49,7 @@ components:
   - mysql
   - cc
   - prom
-  - mongo
+#  - mongo
 #  - k8s
 ssh:
   address: 113.31.168.103:22

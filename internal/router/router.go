@@ -12,6 +12,7 @@ import (
 	"goOrigin/internal/router/k8sHandlers"
 	"goOrigin/internal/router/promHandlers"
 	"goOrigin/internal/router/recordHandlers"
+	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/userHandlers"
 )
 
@@ -89,10 +90,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		tencentGroup.POST(":id", jobsHandlers.GetJobDetail)
 	}
 
-	scriptGroup := g.Group("v1/script/summary")
+	scriptGroup := g.Group("v1/script")
 	{
 		// 基础数据
-		scriptGroup.POST(":id")
+		scriptGroup.POST("", scriptHandlers.CreateScript)
+
+		scriptGroup.DELETE("", scriptHandlers.DeleteScript)
 	}
 	promGroup := g.Group("v1/prom")
 	{
