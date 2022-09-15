@@ -93,6 +93,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	scriptGroup := g.Group("v1/script")
 	{
 		// 基础数据
+		scriptGroup.GET("", scriptHandlers.QueryScriptList)
 		scriptGroup.POST("", scriptHandlers.CreateScript)
 
 		scriptGroup.DELETE("", scriptHandlers.DeleteScript)

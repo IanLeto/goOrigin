@@ -49,11 +49,11 @@ func QueryScriptList(c *gin.Context) {
 		res = &params.QueryScriptListResponse{}
 		err error
 	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
+
+	res, err = service.QueryScript(c, req)
+	if err != nil {
 		goto ERR
 	}
-	res, err = service.QueryScript(c, req)
 	params.BuildResponse(c, params.BuildInfo(res))
 	return
 ERR:

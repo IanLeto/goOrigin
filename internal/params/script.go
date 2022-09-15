@@ -14,15 +14,13 @@ type CreateScriptRequest struct {
 	IsFile     bool     `json:"isFile"`
 	Timeout    int      `json:"timeout"`
 	Tags       []string `json:"tags"`
+	UsedTime   int      `json:"used_time"`
 }
 
 type QueryScriptRequest struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Comment string `json:"comment"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
-	File    string `json:"file"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	File string `json:"file"`
 }
 
 type QueryScriptListResponse struct {

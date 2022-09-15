@@ -27,6 +27,7 @@ func CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interf
 			IsFile:     req.IsFile,
 			Timeout:    req.Timeout,
 			Tags:       req.Tags,
+			UsedTime:   req.UsedTime,
 		}
 		client *elastic.Client
 		res    *elastic.IndexResponse
@@ -58,28 +59,32 @@ ERR:
 
 func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.QueryScriptListResponse, err error) {
 	var (
+		bp     = elastic.NewBoolQuery()
+		eq     = elastic.NewExistsQuery("Uploader")
 		logger = logger2.NewLogger()
 		client *elastic.Client
 		result *elastic.SearchResult
 		script *model.BaseScript
+		infos  []*params.QueryScriptListResponseInfo
 	)
+
 	client, err = clients.NewESClient()
 	if err != nil {
 		logger.Error(fmt.Sprintf("errors : %s", err))
 		goto ERR
 	}
 	// todo 增加查询相关
-	result, err = client.Search().Index("script").Query(elastic.NewMatchAllQuery()).Do(c)
+	result, err = client.Search().Index("script").Query(eq).Query(bp).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("请求es失败 : %s", err))
 		goto ERR
 	}
 	for _, item := range result.Each(reflect.TypeOf(script)) {
-		v, ok := item.(model.BaseScript)
+		v, ok := item.(*model.BaseScript)
 		if !ok {
 			goto ERR
 		}
-		res.Infos = append(res.Infos, &params.QueryScriptListResponseInfo{
+		infos = append(infos, &params.QueryScriptListResponseInfo{
 			ID:         v.ID,
 			Name:       v.Name,
 			Comment:    v.Comment,
@@ -95,6 +100,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 			Tags:       v.Tags,
 		})
 	}
+	res = &params.QueryScriptListResponse{Infos: infos}
 	return res, err
 ERR:
 	{

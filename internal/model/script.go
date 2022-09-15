@@ -18,6 +18,7 @@ type BaseScript struct {
 	IsFile     bool
 	Timeout    int
 	Tags       []string
+	UsedTime   int
 }
 
 type PythonScript struct {
