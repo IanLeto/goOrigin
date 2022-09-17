@@ -44,7 +44,9 @@ ERR:
 func QueryScriptList(c *gin.Context) {
 	var (
 		req = params.QueryScriptRequest{
-			Type: c.Param("type"),
+			Type: c.Query("type"),
+			Key:  c.Query("key"),
+			Tags: c.Query("tags"),
 		}
 		res = &params.QueryScriptListResponse{}
 		err error

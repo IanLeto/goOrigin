@@ -21,6 +21,8 @@ type QueryScriptRequest struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 	File string `json:"file"`
+	Key  string `json:"key"`
+	Tags string `json:"tags"`
 }
 
 type QueryScriptListResponse struct {

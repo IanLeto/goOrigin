@@ -57,15 +57,20 @@ ERR:
 
 }
 
+func DelScript(c *gin.Context) {
+
+}
+
 func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.QueryScriptListResponse, err error) {
 	var (
-		bp     = elastic.NewBoolQuery()
-		eq     = elastic.NewExistsQuery("Uploader")
-		logger = logger2.NewLogger()
-		client *elastic.Client
-		result *elastic.SearchResult
-		script *model.BaseScript
-		infos  []*params.QueryScriptListResponseInfo
+		bp      = elastic.NewBoolQuery()
+		eq      = elastic.NewExistsQuery("Uploader") // 排除无效脚本
+		logger  = logger2.NewLogger()
+		queries []elastic.Query
+		client  *elastic.Client
+		result  *elastic.SearchResult
+		script  *model.BaseScript
+		infos   []*params.QueryScriptListResponseInfo
 	)
 
 	client, err = clients.NewESClient()
@@ -73,7 +78,21 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		logger.Error(fmt.Sprintf("errors : %s", err))
 		goto ERR
 	}
-	// todo 增加查询相关
+	if req.Key != "" {
+		queries = append(queries, elastic.NewMatchQuery("Content", req.Key))
+	}
+	if req.Name != "" {
+		queries = append(queries, elastic.NewTermQuery("Name", req.Name))
+	}
+	if req.Type != "" {
+		queries = append(queries, elastic.NewTermQuery("Type", req.Type))
+	}
+	bp.Must(queries...)
+
+	if req.Tags != "" {
+
+	}
+
 	result, err = client.Search().Index("script").Query(eq).Query(bp).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("请求es失败 : %s", err))
