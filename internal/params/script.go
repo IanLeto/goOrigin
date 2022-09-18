@@ -30,7 +30,7 @@ type QueryScriptListResponse struct {
 }
 
 type QueryScriptListResponseInfo struct {
-	ID         int      `json:"id"`
+	ID         string   `json:"id"`
 	Name       string   `json:"name"`
 	Comment    string   `json:"comment"`
 	Type       string   `json:"type"`

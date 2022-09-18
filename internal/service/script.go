@@ -1,14 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	pbs "goOrigin/agent/protos"
+	"goOrigin/backend"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
-	"reflect"
 )
 
 func CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interface{}, err error) {
@@ -69,8 +71,8 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		queries []elastic.Query
 		client  *elastic.Client
 		result  *elastic.SearchResult
-		script  *model.BaseScript
-		infos   []*params.QueryScriptListResponseInfo
+		//script  *model.BaseScript
+		infos []*params.QueryScriptListResponseInfo
 	)
 
 	client, err = clients.NewESClient()
@@ -98,31 +100,79 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		logger.Error(fmt.Sprintf("请求es失败 : %s", err))
 		goto ERR
 	}
-	for _, item := range result.Each(reflect.TypeOf(script)) {
-		v, ok := item.(*model.BaseScript)
-		if !ok {
-			goto ERR
-		}
+
+	for _, hit := range result.Hits.Hits {
+		var ephemeralSc model.BaseScript
+		err = json.Unmarshal(hit.Source, &ephemeralSc)
+
 		infos = append(infos, &params.QueryScriptListResponseInfo{
-			ID:         v.ID,
-			Name:       v.Name,
-			Comment:    v.Comment,
-			Type:       v.Type,
-			Content:    v.Content,
-			File:       v.File,
-			Uploader:   v.Uploader,
-			CreateTime: v.CreateTime,
-			UpdateTime: v.UpdateTime,
-			System:     v.System,
-			IsFile:     v.IsFile,
-			Timeout:    v.Timeout,
-			Tags:       v.Tags,
+			ID:         hit.Id,
+			Name:       ephemeralSc.Name,
+			Comment:    ephemeralSc.Comment,
+			Type:       ephemeralSc.Type,
+			Content:    ephemeralSc.Content,
+			File:       ephemeralSc.File,
+			Uploader:   ephemeralSc.Uploader,
+			CreateTime: ephemeralSc.CreateTime,
+			UpdateTime: ephemeralSc.UpdateTime,
+			System:     ephemeralSc.System,
+			IsFile:     ephemeralSc.IsFile,
+			Timeout:    ephemeralSc.Timeout,
+			Tags:       ephemeralSc.Tags,
 		})
+
 	}
+
+	//for _, item := range result.Each(reflect.TypeOf(script)) {
+	//	v, ok := item.(*model.BaseScript)
+	//	if !ok {
+	//		goto ERR
+	//	}
+	//	infos = append(infos, &params.QueryScriptListResponseInfo{
+	//		ID:,
+	//		Name:       v.Name,
+	//		Comment:    v.Comment,
+	//		Type:       v.Type,
+	//		Content:    v.Content,
+	//		File:       v.File,
+	//		Uploader:   v.Uploader,
+	//		CreateTime: v.CreateTime,
+	//		UpdateTime: v.UpdateTime,
+	//		System:     v.System,
+	//		IsFile:     v.IsFile,
+	//		Timeout:    v.Timeout,
+	//		Tags:       v.Tags,
+	//	})
+	//}
 	res = &params.QueryScriptListResponse{Infos: infos}
 	return res, err
 ERR:
 	{
 		return nil, err
 	}
+}
+
+func RunScript(c *gin.Context, id string) (*pbs.RunScriptResponse, error) {
+	var (
+		bq     = elastic.NewBoolQuery()
+		logger = logger2.NewLogger()
+		client *elastic.Client
+		script *model.BaseScript
+	)
+	agent, err := backend.NewAgentClient()
+	client, err = clients.NewESClient()
+	bq.Filter(elastic.NewTermQuery("_id", id))
+	result, err := client.Get().Index("script").Id(id).Do(c)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("查询es 失败 %s", err.Error()))
+		return nil, err
+	}
+
+	err = json.Unmarshal(result.Source, &script)
+	return agent.RunScript(c, &pbs.RunScriptRequest{
+		Name:    "",
+		Content: script.Content,
+	})
+
 }

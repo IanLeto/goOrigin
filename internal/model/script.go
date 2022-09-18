@@ -35,6 +35,5 @@ type SellScript struct {
 }
 
 func (s *SellScript) Do() error {
-	//TODO implement me
-	panic("implement me")
+	panic(1)
 }

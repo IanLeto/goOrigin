@@ -61,3 +61,19 @@ func QueryScriptList(c *gin.Context) {
 ERR:
 	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
+func RunScript(c *gin.Context) {
+	var (
+		err error
+		id  = c.Query("id")
+	)
+
+	res, err := service.RunScript(c, id)
+	if err != nil {
+		goto ERR
+	}
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}

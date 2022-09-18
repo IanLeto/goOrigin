@@ -5,6 +5,8 @@ import (
 	pb "goOrigin/agent/protos"
 	"goOrigin/agent/service"
 	"log"
+	"os"
+	"os/exec"
 )
 
 type AgentHandler struct {
@@ -23,4 +25,24 @@ func (a AgentHandler) PingTask(ctx context.Context, ping *pb.Ping) (*pb.Pong, er
 	res.Version = "v0.0.1"
 	return res, err
 
+}
+
+func (a AgentHandler) RunScript(ctx context.Context, req *pb.RunScriptRequest) (*pb.RunScriptResponse, error) {
+	var (
+		res = &pb.RunScriptResponse{}
+	)
+
+	cmd := exec.Command("bash", "-c", req.Content)
+	cmd.Stderr = os.Stderr
+	d, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	log.Println(string(d))
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	res.Result = string(out)
+	return res, err
 }

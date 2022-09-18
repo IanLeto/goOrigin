@@ -94,9 +94,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		// 基础数据
 		scriptGroup.GET("", scriptHandlers.QueryScriptList)
+		scriptGroup.GET("exec", scriptHandlers.RunScript)
 		scriptGroup.POST("", scriptHandlers.CreateScript)
 
 		scriptGroup.DELETE("", scriptHandlers.DeleteScript)
+
 	}
 	promGroup := g.Group("v1/prom")
 	{

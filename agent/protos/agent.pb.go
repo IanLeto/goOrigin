@@ -105,6 +105,172 @@ func (x *Pong) GetVersion() string {
 	return ""
 }
 
+// 客户端流
+type UpdateArr struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Data []int64 `protobuf:"varint,1,rep,packed,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *UpdateArr) Reset() {
+	*x = UpdateArr{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateArr) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateArr) ProtoMessage() {}
+
+func (x *UpdateArr) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateArr.ProtoReflect.Descriptor instead.
+func (*UpdateArr) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UpdateArr) GetData() []int64 {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type RunScriptRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name    string `protobuf:"bytes,1001,opt,name=name,proto3" json:"name,omitempty"`
+	Content string `protobuf:"bytes,1002,opt,name=content,proto3" json:"content,omitempty"`
+}
+
+func (x *RunScriptRequest) Reset() {
+	*x = RunScriptRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RunScriptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunScriptRequest) ProtoMessage() {}
+
+func (x *RunScriptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunScriptRequest.ProtoReflect.Descriptor instead.
+func (*RunScriptRequest) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RunScriptRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RunScriptRequest) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+type RunScriptResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name   string `protobuf:"bytes,1001,opt,name=name,proto3" json:"name,omitempty"`
+	Result string `protobuf:"bytes,1002,opt,name=result,proto3" json:"result,omitempty"`
+	Time   int64  `protobuf:"varint,1003,opt,name=time,proto3" json:"time,omitempty"`
+}
+
+func (x *RunScriptResponse) Reset() {
+	*x = RunScriptResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RunScriptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunScriptResponse) ProtoMessage() {}
+
+func (x *RunScriptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunScriptResponse.ProtoReflect.Descriptor instead.
+func (*RunScriptResponse) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RunScriptResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RunScriptResponse) GetResult() string {
+	if x != nil {
+		return x.Result
+	}
+	return ""
+}
+
+func (x *RunScriptResponse) GetTime() int64 {
+	if x != nil {
+		return x.Time
+	}
+	return 0
+}
+
 var File_agent_proto protoreflect.FileDescriptor
 
 var file_agent_proto_rawDesc = []byte{
@@ -112,11 +278,28 @@ var file_agent_proto_rawDesc = []byte{
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x22, 0x06, 0x0a, 0x04, 0x50, 0x69, 0x6e,
 	0x67, 0x22, 0x20, 0x0a, 0x04, 0x50, 0x6f, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x76, 0x65, 0x72,
 	0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x32, 0x37, 0x0a, 0x05, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x12, 0x2e, 0x0a, 0x08,
-	0x50, 0x69, 0x6e, 0x67, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x10, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x1a, 0x10, 0x2e, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x42, 0x04, 0x5a, 0x02,
-	0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x22, 0x1f, 0x0a, 0x09, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x72, 0x72,
+	0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x04,
+	0x64, 0x61, 0x74, 0x61, 0x22, 0x42, 0x0a, 0x10, 0x52, 0x75, 0x6e, 0x53, 0x63, 0x72, 0x69, 0x70,
+	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x13, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0xe9, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x19, 0x0a,
+	0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0xea, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x22, 0x56, 0x0a, 0x11, 0x52, 0x75, 0x6e, 0x53,
+	0x63, 0x72, 0x69, 0x70, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x13, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0xe9, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x17, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0xea, 0x07, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x13, 0x0a, 0x04, 0x74,
+	0x69, 0x6d, 0x65, 0x18, 0xeb, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x74, 0x69, 0x6d, 0x65,
+	0x32, 0x81, 0x01, 0x0a, 0x05, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x12, 0x2e, 0x0a, 0x08, 0x50, 0x69,
+	0x6e, 0x67, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x10, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x2e, 0x76, 0x31, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x1a, 0x10, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x12, 0x48, 0x0a, 0x09, 0x52, 0x75,
+	0x6e, 0x53, 0x63, 0x72, 0x69, 0x70, 0x74, 0x12, 0x1c, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x75, 0x6e, 0x53, 0x63, 0x72, 0x69, 0x70, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x75, 0x6e, 0x53, 0x63, 0x72, 0x69, 0x70, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x42, 0x04, 0x5a, 0x02, 0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -131,16 +314,21 @@ func file_agent_proto_rawDescGZIP() []byte {
 	return file_agent_proto_rawDescData
 }
 
-var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_agent_proto_goTypes = []interface{}{
-	(*Ping)(nil), // 0: service.v1.Ping
-	(*Pong)(nil), // 1: service.v1.Pong
+	(*Ping)(nil),              // 0: service.v1.Ping
+	(*Pong)(nil),              // 1: service.v1.Pong
+	(*UpdateArr)(nil),         // 2: service.v1.UpdateArr
+	(*RunScriptRequest)(nil),  // 3: service.v1.RunScriptRequest
+	(*RunScriptResponse)(nil), // 4: service.v1.RunScriptResponse
 }
 var file_agent_proto_depIdxs = []int32{
 	0, // 0: service.v1.Agent.PingTask:input_type -> service.v1.Ping
-	1, // 1: service.v1.Agent.PingTask:output_type -> service.v1.Pong
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	3, // 1: service.v1.Agent.RunScript:input_type -> service.v1.RunScriptRequest
+	1, // 2: service.v1.Agent.PingTask:output_type -> service.v1.Pong
+	4, // 3: service.v1.Agent.RunScript:output_type -> service.v1.RunScriptResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -176,6 +364,42 @@ func file_agent_proto_init() {
 				return nil
 			}
 		}
+		file_agent_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateArr); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RunScriptRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RunScriptResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -183,7 +407,7 @@ func file_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_agent_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
