@@ -21,7 +21,7 @@ type Ian struct {
 }
 
 type Body struct {
-	Weight int `json:"weight" bson:"weight"`
+	Weight float32 `json:"weight" bson:"weight"`
 }
 type BETre struct {
 	Core       int `json:"core" bson:"core"`

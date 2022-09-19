@@ -1,6 +1,5 @@
 syntax = "proto3";
 package service.v1;
-import "google/protobuf/wrappers.proto";
 
 
 option go_package = "./";
@@ -11,16 +10,27 @@ message Ping {
 }
 
 message Pong {
-    string version = 1;
+  string version = 1;
 }
 
 // 客户端流
 message UpdateArr {
-    repeated int64 data = 1;
+  repeated int64 data = 1;
 }
 
+message RunScriptRequest {
+  string name = 1001;
+  string content = 1002;
+}
+
+message RunScriptResponse {
+  string name = 1001;
+  string result = 1002;
+  int64 time = 1003;
+
+}
 
 service Agent {
-    rpc PingTask(Ping) returns (Pong);
-    rpc AddArray(UpdateArr) returns (google.protobuf.Int64Value);
+  rpc PingTask(Ping) returns (Pong);
+  rpc RunScript(RunScriptRequest) returns (RunScriptResponse);
 }

@@ -183,7 +183,7 @@ func NewDeployParamsDetail(req *params.CreateDeploymentReq) (*Deploy, error) {
 				SetHostnameAsFQDN:             nil,
 				OS:                            nil,
 			},
-		},                                                    // 定义容器模板，dep 会以此来生成相关的容器
+		}, // 定义容器模板，dep 会以此来生成相关的容器
 		Strategy:                appsv1.DeploymentStrategy{}, // 升级策略
 		MinReadySeconds:         0,
 		RevisionHistoryLimit:    nil,
@@ -216,8 +216,4 @@ func NewDeployParamsV2(req *params.CreateDeploymentReq) (map[string]interface{},
 	)
 
 	return structs.Map(req.Content), err
-}
-
-func SchemeUse() {
-
 }

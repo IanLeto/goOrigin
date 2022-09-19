@@ -17,5 +17,4 @@ func main() {
 	if err := server.Serve(listen); err != nil {
 		panic(err)
 	}
-
 }

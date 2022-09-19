@@ -4,15 +4,6 @@ name: ccServer
 url: localhost:8080
 version: v1
 port: 8080
-log:
-  writer: file,stdout
-  logger_level: DEBUG
-  logger_file: ~/log/goOrigin.log
-  log_format_text: false
-  rollingPolicy: size
-  log_rotate_date: 1
-  log_rotate_size: 1024
-  log_backup_count: 7
 backend:
   MySql:
     address: 124.222.48.125:3306
@@ -30,8 +21,8 @@ backend:
     address: localhost
     port: 2379
   mongo:
-    #    address: 124.222.48.125
-    address: localhost
+    address: 124.222.48.125
+    #    address: localhost
     port: 27017
     user: root
     password: rkkijoorkkiss312joo
@@ -42,6 +33,12 @@ backend:
     auth: root
   k8s:
     address: /Users/ian/.kube/config
+  prom:
+    address: http://124.222.48.125:9090
+    push: http://124.222.48.125:9091
+    group: ian
+  es:
+    address: http://124.222.48.125:9200/
 client:
   CC:
     address: localhost:1129
@@ -51,15 +48,9 @@ components:
   #  - redis
   - mysql
   - cc
+  - prom
 #  - mongo
 #  - k8s
-logging:
-  fileName: .%Y%m%d%H
-  level: debug
-  path: logs
-  rotation:
-    time: 24 # 24 小时分割一次
-    count: 50 # 最多50个
 ssh:
   address: 113.31.168.103:22
   auth: 123qweasdzxc

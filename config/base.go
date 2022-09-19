@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
@@ -48,6 +49,7 @@ func init() {
 
 func initConfig(path string) error {
 	var configPath = ""
+	fmt.Println(os.Getenv("mode"))
 	switch os.Getenv("mode") {
 	case "k8s":
 		configPath = k8sConfigMap
@@ -62,16 +64,6 @@ func initConfig(path string) error {
 
 	}
 
-	//if path == "" {
-	//	//// 这里的配置文件一定要放到项目根目录上
-	//	//// viper 读取文件的特性导致被不同包调用时，该路径会根据调用方变化
-	//	//viper.AddConfigPath("../")
-	//	//viper.SetConfigName("config") // 配置文件名称(无扩展名)
-	//	//viper.SetConfigType("yaml")
-	//	viper.SetConfigFile(configPath)
-	//} else {
-	//	viper.SetConfigFile(path)
-	//}
 	viper.SetConfigFile(configPath)
 
 	if err := viper.ReadInConfig(); err != nil {

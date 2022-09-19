@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AgentClient interface {
 	PingTask(ctx context.Context, in *Ping, opts ...grpc.CallOption) (*Pong, error)
+	RunScript(ctx context.Context, in *RunScriptRequest, opts ...grpc.CallOption) (*RunScriptResponse, error)
 }
 
 type agentClient struct {
@@ -42,11 +43,21 @@ func (c *agentClient) PingTask(ctx context.Context, in *Ping, opts ...grpc.CallO
 	return out, nil
 }
 
+func (c *agentClient) RunScript(ctx context.Context, in *RunScriptRequest, opts ...grpc.CallOption) (*RunScriptResponse, error) {
+	out := new(RunScriptResponse)
+	err := c.cc.Invoke(ctx, "/service.v1.Agent/RunScript", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentServer is the server API for Agent service.
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility
 type AgentServer interface {
 	PingTask(context.Context, *Ping) (*Pong, error)
+	RunScript(context.Context, *RunScriptRequest) (*RunScriptResponse, error)
 	mustEmbedUnimplementedAgentServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedAgentServer struct {
 
 func (UnimplementedAgentServer) PingTask(context.Context, *Ping) (*Pong, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PingTask not implemented")
+}
+func (UnimplementedAgentServer) RunScript(context.Context, *RunScriptRequest) (*RunScriptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunScript not implemented")
 }
 func (UnimplementedAgentServer) mustEmbedUnimplementedAgentServer() {}
 
@@ -88,6 +102,24 @@ func _Agent_PingTask_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Agent_RunScript_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunScriptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).RunScript(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.v1.Agent/RunScript",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).RunScript(ctx, req.(*RunScriptRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Agent_ServiceDesc is the grpc.ServiceDesc for Agent service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var Agent_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PingTask",
 			Handler:    _Agent_PingTask_Handler,
+		},
+		{
+			MethodName: "RunScript",
+			Handler:    _Agent_RunScript_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

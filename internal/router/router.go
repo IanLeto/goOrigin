@@ -10,7 +10,9 @@ import (
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/jobsHandlers"
 	"goOrigin/internal/router/k8sHandlers"
+	"goOrigin/internal/router/promHandlers"
 	"goOrigin/internal/router/recordHandlers"
+	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/userHandlers"
 )
 
@@ -55,7 +57,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
 		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)
 		k8sGroup.POST("dynamic", k8sHandlers.CreateDeployDynamic)
-		//k8sGroup.GET("dynamic", k8sHandlers.ListDeployDynamic)
 		k8sGroup.DELETE("dynamic", k8sHandlers.DeleteDeployDynamic)
 		k8sGroup.PUT("dynamic", k8sHandlers.UpdateDeployDynamic)
 
@@ -78,9 +79,31 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	jobGroup := g.Group("/v1/job")
 	{
 		jobGroup.POST("/", jobsHandlers.CreateJob)
-		jobGroup.PUT("ping", cmdHandlers.Ping)
-		jobGroup.GET("ping", cmdHandlers.Ping)
-		jobGroup.DELETE("ping", cmdHandlers.Ping)
+		jobGroup.DELETE(":id", jobsHandlers.DeleteJob)
+		jobGroup.PUT("/", jobsHandlers.UpdateJob)
+		jobGroup.GET(":id", jobsHandlers.GetJobDetail)
 	}
+	// 远程prom数据展示
+	tencentGroup := g.Group("/v1/dashboard")
+	{
+		// 基础数据
+		tencentGroup.POST(":id", jobsHandlers.GetJobDetail)
+	}
+
+	scriptGroup := g.Group("v1/script")
+	{
+		// 基础数据
+		scriptGroup.GET("", scriptHandlers.QueryScriptList)
+		scriptGroup.GET("exec", scriptHandlers.RunScript)
+		scriptGroup.POST("", scriptHandlers.CreateScript)
+
+		scriptGroup.DELETE("", scriptHandlers.DeleteScript)
+
+	}
+	promGroup := g.Group("v1/prom")
+	{
+		promGroup.POST("weight", promHandlers.QueryWeight)
+	}
+
 	return g
 }
