@@ -5,7 +5,7 @@ type Script interface {
 }
 
 type BaseScript struct {
-	ID         int
+	ID         string
 	Name       string
 	Comment    string
 	Type       string

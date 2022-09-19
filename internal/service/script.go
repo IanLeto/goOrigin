@@ -168,8 +168,13 @@ func RunScript(c *gin.Context, id string) (*pbs.RunScriptResponse, error) {
 		logger.Error(fmt.Sprintf("查询es 失败 %s", err.Error()))
 		return nil, err
 	}
-
 	err = json.Unmarshal(result.Source, &script)
+	if err != nil {
+		logger.Error(fmt.Sprintf("format es info 失败 %s", err.Error()))
+		return nil, err
+	}
+	script.UsedTime += 1
+	_, err = client.Index().Index("script").Id(script.ID).BodyJson(script).Do(c)
 	return agent.RunScript(c, &pbs.RunScriptRequest{
 		Name:    "",
 		Content: script.Content,

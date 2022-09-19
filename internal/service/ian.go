@@ -9,7 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
@@ -24,28 +23,28 @@ var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 func newPusher(info prometheus.Gauge) *push.Pusher {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(info)
-	return push.New(config.Conf.Backend.PromConfig.Address, config.Conf.Backend.PromConfig.Address).Gatherer(reg)
+	return push.New(config.Conf.Backend.PromConfig.Push, config.Conf.Backend.PromConfig.Group).Gatherer(reg)
 }
 
 func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
-		ian = model.NewIan(req)
+	//ian = model.NewIan(req)
 	)
 	// 不另启dao了 写入prometheus
 	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
 	info.Set(cast.ToFloat64(req.Body.Weight))
 
-	res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
-	if err != nil {
-		logrus.Errorf("创建日常数据失败")
-		goto ERR
-	}
+	//res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
+	//if err != nil {
+	//	logrus.Errorf("创建日常数据失败")
+	//	goto ERR
+	//}
 	if err := newPusher(info).Push(); err != nil {
 		logrus.Errorf("push prom failed %s", err)
 		goto ERR
 	}
-
-	return res.InsertedID.(primitive.ObjectID).Hex(), nil
+	return nil, err
+	//return res.InsertedID.(primitive.ObjectID).Hex(), nil
 ERR:
 	return "", nil
 }
