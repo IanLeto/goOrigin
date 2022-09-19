@@ -55,6 +55,8 @@ func initConfig(path string) error {
 		configPath = debug
 	case "tencent":
 		configPath = tencentLocal
+	case "win":
+		configPath = "config.yaml"
 	default:
 		configPath = debug
 
