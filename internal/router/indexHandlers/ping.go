@@ -14,6 +14,12 @@ func Ping(c *gin.Context) {
 	}, nil)
 }
 
+func Prom(handler http.Handler) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		handler.ServeHTTP(context.Writer, context.Request)
+	}
+}
+
 func NoRouterHandler(c *gin.Context) {
 	c.String(http.StatusNotFound, "incorrect API address")
 }
