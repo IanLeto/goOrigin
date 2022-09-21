@@ -19,7 +19,6 @@ import (
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
-
 	g.NoRoute(indexHandlers.NoRouterHandler)
 
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

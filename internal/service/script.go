@@ -35,6 +35,7 @@ func CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interf
 		res    *elastic.IndexResponse
 	)
 	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex("script") }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("errors: %s", err))
 		goto ERR
