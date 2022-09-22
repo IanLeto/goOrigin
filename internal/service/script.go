@@ -60,10 +60,6 @@ ERR:
 
 }
 
-func DelScript(c *gin.Context) {
-
-}
-
 func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.QueryScriptListResponse, err error) {
 	var (
 		bp      = elastic.NewBoolQuery()
@@ -72,8 +68,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		queries []elastic.Query
 		client  *elastic.Client
 		result  *elastic.SearchResult
-		//script  *model.BaseScript
-		infos []*params.QueryScriptListResponseInfo
+		infos   []*params.QueryScriptListResponseInfo
 	)
 
 	client, err = clients.NewESClient()

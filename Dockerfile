@@ -3,6 +3,7 @@ FROM golang:1.17-alpine
 # 工作目录 也就是起始目录 毕竟我们不能吧 / 作为根目录吧
 WORKDIR /Users/ian/go/src/goOrigin
 COPY . /Users/ian/go/src/goOrigin
+RUN go env -w GOPROXY=https://goproxy.cn,direct
 #COPY --from=busybox:1.28 /bin/busybox /bin/busybox
 #RUN apk add build-base
 #RUN go install github.com/go-delve/delve/cmd/dlv@latest
