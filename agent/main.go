@@ -4,6 +4,7 @@ import (
 	"goOrigin/agent/handlers"
 	pb "goOrigin/agent/protos"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"net"
 )
 
@@ -12,7 +13,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	server := grpc.NewServer()
+	creds, err := credentials.NewServerTLSFromFile("/Users/ian/go/src/goOrigin/agent/server.crt",
+		"/Users/ian/go/src/goOrigin/agent/server.key")
+	if err != nil {
+		panic(err)
+	}
+	server := grpc.NewServer(grpc.Creds(creds))
 	pb.RegisterAgentServer(server, &handlers.AgentHandler{})
 	if err := server.Serve(listen); err != nil {
 		panic(err)

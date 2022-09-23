@@ -3,9 +3,11 @@ package service
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
+	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
 )
 
@@ -18,11 +20,18 @@ func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
 			Type:       req.Type,
 			StrategyID: req.StrategyID,
 		}
-		err error
+		log    = logger.NewLogger()
+		err    error
+		client *elastic.Client
 	)
+	client, err = clients.NewESClient()
 	if err != nil {
-		logrus.Errorf("创建 job 失败 %s", err)
+		log.Error(fmt.Sprintf("创建es client 失败 %s", err.Error()))
 		goto ERR
+	}
+
+	for _, id := range req.ScriptIDs {
+		client.Search().Index("script").Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", id)))
 	}
 	err = job.Create()
 	if err != nil {

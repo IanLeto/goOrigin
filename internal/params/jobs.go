@@ -9,6 +9,7 @@ type CreateJobRequest struct {
 	Content    string   `json:"content"`
 	FilePath   string   `json:"filePath"`
 	Targets    []string `json:"targets"`
+	ScriptIDs  []string `json:"script_ids"`
 }
 
 type UpdateJobRequest struct {

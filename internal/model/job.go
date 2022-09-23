@@ -13,6 +13,7 @@ type Job struct {
 	Name       string
 	Type       string
 	StrategyID uint
+	Scripts    BaseScript
 }
 
 func (j *Job) ToTable() *db.TJob {

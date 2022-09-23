@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AgentClient interface {
 	PingTask(ctx context.Context, in *Ping, opts ...grpc.CallOption) (*Pong, error)
 	RunScript(ctx context.Context, in *RunScriptRequest, opts ...grpc.CallOption) (*RunScriptResponse, error)
+	RunJob(ctx context.Context, in *RunJobRequest, opts ...grpc.CallOption) (*RunJobResponse, error)
 }
 
 type agentClient struct {
@@ -52,12 +53,22 @@ func (c *agentClient) RunScript(ctx context.Context, in *RunScriptRequest, opts 
 	return out, nil
 }
 
+func (c *agentClient) RunJob(ctx context.Context, in *RunJobRequest, opts ...grpc.CallOption) (*RunJobResponse, error) {
+	out := new(RunJobResponse)
+	err := c.cc.Invoke(ctx, "/service.v1.Agent/RunJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentServer is the server API for Agent service.
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility
 type AgentServer interface {
 	PingTask(context.Context, *Ping) (*Pong, error)
 	RunScript(context.Context, *RunScriptRequest) (*RunScriptResponse, error)
+	RunJob(context.Context, *RunJobRequest) (*RunJobResponse, error)
 	mustEmbedUnimplementedAgentServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedAgentServer) PingTask(context.Context, *Ping) (*Pong, error) 
 }
 func (UnimplementedAgentServer) RunScript(context.Context, *RunScriptRequest) (*RunScriptResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunScript not implemented")
+}
+func (UnimplementedAgentServer) RunJob(context.Context, *RunJobRequest) (*RunJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunJob not implemented")
 }
 func (UnimplementedAgentServer) mustEmbedUnimplementedAgentServer() {}
 
@@ -120,6 +134,24 @@ func _Agent_RunScript_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Agent_RunJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunJobRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).RunJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.v1.Agent/RunJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).RunJob(ctx, req.(*RunJobRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Agent_ServiceDesc is the grpc.ServiceDesc for Agent service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Agent_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RunScript",
 			Handler:    _Agent_RunScript_Handler,
+		},
+		{
+			MethodName: "RunJob",
+			Handler:    _Agent_RunJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

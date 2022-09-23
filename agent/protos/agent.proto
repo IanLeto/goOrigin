@@ -30,7 +30,21 @@ message RunScriptResponse {
 
 }
 
+message RunJobRequest {
+  string name = 1001;
+  repeated string contents = 1002;
+
+}
+
+message RunJobResponse {
+  string name = 1001;
+  repeated string result = 1002;
+  int64 time = 1003;
+}
+
+
 service Agent {
   rpc PingTask(Ping) returns (Pong);
   rpc RunScript(RunScriptRequest) returns (RunScriptResponse);
+  rpc RunJob(RunJobRequest) returns (RunJobResponse);
 }

@@ -46,3 +46,26 @@ func (a AgentHandler) RunScript(ctx context.Context, req *pb.RunScriptRequest) (
 	res.Result = string(out)
 	return res, err
 }
+
+func (a AgentHandler) RunJob(ctx context.Context, req *pb.RunJobRequest) (*pb.RunJobResponse, error) {
+	var (
+		res = &pb.RunJobResponse{}
+		err error
+	)
+	for _, s := range req.GetContents() {
+		cmd := exec.Command("bash", "-c", s)
+		cmd.Stderr = os.Stderr
+		d, err := cmd.Output()
+		if err != nil {
+			return nil, err
+		}
+		log.Println(string(d))
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, err
+		}
+		res.Result = append(res.Result, string(out))
+	}
+	return res, err
+
+}
