@@ -124,7 +124,20 @@ ERR:
 // @param res body params.BaseResponseInfo true "1"
 // @Router /v1/record [POST]
 func GetJobs(c *gin.Context) {
-
+	var (
+		//id  = utils.QueryInt(c, "id", 0)
+		//id  = cast.ToInt(c.Param("id"))
+		err error
+		res = &params.GetJobsResponse{}
+	)
+	res, err = service.GetJobs(c)
+	if err != nil {
+		goto ERR
+	}
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 // ExecJob  @Summary

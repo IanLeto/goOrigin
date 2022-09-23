@@ -3,12 +3,13 @@ package service
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
+	"goOrigin/internal/db"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
-	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
+	"goOrigin/pkg/storage"
+	"strings"
 )
 
 func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
@@ -19,20 +20,35 @@ func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
 			Name:       req.Name,
 			Type:       req.Type,
 			StrategyID: req.StrategyID,
+			ScriptIDS:  req.ScriptIDs,
 		}
-		log    = logger.NewLogger()
-		err    error
-		client *elastic.Client
+		log = logger.NewLogger()
+		err error
+		//client   *elastic.Client
+		//playbook = map[string]string{}
 	)
-	client, err = clients.NewESClient()
+	//scripts, err := model.BoolQueryScript(c, client)
+	//client, err = clients.NewESClient()
 	if err != nil {
 		log.Error(fmt.Sprintf("创建es client 失败 %s", err.Error()))
 		goto ERR
 	}
+	//res, err = client.Search().Index("script").Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", req.ScriptIDs))).Do(c)
+	//if err != nil {
+	//	log.Error(fmt.Sprintf("查询es client 失败 %s", err.Error()))
+	//	goto ERR
+	//}
 
-	for _, id := range req.ScriptIDs {
-		client.Search().Index("script").Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", id)))
-	}
+	//for _, id := range req.ScriptIDs {
+	//	for i := 0; i < len(scripts); i++ {
+	//		if id == scripts[i].ID {
+	//			playbook[id] = scripts[i].Content
+	//			scripts[i] = scripts[len(scripts)-1]
+	//			scripts[len(scripts)-1] = nil
+	//			scripts = scripts[:len(scripts)-1]
+	//		}
+	//	}
+	//}
 	err = job.Create()
 	if err != nil {
 		goto ERR
@@ -96,5 +112,30 @@ func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
 	}
 
 	return response, err
+
+}
+
+func GetJobs(c *gin.Context) (*params.GetJobsResponse, error) {
+	var (
+		err   error
+		tJobs []*db.TJob
+		infos []*params.GetJobsResponseInfo
+	)
+
+	err = storage.GlobalMySQL.Table("t_jobs").Find(&tJobs).Error
+	if err != nil {
+		return nil, err
+	}
+	for _, tJob := range tJobs {
+		infos = append(infos, &params.GetJobsResponseInfo{
+			ID:        tJob.ID,
+			Name:      tJob.Name,
+			Content:   "",
+			ScriptIDs: strings.Split(tJob.ScriptIDs, ","),
+		})
+	}
+	return &params.GetJobsResponse{
+		Infos: infos,
+	}, err
 
 }

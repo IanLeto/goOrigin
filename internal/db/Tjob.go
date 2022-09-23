@@ -4,10 +4,11 @@ import "goOrigin/pkg/storage"
 
 type TJob struct {
 	*Meta
-	Name     string `json:"name"`
-	Target   string `json:"target"`
-	FilePath string `json:"file_path"`
-	Type     string `json:"type"`
+	Name      string `json:"name"`
+	Target    string `json:"target"`
+	FilePath  string `json:"file_path"`
+	Type      string `json:"type"`
+	ScriptIDs string `json:"script_ids"`
 }
 
 func (t *TJob) Create() (DBOpt, error) {

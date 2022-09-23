@@ -14,14 +14,16 @@ type Job struct {
 	Type       string
 	StrategyID uint
 	Scripts    BaseScript
+	ScriptIDS  []string
 }
 
 func (j *Job) ToTable() *db.TJob {
 	return &db.TJob{
-		Name:     j.Name,
-		Target:   strings.Join(j.Targets, ","),
-		FilePath: j.FilePath,
-		Type:     j.Type,
+		Name:      j.Name,
+		Target:    strings.Join(j.Targets, ","),
+		FilePath:  j.FilePath,
+		Type:      j.Type,
+		ScriptIDs: strings.Join(j.ScriptIDS, ","),
 	}
 }
 
@@ -58,3 +60,16 @@ func (j *Job) QueryDetail() (*db.TJob, error) {
 	return tJob, err
 
 }
+
+//func QueryList(j []*Job) (*db.TJob, error) {
+//	var tJobs []*db.TJob
+//	for _, job := range j {
+//		tJobs = append(tJobs, job.ToTable())
+//	}
+//	err := storage.GlobalMySQL.Model(&db.TJob{}).Find(tJobs)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return tJob, err
+//
+//}
