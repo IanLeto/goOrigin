@@ -140,13 +140,24 @@ ERR:
 	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
-// ExecJob  @Summary
-// @Description 创建主任务
-// @Tags Ian
-// @Accept json
-// @param job body params.CreateJobRequest true "1"
-// @param res body params.BaseResponseInfo true "1"
-// @Router /v1/record [POST]
-func ExecJob(c *gin.Context) {
+func RunJob(c *gin.Context) {
+
+	var (
+		req = &params.RunJobRequest{}
+		res = &params.RunJobResponse{}
+		err error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	res, err = service.RunJob(c, req)
+	if err != nil {
+		goto ERR
+	}
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }

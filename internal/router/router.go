@@ -86,6 +86,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		jobGroup.PUT("/", jobsHandlers.UpdateJob)
 		jobGroup.GET(":id", jobsHandlers.GetJobDetail)
 		jobGroup.GET("", jobsHandlers.GetJobs)
+		jobGroup.POST("run/:id", jobsHandlers.RunJob)
 	}
 	// 远程prom数据展示
 	tencentGroup := g.Group("/v1/dashboard")

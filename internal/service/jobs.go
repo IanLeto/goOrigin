@@ -109,6 +109,7 @@ func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
 		ID:       tJob.ID,
 		Name:     tJob.Name,
 		FilePath: tJob.FilePath,
+		Target:   strings.Split(tJob.Target, ","),
 	}
 
 	return response, err
@@ -138,4 +139,38 @@ func GetJobs(c *gin.Context) (*params.GetJobsResponse, error) {
 		Infos: infos,
 	}, err
 
+}
+
+func RunJob(c *gin.Context, req *params.RunJobRequest) (*params.RunJobResponse, error) {
+	var (
+		err  error
+		job  = &model.Job{}
+		tJob = &db.TJob{}
+		//infos []*params.GetJobsResponseInfo
+	)
+	if err != nil {
+		goto ERR
+	}
+
+	err = storage.GlobalMySQL.Table("t_jobs").Find(&tJob).Error
+	if err != nil {
+		return nil, err
+	}
+	job = &model.Job{
+		ID:        tJob.ID,
+		Targets:   strings.Split(tJob.ScriptIDs, ","),
+		FilePath:  tJob.FilePath,
+		Name:      tJob.Name,
+		Type:      tJob.Type,
+		ScriptIDS: strings.Split(tJob.ScriptIDs, ","),
+	}
+	go func() {
+
+		_ = job.Exec(c)
+	}()
+	return &params.RunJobResponse{}, err
+ERR:
+	{
+		return nil, err
+	}
 }

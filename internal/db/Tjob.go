@@ -39,6 +39,5 @@ func (t *TJob) BatchUpdate(opts []DBOpt) {
 }
 
 func DeleteJobByID(id uint) error {
-	tJob := TJob{}
-	return storage.GlobalMySQL.Model(tJob).Delete(tJob, id).Error
+	return storage.GlobalMySQL.Table("t_jobs").Delete(&TJob{}, id).Error
 }

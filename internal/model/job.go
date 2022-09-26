@@ -1,7 +1,14 @@
 package model
 
 import (
+	"context"
+	"fmt"
+	"github.com/olivere/elastic/v7"
+	pbs "goOrigin/agent/protos"
+	"goOrigin/backend"
 	"goOrigin/internal/db"
+	"goOrigin/pkg/clients"
+	"goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
 	"strings"
 )
@@ -58,7 +65,52 @@ func (j *Job) QueryDetail() (*db.TJob, error) {
 		return nil, err
 	}
 	return tJob, err
+}
 
+func (j *Job) Exec(ctx context.Context) error {
+	var (
+		err     error
+		log     = logger.NewLogger()
+		client  *elastic.Client
+		scripts []*BaseScript
+	)
+	agent, err := backend.NewAgentClient()
+	if err != nil {
+		log.Error(fmt.Sprintf("agent 创建失败 %s", err))
+		goto ERR
+	}
+	if j.FilePath != "" {
+		return err
+	}
+	client, err = clients.NewESClient()
+	if err != nil {
+		log.Error(fmt.Sprintf("es 创建失败 %s", err))
+		goto ERR
+	}
+	for _, id := range j.ScriptIDS {
+		// 先全部遍历出来
+		res, err := BoolQueryScript(ctx, client, elastic.Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", id))))
+		if err != nil {
+			log.Error(fmt.Sprintf("查询es client 失败 %s", err.Error()))
+			goto ERR
+		}
+		scripts = append(scripts, res...)
+	}
+	for _, i := range scripts {
+		_, err = agent.RunScript(ctx, &pbs.RunScriptRequest{
+			Name:    i.Name,
+			Content: i.Content,
+		})
+		if err != nil {
+			log.Error(fmt.Sprintf("脚本%s 执行失败 %s", i.Name, err))
+			goto ERR
+		}
+	}
+	return err
+ERR:
+	{
+		return err
+	}
 }
 
 //func QueryList(j []*Job) (*db.TJob, error) {

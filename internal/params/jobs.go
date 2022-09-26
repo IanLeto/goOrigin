@@ -46,3 +46,17 @@ type GetJobsResponseInfo struct {
 	Target     []string `json:"target"`
 	ScriptIDs  []string `json:"script_ids"`
 }
+
+type RunJobRequest struct {
+	ID         uint     `json:"id"`
+	StrategyID uint     `json:"strategy_id"`
+	Target     []string `json:"target"`
+	ScriptIDs  []string `json:"script_ids"`
+}
+
+type RunJobResponse struct {
+	ID         uint     `json:"id"`
+	StrategyID uint     `json:"strategy_id"`
+	Target     []string `json:"target"`
+	ScriptIDs  []string `json:"script_ids"`
+}
