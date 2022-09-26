@@ -25,7 +25,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)
-
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
 
 	}
@@ -108,6 +107,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	promGroup := g.Group("v1/prom")
 	{
 		promGroup.POST("weight", promHandlers.QueryWeight)
+
 	}
 
 	return g
