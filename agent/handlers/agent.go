@@ -47,7 +47,7 @@ func (a AgentHandler) RunScript(ctx context.Context, req *pb.RunScriptRequest) (
 	return res, err
 }
 
-func (a AgentHandler) RunJob(ctx context.Context, req *pb.RunJobRequest) (*pb.RunJobResponse, error) {
+func (a *AgentHandler) RunJob(ctx context.Context, req *pb.RunJobRequest) (*pb.RunJobResponse, error) {
 	var (
 		res = &pb.RunJobResponse{}
 		err error

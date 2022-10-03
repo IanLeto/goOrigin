@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/olivere/elastic/v7"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,8 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
+	"goOrigin/pkg/clients"
+	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
 )
 
@@ -28,8 +31,25 @@ func newPusher(info prometheus.Gauge) *push.Pusher {
 
 func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
-	//ian = model.NewIan(req)
+		client *elastic.Client
+		res    *elastic.IndexResponse
+		logger = logger2.NewLogger()
 	)
+	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex("ian") }()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return nil, err
+	}
+	ian := model.NewIan(req)
+	res, err = client.Index().Index("ian").BodyJson(ian).Do(c)
+	if err != nil {
+		logger.Error(fmt.Sprintf("创建 ianrecord:%s 失败 %s", ian.ToString(), err))
+		return nil, err
+	}
+	if req.Body.Weight == 0 {
+		return res, err
+	}
 	// 不另启dao了 写入prometheus
 	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
 	info.Set(cast.ToFloat64(req.Body.Weight))

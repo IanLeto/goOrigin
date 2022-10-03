@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"goOrigin/internal/params"
 	"time"
@@ -38,6 +39,11 @@ type Worker struct {
 	Vol2 string `json:"vol2" bson:"vol2"`
 	Vol3 string `json:"vol3" bson:"vol3"`
 	Vol4 string `json:"vol4" bson:"vol4"`
+}
+
+func (i *Ian) ToString() string {
+	data, _ := json.Marshal(i)
+	return string(data)
 }
 
 func NewIan(req params.CreateIanRequestInfo) *Ian {
