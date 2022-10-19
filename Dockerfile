@@ -6,7 +6,7 @@ COPY . /Users/ian/go/src/goOrigin
 RUN go env -w GOPROXY=https://goproxy.cn,direct
 #COPY --from=busybox:1.28 /bin/busybox /bin/busybox
 #RUN apk add build-base
-#RUN go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 # run go build build 因为我们已经指定工作目录了，相当于在/root 下执行go huild
 RUN go build  -o ori main.go
