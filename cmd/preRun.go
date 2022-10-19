@@ -34,7 +34,7 @@ var compInit = map[string]func() error{
 }
 
 var cronTask = map[string]func() error{
-	"ian": cron.RegisterNoteIan, // 定期创建日报
+	//"ian": cron.RegisterNoteIan, // 定期创建日报
 }
 
 // step 1 本地环境变量检查
