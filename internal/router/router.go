@@ -4,9 +4,12 @@ import (
 	"github.com/DeanThompson/ginpprof"
 	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/uber/jaeger-client-go/config"
+	jaegerConfig "github.com/uber/jaeger-client-go/config"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/jobsHandlers"
@@ -15,7 +18,30 @@ import (
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/userHandlers"
+	"io"
 )
+
+func Jaeger() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var parentSpan opentracing.Span
+		tracer, closer := config.NewTracer
+	}
+
+}
+func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
+	cfg := jaegerConfig.Configuration{
+		ServiceName:         svc,
+		Disabled:            false,
+		RPCMetrics:          false,
+		Gen128Bit:           false,
+		Tags:                nil,
+		Sampler:             nil,
+		Reporter:            nil,
+		Headers:             nil,
+		BaggageRestrictions: nil,
+		Throttler:           nil,
+	}
+}
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic

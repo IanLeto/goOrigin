@@ -40,6 +40,8 @@ backend:
   es:
 #    address: http://124.222.48.125:9200/
     address: http://localhost:9200/  # 注意是http:// 必须要有
+  jaeger:
+    address: localhost:1
 client:
   CC:
     address: localhost:1129
