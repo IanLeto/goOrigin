@@ -1,14 +1,16 @@
 package router
 
 import (
+	"context"
 	"github.com/DeanThompson/ginpprof"
 	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/uber/jaeger-client-go/config"
+	jaeger "github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
@@ -22,30 +24,57 @@ import (
 )
 
 func Jaeger() gin.HandlerFunc {
-	return func(context *gin.Context) {
+	return func(c *gin.Context) {
 		var parentSpan opentracing.Span
-		tracer, closer := config.NewTracer
+		tracer, closer := newTracer("goOrigin", "test")
+		defer func() { _ = closer.Close() }()
+		//
+		spanCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request.Header))
+		if err != nil {
+			parentSpan = tracer.StartSpan(c.Request.URL.Path)
+		} else {
+			parentSpan = opentracing.StartSpan(
+				c.Request.URL.Path, opentracing.ChildOf(spanCtx), opentracing.Tag{
+					Key:   string(ext.Component),
+					Value: "Http",
+				}, ext.SpanKindRPCServer)
+		}
+		// 这条很重要
+		defer parentSpan.Finish()
+		c.Set("tracer", tracer)
+		c.Set("ctx", opentracing.ContextWithSpan(context.Background(), parentSpan))
+		c.Next()
 	}
 
 }
 func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 	cfg := jaegerConfig.Configuration{
-		ServiceName:         svc,
-		Disabled:            false,
-		RPCMetrics:          false,
-		Gen128Bit:           false,
-		Tags:                nil,
-		Sampler:             nil,
-		Reporter:            nil,
-		Headers:             nil,
-		BaggageRestrictions: nil,
-		Throttler:           nil,
+
+		ServiceName: svc,
+		Sampler: &jaegerConfig.SamplerConfig{
+			Type:  "const",
+			Param: 1, // 1 全采 0 不采
+		},
+		Reporter: &jaegerConfig.ReporterConfig{
+			LogSpans:           true,
+			LocalAgentHostPort: "127.0.0.1:6831",
+		},
 	}
+	//sender, err := jaeger.NewUDPTransport("localhost:6831", 0)
+	//reper := jaeger.NewRemoteReporter(sender)
+
+	tracer, closer, err := cfg.NewTracer(jaegerConfig.Logger(jaeger.StdLogger))
+	if err != nil {
+		panic(err)
+	}
+	opentracing.SetGlobalTracer(tracer)
+	return tracer, closer
 }
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
+	g.Use(Jaeger())
 
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	indexGroup := g.Group("/")
