@@ -101,8 +101,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 	recordGroup := g.Group("/v1/record")
 	{
-		recordGroup.POST("/", recordHandlers.CreateIanRecord)
-		recordGroup.DELETE("/", recordHandlers.DeleteIanRecord)
+		recordGroup.POST("", recordHandlers.CreateIanRecord)
+		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
 		recordGroup.PUT("/", recordHandlers.UpdateIanRecord)
 		recordGroup.GET("/", recordHandlers.SelectIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
