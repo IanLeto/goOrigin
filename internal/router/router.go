@@ -12,6 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	jaeger "github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
+	"goOrigin/config"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
 	"goOrigin/internal/router/jobsHandlers"
@@ -57,7 +58,7 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 		},
 		Reporter: &jaegerConfig.ReporterConfig{
 			LogSpans:           true,
-			LocalAgentHostPort: "127.0.0.1:6831",
+			LocalAgentHostPort: config.Conf.Backend.JaegerConfig.Address,
 		},
 	}
 	//sender, err := jaeger.NewUDPTransport("localhost:6831", 0)

@@ -38,22 +38,23 @@ backend:
     push: http://124.222.48.125:9091
     group: ian
   es:
-#    address: http://124.222.48.125:9200/
+    #    address: http://124.222.48.125:9200/
     address: http://localhost:9200/  # 注意是http:// 必须要有
   jaeger:
-    address: localhost:1
+    address: localhost:6831
 client:
   CC:
     address: localhost:1129
     heart_beat: 10
     user: root
 components:
-  #  - redis
   - mysql
   - cc
   - prom
-#  - mongo
-#  - k8s
+  - jaeger
+  #  - redis
+  #   - mongo
+  #  - k8s
 ssh:
   address: 113.31.168.103:22
   auth: 123qweasdzxc

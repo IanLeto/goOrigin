@@ -7,6 +7,7 @@ import (
 )
 
 func Ping(c *gin.Context) {
+
 	baseHandlers.RenderData(c, map[string]string{
 		"Version":    "0.0.1",
 		"Maintainer": "ian.liu",

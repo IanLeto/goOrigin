@@ -14,6 +14,7 @@ type BackendConfig struct {
 	*K8sConfig
 	*PromConfig
 	*EsConfig
+	*JaegerConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -25,6 +26,7 @@ func NewBackendConfig() *BackendConfig {
 		NewK8sConfig(),
 		NewPromConfig(),
 		NewEsConfig(),
+		NewJaegerConfig(),
 	}
 }
 
@@ -148,6 +150,14 @@ type EsConfig struct {
 
 func NewEsConfig() *EsConfig {
 	return &EsConfig{Address: viper.GetString("backend.es.address")}
+}
+
+type JaegerConfig struct {
+	Address string
+}
+
+func NewJaegerConfig() *JaegerConfig {
+	return &JaegerConfig{Address: viper.GetString("backend.jaeger.address")}
 }
 
 // 配置中心httpclient 配置参数
