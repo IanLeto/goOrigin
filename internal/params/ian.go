@@ -34,7 +34,7 @@ type QueryRequest struct {
 type QueryResponse struct {
 	Name string `json:"name"`
 	Body struct {
-		Weight int `json:"weight"`
+		Weight float32 `json:"weight"`
 	} `json:"body"`
 	BETre struct {
 		Core       int `json:"core"`
@@ -54,6 +54,7 @@ type QueryResponse struct {
 }
 
 type AppendRequestInfo struct {
+	Id   string `json:"id"`
 	Name string `json:"name"`
 	Body struct {
 		Weight int `json:"weight"`

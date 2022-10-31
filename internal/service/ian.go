@@ -106,11 +106,6 @@ ERR:
 	return "", res.Err()
 }
 
-// SelectIanRecordDetail 详细过滤的demo
-func SelectIanRecordDetail() {
-
-}
-
 //func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {
 //	response = make([]*params.QueryResponse, 0)
 //
@@ -166,9 +161,9 @@ func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*para
 		response = append(response, &params.QueryResponse{
 			Name: ephemeralIan.Name,
 			Body: struct {
-				Weight int `json:"weight"`
+				Weight float32 `json:"weight"`
 			}{
-				Weight: cast.ToInt(ephemeralIan.Body.Weight),
+				Weight: ephemeralIan.Body.Weight,
 			},
 			BETre: struct {
 				Core       int `json:"core"`
@@ -245,39 +240,37 @@ ERR:
 //}
 
 func AppendIanRecord(c *gin.Context, req *params.AppendRequestInfo) (*model.Ian, error) {
-	//var (
-	//	ian = model.Ian{}
-	//	err error
-	//)
-	//
-	//filter := bson.M{
-	//	"name": req.Name,
-	//}
-	//esClient, err := clients.NewESClient()
-	//if res.Err() != nil {
-	//	logrus.Errorf("查询日常数据失败 %s", res.Err())
-	//	goto ERR
-	//}
-	//if err := res.Decode(&ian); err != nil {
-	//	goto ERR
-	//}
-	//ian.BETre.Core += req.BETre.Core
-	//ian.BETre.Runner += req.BETre.Runner
-	//ian.BETre.Support += req.BETre.Support
-	//ian.BETre.Squat += req.BETre.Squat
-	//ian.BETre.EasyBurpee += req.BETre.EasyBurpee
-	//ian.BETre.Chair += req.BETre.Chair
-	//ian.BETre.Stretch += req.BETre.Stretch
-	//ian.Worker.Vol1 = fmt.Sprintf("%s;%s", ian.Worker.Vol1, req.Worker.Vol1)
-	//ian.Worker.Vol2 = fmt.Sprintf("%s;%s", ian.Worker.Vol2, req.Worker.Vol2)
-	//ian.Worker.Vol3 = fmt.Sprintf("%s;%s", ian.Worker.Vol3, req.Worker.Vol3)
-	//ian.Worker.Vol4 = fmt.Sprintf("%s;%s", ian.Worker.Vol4, req.Worker.Vol4)
-	//
-	//if storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), filter, &ian).Err() != nil {
-	//	goto ERR
-	//}
-	//return &ian, nil
-	//ERR:
+	var (
+		bq      = elastic.NewBoolQuery()
+		queries []elastic.Query
+		client  *elastic.Client
+		daoRes  *elastic.SearchResult
+		ian     model.Ian
+		err     error
+		logger  = logger2.NewLogger()
+	)
+	client, err = clients.NewESClient()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return nil, err
+	}
+	queries = append(queries, elastic.NewTermQuery("id", req.Id))
+	bq.Must(queries...)
+	daoRes, err = client.Search("ian").Query(bq).Size(1).Do(c)
+	if len(daoRes.Hits.Hits) != 1 {
+		goto ERR
+	}
+	if err := json.Unmarshal(daoRes.Hits.Hits[0].Source, &ian); err != nil {
+		goto ERR
+	}
+	ian.Worker.Vol1 = fmt.Sprintf("%s;%s", ian.Worker.Vol1, req.Worker.Vol1)
+	ian.Worker.Vol2 = fmt.Sprintf("%s;%s", ian.Worker.Vol2, req.Worker.Vol2)
+	ian.Worker.Vol3 = fmt.Sprintf("%s;%s", ian.Worker.Vol3, req.Worker.Vol3)
+	ian.Worker.Vol4 = fmt.Sprintf("%s;%s", ian.Worker.Vol4, req.Worker.Vol4)
+
+	return &ian, err
+
+ERR:
 	return nil, nil
 }
 

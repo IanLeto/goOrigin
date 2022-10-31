@@ -20,6 +20,7 @@ import (
 	"goOrigin/internal/router/promHandlers"
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/scriptHandlers"
+	"goOrigin/internal/router/topoHandlers"
 	"goOrigin/internal/router/userHandlers"
 	"io"
 )
@@ -163,6 +164,13 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	promGroup := g.Group("v1/prom")
 	{
 		promGroup.POST("weight", promHandlers.QueryWeight)
+
+	}
+	topoGroup := g.Group("v1/node")
+	{
+		topoGroup.POST("", topoHandlers.CreateNode)
+		topoGroup.GET("", nil)
+		topoGroup.POST("topo", nil)
 
 	}
 
