@@ -25,17 +25,36 @@ ERR:
 	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
-func GetNodeDetail(c *gin.Context) {
+func GetNodes(c *gin.Context) {
 	var (
-		req = params.CreateNodeRequest{}
-		res interface{}
-		err error
+		id   = c.Query("id")
+		name = c.Query("name")
+		err  error
 	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
+	res, err := service.GetNodes(c, id, name)
+	if err != nil {
 		goto ERR
 	}
-	res, err = service.CreateNode(c, &req)
+
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func GetNodeDetail(c *gin.Context) {
+	var (
+		id     = c.Query("id")
+		name   = c.Query("name")
+		father = c.Query("father")
+		res    interface{}
+		err    error
+	)
+
+	res, err = service.GetNodeDetail(c, id, name, father)
+	if err != nil {
+		goto ERR
+	}
 	params.BuildResponse(c, params.BuildInfo(res))
 	return
 ERR:
@@ -53,6 +72,22 @@ func GetTopo(c *gin.Context) {
 		goto ERR
 	}
 	res, err = service.CreateNode(c, &req)
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func DeleteNodes(c *gin.Context) {
+	var (
+		ids = c.QueryArray("ids")
+		err error
+	)
+	res, err := service.DeleteNodes(c, ids)
+	if err != nil {
+		goto ERR
+	}
+
 	params.BuildResponse(c, params.BuildInfo(res))
 	return
 ERR:

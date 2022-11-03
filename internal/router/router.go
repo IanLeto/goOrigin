@@ -169,9 +169,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	topoGroup := g.Group("v1/node")
 	{
 		topoGroup.POST("", topoHandlers.CreateNode)
-		topoGroup.GET("", nil)
-		topoGroup.POST("topo", nil)
-
+		topoGroup.GET("", topoHandlers.GetNodes)
+		topoGroup.GET(":id", topoHandlers.GetNodeDetail)
+		topoGroup.DELETE("", topoHandlers.DeleteNodes)
 	}
 
 	return g

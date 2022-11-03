@@ -62,12 +62,12 @@ ERR:
 
 func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.QueryScriptListResponse, err error) {
 	var (
-		bp      = elastic.NewBoolQuery()
+		bq      = elastic.NewBoolQuery()
 		eq      = elastic.NewExistsQuery("Uploader") // 排除无效脚本
 		logger  = logger2.NewLogger()
 		queries []elastic.Query
 		client  *elastic.Client
-		result  *elastic.SearchResult
+		daoRes  *elastic.SearchResult
 		infos   []*params.QueryScriptListResponseInfo
 	)
 
@@ -85,19 +85,19 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 	if req.Type != "" {
 		queries = append(queries, elastic.NewTermQuery("Type", req.Type))
 	}
-	bp.Must(queries...)
+	bq.Must(queries...)
 
 	if req.Tags != "" {
 
 	}
 
-	result, err = client.Search().Index("script").Query(eq).Query(bp).Do(c)
+	daoRes, err = client.Search().Index("script").Query(eq).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("请求es失败 : %s", err))
 		goto ERR
 	}
 
-	for _, hit := range result.Hits.Hits {
+	for _, hit := range daoRes.Hits.Hits {
 		var ephemeralSc model.BaseScript
 		err = json.Unmarshal(hit.Source, &ephemeralSc)
 
@@ -119,7 +119,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 
 	}
 
-	//for _, item := range result.Each(reflect.TypeOf(script)) {
+	//for _, item := range daoRes.Each(reflect.TypeOf(script)) {
 	//	v, ok := item.(*model.BaseScript)
 	//	if !ok {
 	//		goto ERR

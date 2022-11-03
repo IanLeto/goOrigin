@@ -12,3 +12,9 @@ type CreateNodeResponse struct {
 	Father  string `json:"father"`
 	Next    string `json:"next"`
 }
+
+type GetNodeRequest struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+	Father  string `json:"father"`
+}
