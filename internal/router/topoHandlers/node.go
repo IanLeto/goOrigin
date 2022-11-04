@@ -63,15 +63,15 @@ ERR:
 
 func GetTopo(c *gin.Context) {
 	var (
-		req = params.CreateNodeRequest{}
-		res interface{}
-		err error
+		name = c.Query("name")
+		res  interface{}
+		err  error
 	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
+
+	res, err = service.GetTopo(c, name)
+	if err != nil {
 		goto ERR
 	}
-	res, err = service.CreateNode(c, &req)
 	params.BuildResponse(c, params.BuildInfo(res))
 	return
 ERR:

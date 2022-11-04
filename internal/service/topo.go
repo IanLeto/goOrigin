@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
@@ -15,11 +16,20 @@ func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err e
 		logger = logger2.NewLogger()
 		node   *model.Node
 	)
+
 	node = &model.Node{
-		Name:    req.Name,
-		Content: req.Content,
-		Father:  req.Father,
+		Name:     req.Name,
+		Content:  req.Content,
+		Depend:   req.Depend,
+		Father:   req.Father,
+		FatherID: req.FatherId,
+		Done:     req.Done,
+		Status:   "New",
+		Note:     req.Note,
+		Tags:     req.Tags,
+		Children: req.Children,
 	}
+
 	id, err = node.CreateNode(c)
 	if err != nil {
 		logger.Error("创建node 失败")
@@ -47,7 +57,7 @@ func GetNodes(c *gin.Context, id, name string) (node []*model.Node, err error) {
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermQuery("name", name)))
 	queries = append(queries, NewExistEsQuery(id, elastic.NewTermQuery("_id", id)))
 	bq.Must(queries...)
-	daoRes, err = client.Search().Index("topo").Query(bq).Do(c)
+	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
 		goto ERR
@@ -80,7 +90,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 	)
 	filters = append(filters, NewExistEsQuery("_id", elastic.NewTermsQuery("_id", ids)))
 	bq.Filter(filters...)
-	daoRes, err := client.DeleteByQuery().Index("topo").Query(bq).Do(c)
+	daoRes, err := client.DeleteByQuery().Index(model.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error("delete 失败")
 		return nil, err
@@ -113,6 +123,41 @@ func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error)
 		goto ERR
 	}
 	return node, nil
+
+ERR:
+	{
+		return nil, err
+	}
+}
+
+func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err error) {
+	var (
+		logger  = logger2.NewLogger()
+		bq      = elastic.NewBoolQuery()
+		client  *elastic.Client
+		daoRes  *elastic.SearchResult
+		queries []elastic.Query
+		node    *model.Node
+	)
+	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
+	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
+	if len(daoRes.Hits.Hits) == 0 {
+		err = errors.New("不存在该数据")
+		goto ERR
+	}
+	err = json.Unmarshal(daoRes.Hits.Hits[0].Source, node)
+	if err != nil {
+		logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
+		goto ERR
+	}
+	res.Name = node.Name
+	res.Content = node.Content
+	res.Depend = node.Depend
+	res.Done = node.Done
+	res.Tags = node.Tags
+	res.Note = node.Note
+	res.Nodes = node.Nodes
+	return
 
 ERR:
 	{

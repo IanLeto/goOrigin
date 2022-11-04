@@ -62,9 +62,6 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 			LocalAgentHostPort: config.Conf.Backend.JaegerConfig.Address,
 		},
 	}
-	//sender, err := jaeger.NewUDPTransport("localhost:6831", 0)
-	//reper := jaeger.NewRemoteReporter(sender)
-
 	tracer, closer, err := cfg.NewTracer(jaegerConfig.Logger(jaeger.StdLogger))
 	if err != nil {
 		panic(err)
@@ -172,6 +169,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		topoGroup.GET("", topoHandlers.GetNodes)
 		topoGroup.GET(":id", topoHandlers.GetNodeDetail)
 		topoGroup.DELETE("", topoHandlers.DeleteNodes)
+		topoGroup.GET("/topo", topoHandlers.GetTopo)
 	}
 
 	return g

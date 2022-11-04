@@ -11,15 +11,22 @@ import (
 )
 
 type Node struct {
-	ID      string
-	Name    string
-	Content string
-	Depend  string
-	Father  string
-	Next    []Node
-	Done    bool
-	Status  string
-	Note    string
+	Name     string   `json:"name"`
+	Content  string   `json:"content"`
+	Depend   string   `json:"depend"`
+	Father   string   `json:"father"`
+	FatherID string   `json:"father_id"`
+	Done     bool     `json:"done"`
+	Status   string   `json:"status"`
+	Note     string   `json:"note"`
+	Tags     []string `json:"tags"`
+	Children []string `json:"children"`
+	Nodes    []*Node  `json:"nodes"`
+}
+
+type Topo struct {
+	*Node
+	Children []*Node `json:"children"`
 }
 
 func GetTopo(ctx context.Context, root *Node) *Node {
@@ -35,14 +42,14 @@ func GetTopo(ctx context.Context, root *Node) *Node {
 
 	}
 
-	bq.Filter(elastic.NewTermQuery("father", root.ID))
-	daoRes, err = client.Search().Index("topo").Query(bq).Do(ctx)
+	bq.Filter(elastic.NewTermQuery("father", root.Name))
+	daoRes, err = client.Search().Index(EsNode).Query(bq).Do(ctx)
 	for _, hit := range daoRes.Hits.Hits {
 		var (
 			ephemeralNode Node
 		)
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
-		root.Next = append(root.Next, ephemeralNode)
+		root.Nodes = append(root.Nodes, &ephemeralNode)
 		GetTopo(ctx, &ephemeralNode)
 	}
 	if err != nil {
@@ -58,12 +65,12 @@ func (node *Node) CreateNode(c *gin.Context) (id string, err error) {
 		logger = logger2.NewLogger()
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex("ian") }()
+	defer func() { client.CloseIndex(EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return "", err
 	}
-	res, err = client.Index().Index("topo").BodyJson(node).Do(c)
+	res, err = client.Index().Index(EsNode).BodyJson(node).Do(c)
 	if err != nil {
 		goto ERR
 	}
