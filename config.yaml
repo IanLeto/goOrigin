@@ -63,7 +63,8 @@ data:
   - mongo
   - zk
 Cron:
-  - ian
+  #  - ian
+  - logger
 
 
 

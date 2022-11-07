@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"context"
 	"github.com/sirupsen/logrus"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
 	"goOrigin/internal/db"
+	"goOrigin/pkg"
+	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
@@ -32,6 +35,7 @@ var compInit = map[string]func() error{
 
 var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
+	"logger": cron.RegLoggerCron,
 }
 
 // step 1 本地环境变量检查
@@ -97,17 +101,17 @@ var initData = func() error {
 
 // step 8 初始化定时任务
 var initCronTask = func() error {
-	//var taskRootCtx = context.Background()
-	//for _, t := range config.Conf.Cron {
-	//	if err := cronTask[t](); err != nil {
-	//		return err
-	//	}
-	//}
-	//for _, t := range cron.QueueCron {
-	//	go func(task pkg.Job) {
-	//		_ = task.Exec(taskRootCtx, nil)
-	//	}(t)
-	//}
+	var taskRootCtx = context.Background()
+	for _, t := range config.Conf.Cron {
+		if err := cronTask[t](); err != nil {
+			return err
+		}
+	}
+	for _, t := range cron.QueueCron {
+		go func(task pkg.Job) {
+			_ = task.Exec(taskRootCtx, nil)
+		}(t)
+	}
 	return nil
 }
 var dbMigrate = func() error {

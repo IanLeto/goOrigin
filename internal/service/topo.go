@@ -8,6 +8,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
+	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
@@ -54,9 +55,15 @@ func GetNodes(c *gin.Context, id, name string) (node []*model.Node, err error) {
 		daoRes  *elastic.SearchResult
 		//eq     = elastic.NewExistsQuery()
 	)
+	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex(model.EsNode) }()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return nil, err
+	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermQuery("name", name)))
 	queries = append(queries, NewExistEsQuery(id, elastic.NewTermQuery("_id", id)))
-	bq.Must(queries...)
+	//bq.Must(queries...)
 	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
@@ -108,6 +115,12 @@ func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error)
 		node    *model.Node
 		err     error
 	)
+	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex(model.EsNode) }()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return nil, err
+	}
 	queries = append(queries, NewExistEsQuery(id, elastic.NewTermsQuery("_id", id)))
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
 	queries = append(queries, NewExistEsQuery(father, elastic.NewTermsQuery("father", father)))
@@ -139,24 +152,33 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 		queries []elastic.Query
 		node    *model.Node
 	)
+	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex(model.EsNode) }()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return nil, err
+	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
 	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")
 		goto ERR
 	}
-	err = json.Unmarshal(daoRes.Hits.Hits[0].Source, node)
+	err = json.Unmarshal(daoRes.Hits.Hits[0].Source, &node)
 	if err != nil {
 		logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
 		goto ERR
 	}
-	res.Name = node.Name
-	res.Content = node.Content
-	res.Depend = node.Depend
-	res.Done = node.Done
-	res.Tags = node.Tags
-	res.Note = node.Note
-	res.Nodes = node.Nodes
+	node = model.GetTopo(c, node)
+	res = &params.GetTopoResponse{
+		Name:    node.Name,
+		Content: node.Content,
+		Depend:  node.Depend,
+		Done:    node.Done,
+		Tags:    node.Tags,
+		Note:    node.Note,
+		Nodes:   node.Nodes,
+	}
 	return
 
 ERR:
