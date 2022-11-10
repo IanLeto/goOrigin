@@ -36,5 +36,4 @@ func InitLogger() {
 
 func init() {
 	InitLogger()
-
 }
