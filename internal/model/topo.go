@@ -11,6 +11,7 @@ import (
 )
 
 type Node struct {
+	ID       string   `json:"_id"`
 	Name     string   `json:"name"`
 	Content  string   `json:"content"`
 	Depend   string   `json:"depend"`

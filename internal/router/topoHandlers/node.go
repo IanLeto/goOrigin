@@ -27,11 +27,14 @@ ERR:
 
 func GetNodes(c *gin.Context) {
 	var (
-		id   = c.Query("id")
-		name = c.Query("name")
-		err  error
+		id      = c.Query("id")
+		name    = c.Query("name")
+		father  = c.Query("father")
+		content = c.Query("content")
+		done    = c.GetBool("done")
+		err     error
 	)
-	res, err := service.GetNodes(c, id, name)
+	res, err := service.GetNodes(c, id, name, father, content, done)
 	if err != nil {
 		goto ERR
 	}
@@ -69,6 +72,21 @@ func GetTopo(c *gin.Context) {
 	)
 
 	res, err = service.GetTopo(c, name)
+	if err != nil {
+		goto ERR
+	}
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+func GetTopoList(c *gin.Context) {
+	var (
+		res interface{}
+		err error
+	)
+
+	res, err = service.GetTopoList(c)
 	if err != nil {
 		goto ERR
 	}

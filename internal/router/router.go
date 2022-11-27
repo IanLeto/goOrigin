@@ -166,10 +166,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	topoGroup := g.Group("v1/node")
 	{
 		topoGroup.POST("", topoHandlers.CreateNode)
-		topoGroup.GET("", topoHandlers.GetNodes)
+		topoGroup.GET("/list", topoHandlers.GetNodes)
 		topoGroup.GET(":id", topoHandlers.GetNodeDetail)
 		topoGroup.DELETE("", topoHandlers.DeleteNodes)
 		topoGroup.GET("/topo", topoHandlers.GetTopo)
+		topoGroup.GET("/topos", topoHandlers.GetTopoList)
 	}
 
 	return g

@@ -46,14 +46,13 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name string) (node []*model.Node, err error) {
+func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.Node, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		queries []elastic.Query
 		bq      = elastic.NewBoolQuery()
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
-		//eq     = elastic.NewExistsQuery()
 	)
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()
@@ -61,9 +60,19 @@ func GetNodes(c *gin.Context, id, name string) (node []*model.Node, err error) {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return nil, err
 	}
-	queries = append(queries, NewExistEsQuery(name, elastic.NewTermQuery("name", name)))
-	queries = append(queries, NewExistEsQuery(id, elastic.NewTermQuery("_id", id)))
-	//bq.Must(queries...)
+	if name != "" {
+		queries = append(queries, elastic.NewTermsQuery("name", name))
+
+	}
+	if father != "" {
+		queries = append(queries, elastic.NewTermsQuery("father", father))
+
+	}
+	if content != "" {
+		queries = append(queries, elastic.NewMatchQuery("content", content))
+
+	}
+	bq.Must(queries...)
 	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
@@ -72,11 +81,11 @@ func GetNodes(c *gin.Context, id, name string) (node []*model.Node, err error) {
 	for _, hit := range daoRes.Hits.Hits {
 		var ephemeralNode *model.Node
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
+		ephemeralNode.ID = hit.Id
 		if err != nil {
 			goto ERR
 		}
 		node = append(node, ephemeralNode)
-
 	}
 	return node, nil
 ERR:
@@ -142,6 +151,49 @@ ERR:
 		return nil, err
 	}
 }
+func GetTopoList(c *gin.Context) (res []*params.GetTopoResponse, err error) {
+	var (
+		logger = logger2.NewLogger()
+		client *elastic.Client
+		daoRes *elastic.SearchResult
+		node   *model.Node
+	)
+	client, err = clients.NewESClient()
+	defer func() { client.CloseIndex(model.EsNode) }()
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
+		return nil, err
+	}
+	daoRes, err = client.Search().Index(model.EsNode).Query(elastic.NewTermsQuery("father", "")).Do(c)
+	if len(daoRes.Hits.Hits) == 0 {
+		err = errors.New("不存在该数据")
+		goto ERR
+	}
+	for _, hit := range daoRes.Hits.Hits {
+		err = json.Unmarshal(hit.Source, &node)
+		if err != nil {
+			logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
+			goto ERR
+		}
+		res = append(res, &params.GetTopoResponse{
+			Name:    node.Name,
+			Content: node.Content,
+			Depend:  node.Depend,
+			Done:    node.Done,
+			Tags:    node.Tags,
+			Note:    node.Note,
+			Nodes:   node.Nodes,
+		})
+	}
+
+	node = model.GetTopo(c, node)
+	return
+
+ERR:
+	{
+		return nil, err
+	}
+}
 
 func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err error) {
 	var (
@@ -155,10 +207,11 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()
 	if err != nil {
-		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
 		return nil, err
 	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
+	bq.Filter(queries...)
 	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")

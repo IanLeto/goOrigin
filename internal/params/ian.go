@@ -32,8 +32,9 @@ type QueryRequest struct {
 }
 
 type QueryResponse struct {
-	Name string `json:"name"`
-	Body struct {
+	Name       string `json:"name"`
+	CreateTime string `json:"create_time"`
+	Body       struct {
 		Weight float32 `json:"weight"`
 	} `json:"body"`
 	BETre struct {

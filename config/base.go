@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
@@ -48,23 +47,23 @@ func init() {
 }
 
 func initConfig(path string) error {
-	var configPath = ""
-	fmt.Println(os.Getenv("mode"))
-	switch os.Getenv("mode") {
-	case "k8s":
-		configPath = k8sConfigMap
-	case "debug":
-		configPath = debug
-	case "tencent":
-		configPath = tencentLocal
-	case "win":
-		configPath = "config.yaml"
-	default:
-		configPath = debug
+	//var configPath = ""
+	//fmt.Println(os.Getenv("mode"))
+	//switch os.Getenv("mode") {
+	//case "k8s":
+	//	configPath = k8sConfigMap
+	//case "debug":
+	//	configPath = debug
+	//case "tencent":
+	//	configPath = tencentLocal
+	//case "win":
+	//	configPath = "config.yaml"
+	//default:
+	//	configPath = debug
+	//
+	//}
 
-	}
-
-	viper.SetConfigFile(configPath)
+	viper.SetConfigFile(path)
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Printf("error in init config %s", err)

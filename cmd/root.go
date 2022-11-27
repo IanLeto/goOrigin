@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"github.com/spf13/cobra"
 	"goOrigin/pkg/httpclient"
 	"goOrigin/pkg/utils"
@@ -71,15 +71,13 @@ func formatResponseInfo(res *httpclient.CCResponseInfo, err error) string {
 }
 
 var RootCmd = &cobra.Command{
-	Use:   "",
+	Use:   "run",
 	Short: "",
 	Run: func(cmd *cobra.Command, args []string) {
-		config := ""
-		if v, err := cmd.Flags().GetBool("debug"); err != nil && v {
-			config = paramsStr(cmd.Flags().GetString("config"))
-		}
-		logrus.Debugf(config)
+		config := paramsStr(cmd.Flags().GetString("config"))
+		fmt.Println(config)
 		PreRun(config)
+		DebugServer()
 	},
 }
 

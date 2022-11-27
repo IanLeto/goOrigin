@@ -19,9 +19,9 @@ spec: # pod 的规格，也就是内部容器中的详细定义
         master: ian
       containers:
         - name: go-ori
-          image: ianleto/goorigin:stable
-#          imagePullPolicy: IfNotPresent # 如果这个image 不存在本地则拉取
-          imagePullPolicy: Never
+          image: ianleto/goorigin:079597f
+          imagePullPolicy: IfNotPresent # 如果这个image 不存在本地则拉取
+#          imagePullPolicy: Never
 #          livenessProbe: # 存活探针
 #            httpGet: # 心跳方式为http
 #              path: /ping

@@ -7,6 +7,7 @@
     add gorm mysql init 10/16
     增加 k8s curd api 2022/7/26 未测试
 #### 常用命令
+    docker build --tag ianleto/goorigin:
     build  GOOS=linux GOARCH=amd64 go build -o ianhello 
     cd  /Users/ian/go/src/goOrigin/agent/protos
     protoc -I ../protos --go_out=plugins=grpc:../pbs ../protos/task.proto

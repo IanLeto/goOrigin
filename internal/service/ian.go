@@ -17,6 +17,7 @@ import (
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
+	"time"
 )
 
 var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -159,7 +160,8 @@ func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*para
 			goto ERR
 		}
 		response = append(response, &params.QueryResponse{
-			Name: ephemeralIan.Name,
+			Name:       ephemeralIan.Name,
+			CreateTime: time.Unix(ephemeralIan.CreateTime, 0).Format(time.RFC3339),
 			Body: struct {
 				Weight float32 `json:"weight"`
 			}{

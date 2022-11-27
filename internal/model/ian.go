@@ -15,10 +15,11 @@ type Base struct {
 
 type Ian struct {
 	*Base
-	Name   string `json:"name" bson:"name"`
-	Body   `json:"body" bson:"body"`
-	BETre  `json:"BETre" bson:"BETre"`
-	Worker `json:"worker" bson:"worker"`
+	Name       string `json:"name" bson:"name"`
+	CreateTime int64  `json:"create_date"`
+	Body       `json:"body" bson:"body"`
+	BETre      `json:"BETre" bson:"BETre"`
+	Worker     `json:"worker" bson:"worker"`
 }
 
 type Body struct {
