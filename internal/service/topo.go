@@ -155,10 +155,11 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()
 	if err != nil {
-		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
 		return nil, err
 	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
+	bq.Filter(queries...)
 	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")
