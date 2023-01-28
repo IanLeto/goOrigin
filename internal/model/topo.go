@@ -8,6 +8,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
+	"goOrigin/pkg/utils"
 )
 
 type Node struct {
@@ -59,22 +60,76 @@ func GetTopo(ctx context.Context, root *Node) *Node {
 	return root
 }
 
+//func (node *Node) CreateNode(c *gin.Context) (id string, err error) {
+//	var (
+//		client *elastic.Client
+//		res    *elastic.IndexResponse
+//		logger = logger2.NewLogger()
+//	)
+//	client, err = clients.NewESClient()
+//	defer func() { client.CloseIndex(EsNode) }()
+//	if err != nil {
+//		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+//		return "", err
+//	}
+//	res, err = client.Index().Index(EsNode).BodyJson(node).Do(c)
+//	if err != nil {
+//		goto ERR
+//	}
+//	return res.Id, nil
+//ERR:
+//	{
+//		return "", err
+//	}
+//}
+
 func (node *Node) CreateNode(c *gin.Context) (id string, err error) {
 	var (
-		client *elastic.Client
+		conn   *clients.EsConn
 		res    *elastic.IndexResponse
+		father *Node
 		logger = logger2.NewLogger()
 	)
-	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(EsNode) }()
+	conn, err = clients.NewEsConn(nil)
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return "", err
 	}
-	res, err = client.Index().Index(EsNode).BodyJson(node).Do(c)
+	_, err = conn.Search(nil)
 	if err != nil {
 		goto ERR
 	}
+	_, err = conn.Create(nil)
+	if err != nil {
+		goto ERR
+	}
+	node.Tags = utils.Set(append(node.Tags, father.Tags...))
+	node.Father = father.Name
+	return res.Id, nil
+ERR:
+	{
+		return "", err
+	}
+}
+
+func (node *Node) UpdateNode(c *gin.Context) (id string, err error) {
+	var (
+		conn   *clients.EsConn
+		res    *elastic.IndexResponse
+		father *Node
+		logger = logger2.NewLogger()
+	)
+	conn, err = clients.NewEsConn(nil)
+	if err != nil {
+		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
+		return "", err
+	}
+	_, err = conn.Update(nil)
+	if err != nil {
+		goto ERR
+	}
+	node.Tags = utils.Set(append(node.Tags, father.Tags...))
+	node.Father = father.Name
 	return res.Id, nil
 ERR:
 	{

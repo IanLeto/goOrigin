@@ -1,4 +1,4 @@
-package service
+package v2
 
 import (
 	"encoding/json"
@@ -31,6 +31,47 @@ func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err e
 	}
 
 	id, err = node.CreateNode(c)
+	if err != nil {
+		logger.Error("创建node 失败")
+		return "", err
+	}
+	return
+}
+
+func UpdateNode(c *gin.Context, req *params.UpdateNodeRequest) (id string, err error) {
+	var (
+		logger = logger2.NewLogger()
+		node   *model.Node
+	)
+	if req.Name != "" {
+		node.Name = req.Name
+	}
+	if req.Content != "" {
+		node.Content = req.Content
+	}
+	if req.Depend != "" {
+		node.Depend = req.Depend
+	}
+	if req.FatherId != "" {
+		node.FatherID = req.FatherId
+	}
+	if req.Done != nil {
+		node.Done = *req.Done
+	}
+	if req.Note != "" {
+		node.Note = req.Note
+	}
+	if req.Status != "" {
+		node.Status = req.Status
+	}
+	if len(req.Tags) != 0 {
+		node.Tags = req.Tags
+	}
+	if len(req.Children) != 0 {
+		node.Children = req.Children
+	}
+
+	id, err = node.UpdateNode(c)
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err

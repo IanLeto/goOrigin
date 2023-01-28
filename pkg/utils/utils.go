@@ -37,6 +37,11 @@ func getRootPath() string {
 	return filepath.Join(path, "")
 }
 
+// 去重
+func Set([]string) []string {
+	return []string{}
+}
+
 func GetFilePath(path string) string {
 	return filepath.Join(Root, path)
 }

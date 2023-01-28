@@ -163,14 +163,20 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		promGroup.POST("weight", promHandlers.QueryWeight)
 
 	}
-	topoGroup := g.Group("v1/node")
+	//topoGroup := g.Group("v1/node")
+	//{
+	//	topoGroup.POST("", topoHandlers.CreateNode)
+	//	topoGroup.GET("/list", topoHandlers.GetNodes)
+	//	topoGroup.GET(":id", topoHandlers.GetNodeDetail)
+	//	topoGroup.DELETE("", topoHandlers.DeleteNodes)
+	//	topoGroup.GET("/topo", topoHandlers.GetTopo)
+	//	topoGroup.GET("/topos", topoHandlers.GetTopoList)
+	//}
+
+	topov2Group := g.Group("v2/node")
 	{
-		topoGroup.POST("", topoHandlers.CreateNode)
-		topoGroup.GET("/list", topoHandlers.GetNodes)
-		topoGroup.GET(":id", topoHandlers.GetNodeDetail)
-		topoGroup.DELETE("", topoHandlers.DeleteNodes)
-		topoGroup.GET("/topo", topoHandlers.GetTopo)
-		topoGroup.GET("/topos", topoHandlers.GetTopoList)
+		topov2Group.POST("", topoHandlers.CreateNode)
+
 	}
 
 	return g

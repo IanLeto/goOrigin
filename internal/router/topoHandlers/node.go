@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"goOrigin/internal/params"
 	"goOrigin/internal/service"
+	v2 "goOrigin/internal/service/v2"
 )
 
 func CreateNode(c *gin.Context) {
@@ -18,7 +19,24 @@ func CreateNode(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = service.CreateNode(c, &req)
+	res, err = v2.CreateNode(c, &req)
+	params.BuildResponse(c, params.BuildInfo(res))
+	return
+ERR:
+	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func UpdateNode(c *gin.Context) {
+	var (
+		req = params.UpdateNodeRequest{}
+		res interface{}
+		err error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	res, err = v2.UpdateNode(c, &req)
 	params.BuildResponse(c, params.BuildInfo(res))
 	return
 ERR:

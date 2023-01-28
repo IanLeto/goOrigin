@@ -38,3 +38,15 @@ type GetTopoResponse struct {
 	Note    string      `json:"note"`
 	Nodes   interface{} `json:"nodes"`
 }
+
+type UpdateNodeRequest struct {
+	Name     string   `json:"name"`
+	Content  string   `json:"content"`
+	Depend   string   `json:"depend"`
+	FatherId string   `json:"father_id"`
+	Done     *bool    `json:"done"`
+	Note     string   `json:"note"`
+	Status   string   `json:"status"`
+	Tags     []string `json:"tags"`
+	Children []string `json:"children"`
+}

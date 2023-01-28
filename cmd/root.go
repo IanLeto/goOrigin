@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"goOrigin/pkg/httpclient"
 	"goOrigin/pkg/utils"
 )
 
@@ -64,10 +63,6 @@ func paramCheck(cmd *cobra.Command) map[string]string {
 		"commonFilePath":       commonFilePath,
 	}
 
-}
-
-func formatResponseInfo(res *httpclient.CCResponseInfo, err error) string {
-	return ""
 }
 
 var RootCmd = &cobra.Command{

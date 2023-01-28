@@ -13,6 +13,10 @@ import (
 	logger2 "goOrigin/pkg/logger"
 )
 
+type ScriptApis interface {
+	CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interface{}, err error)
+}
+
 func CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interface{}, err error) {
 	var (
 		logger = logger2.NewLogger()
