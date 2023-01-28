@@ -52,7 +52,7 @@ func GetNodes(c *gin.Context) {
 		done    = c.GetBool("done")
 		err     error
 	)
-	res, err := service.GetNodes(c, id, name, father, content, done)
+	res, err := v2.GetNodes(c, id, name, father, content, done)
 	if err != nil {
 		goto ERR
 	}

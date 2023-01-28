@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
@@ -89,31 +90,21 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.Node, err error) {
 	var (
 		logger  = logger2.NewLogger()
-		queries []elastic.Query
-		bq      = elastic.NewBoolQuery()
-		client  *elastic.Client
-		daoRes  *elastic.SearchResult
+		queries map[string]interface{}
+
+		conn   *clients.EsV2Conn
+		daoRes *elastic.SearchResult
 	)
-	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
-	if err != nil {
-		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
-		return nil, err
-	}
+	conn = clients.NewEsV2Conn(config.Conf)
+
 	if name != "" {
-		queries = append(queries, elastic.NewTermsQuery("name", name))
+		queries["term"] = map[string]interface{}{
+			"name": name,
+		}
 
 	}
-	if father != "" {
-		queries = append(queries, elastic.NewTermsQuery("father", father))
+	res, err := conn.Query("node", queries)
 
-	}
-	if content != "" {
-		queries = append(queries, elastic.NewMatchQuery("content", content))
-
-	}
-	bq.Must(queries...)
-	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
 		goto ERR
