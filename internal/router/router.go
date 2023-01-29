@@ -176,7 +176,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	topov2Group := g.Group("v2/node")
 	{
 		topov2Group.POST("", topoHandlers.CreateNode)
-		topov2Group.POST("", topoHandlers.CreateNode)
+		topov2Group.GET("", topoHandlers.GetNodes)
 
 	}
 

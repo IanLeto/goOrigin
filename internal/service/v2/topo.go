@@ -90,10 +90,8 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.Node, err error) {
 	var (
 		logger  = logger2.NewLogger()
-		queries map[string]interface{}
-
-		conn   *clients.EsV2Conn
-		daoRes *elastic.SearchResult
+		queries = map[string]interface{}{}
+		conn    *clients.EsV2Conn
 	)
 	conn = clients.NewEsV2Conn(config.Conf)
 
@@ -109,9 +107,10 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
 		goto ERR
 	}
-	for _, hit := range daoRes.Hits.Hits {
+
+	for _, hit := range res.Hits.Hits {
 		var ephemeralNode *model.Node
-		err = json.Unmarshal(hit.Source, &ephemeralNode)
+		err = json.Unmarshal([]byte(hit.Source), &ephemeralNode)
 		ephemeralNode.ID = hit.Id
 		if err != nil {
 			goto ERR

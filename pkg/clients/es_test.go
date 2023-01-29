@@ -36,7 +36,7 @@ func (s *EsAPISuite) TestConfig() {
 	query = map[string]interface{}{}
 	err = json.NewEncoder(&buf).Encode(query)
 	s.NoError(err)
-
+	//buf.Write([]byte(""))
 	res, err = s.conn.Client.Search(
 		s.conn.Client.Search.WithIndex("audit1"),
 		s.conn.Client.Search.WithBody(&buf),

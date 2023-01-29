@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"goOrigin/config"
+	"io"
 )
 
 type EsV2Conn struct {
@@ -37,9 +38,11 @@ func (c *EsV2Conn) Query(index string, q map[string]interface{}) (*Response, err
 		return nil, err
 	}
 	var (
-		buf  bytes.Buffer
-		resp Response
+		buf        bytes.Buffer
+		resp       Response
+		resContent []byte
 	)
+
 	err = json.NewEncoder(&buf).Encode(q)
 	if err != nil {
 		goto ERR
@@ -52,7 +55,8 @@ func (c *EsV2Conn) Query(index string, q map[string]interface{}) (*Response, err
 		goto ERR
 	}
 	defer func() { _ = res.Body.Close() }()
-	err = json.Unmarshal([]byte(res.String()), &resp)
+	resContent, err = io.ReadAll(res.Body)
+	err = json.Unmarshal(resContent, &resp)
 	return &resp, err
 
 ERR:
