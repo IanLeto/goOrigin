@@ -110,7 +110,11 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 
 	for _, hit := range res.Hits.Hits {
 		var ephemeralNode *model.Node
-		err = json.Unmarshal([]byte(hit.Source), &ephemeralNode)
+		data, err := json.Marshal(hit.Source)
+		if err != nil {
+			goto ERR
+		}
+		err = json.Unmarshal(data, &ephemeralNode)
 		ephemeralNode.ID = hit.Id
 		if err != nil {
 			goto ERR
