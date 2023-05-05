@@ -47,3 +47,4 @@ spec: # pod 的规格，也就是内部容器中的详细定义
             items:
               - key: config.yaml
                 path: config.yaml
+

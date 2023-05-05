@@ -161,7 +161,8 @@ func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*para
 		}
 		response = append(response, &params.QueryResponse{
 			Name:       ephemeralIan.Name,
-			CreateTime: time.Unix(ephemeralIan.CreateTime, 0).Format(time.RFC3339),
+			CreateTime: time.Unix(ephemeralIan.Time.T, 0).Format(time.RFC3339),
+			UpdateTime: time.Unix(ephemeralIan.Time.I, 0).Format(time.RFC3339),
 			Body: struct {
 				Weight float32 `json:"weight"`
 			}{

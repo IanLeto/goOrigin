@@ -101,8 +101,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		recordGroup.POST("", recordHandlers.CreateIanRecord)
 		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
-		recordGroup.PUT("/", recordHandlers.UpdateIanRecord)
-		recordGroup.GET("/", recordHandlers.SelectIanRecord)
+		recordGroup.PUT("", recordHandlers.UpdateIanRecord)
+		recordGroup.GET("", recordHandlers.SelectIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
 	}
 	k8sGroup := g.Group("v1/k8s/deploy")
@@ -163,21 +163,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		promGroup.POST("weight", promHandlers.QueryWeight)
 
 	}
-	//topoGroup := g.Group("v1/node")
-	//{
-	//	topoGroup.POST("", topoHandlers.CreateNode)
-	//	topoGroup.GET("/list", topoHandlers.GetNodes)
-	//	topoGroup.GET(":id", topoHandlers.GetNodeDetail)
-	//	topoGroup.DELETE("", topoHandlers.DeleteNodes)
-	//	topoGroup.GET("/topo", topoHandlers.GetTopo)
-	//	topoGroup.GET("/topos", topoHandlers.GetTopoList)
-	//}
 
 	topov2Group := g.Group("v2/node")
 	{
 		topov2Group.POST("", topoHandlers.CreateNode)
 		topov2Group.GET("", topoHandlers.GetNodes)
-
 	}
 
 	//testData := g.Group("")

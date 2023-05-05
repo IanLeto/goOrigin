@@ -24,7 +24,8 @@ type CreateIanRequestInfo struct {
 		Vol3 string `json:"vol3"`
 		Vol4 string `json:"vol4"`
 	} `json:"worker"`
-	Extra map[string]string `json:"Extra"`
+	Content string            `json:"content"`
+	Extra   map[string]string `json:"Extra"`
 }
 
 type QueryRequest struct {
@@ -34,6 +35,7 @@ type QueryRequest struct {
 type QueryResponse struct {
 	Name       string `json:"name"`
 	CreateTime string `json:"create_time"`
+	UpdateTime string `json:"update_time"`
 	Body       struct {
 		Weight float32 `json:"weight"`
 	} `json:"body"`

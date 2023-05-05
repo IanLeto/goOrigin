@@ -47,6 +47,10 @@ func (s *EsAPISuite) TestConfig() {
 
 }
 
+func (s *EsAPISuite) TestQuery() {
+
+}
+
 // TestHttpClient :
 func TestEsConfiguration(t *testing.T) {
 	suite.Run(t, new(EsAPISuite))

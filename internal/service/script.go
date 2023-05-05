@@ -136,7 +136,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 	//		Content:    v.Content,
 	//		File:       v.File,
 	//		Uploader:   v.Uploader,
-	//		CreateTime: v.CreateTime,
+	//		Time: v.Time,
 	//		UpdateTime: v.UpdateTime,
 	//		System:     v.System,
 	//		IsFile:     v.IsFile,
