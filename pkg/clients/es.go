@@ -2,6 +2,7 @@ package clients
 
 import (
 	"github.com/olivere/elastic/v7"
+
 	"goOrigin/config"
 )
 
@@ -44,13 +45,14 @@ func (c *EsConn) Ping() error {
 }
 
 func (c *EsConn) Search(callback func()) (interface{}, error) {
+	//res, err := c.Client.
+
 	panic(1)
 }
 
 func (c *EsConn) Create(callback func()) (interface{}, error) {
 	panic(1)
 }
-
 
 func (c *EsConn) Update(callback func()) (interface{}, error) {
 	panic(1)
@@ -59,6 +61,3 @@ func (c *EsConn) Update(callback func()) (interface{}, error) {
 func (c *EsConn) Delete(callback func()) (interface{}, error) {
 	panic(1)
 }
-
-
-

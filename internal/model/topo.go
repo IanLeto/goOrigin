@@ -11,27 +11,27 @@ import (
 	"goOrigin/pkg/utils"
 )
 
-type Node struct {
-	ID       string   `json:"_id"`
-	Name     string   `json:"name"`
-	Content  string   `json:"content"`
-	Depend   string   `json:"depend"`
-	Father   string   `json:"father"`
-	FatherID string   `json:"father_id"`
-	Done     bool     `json:"done"`
-	Status   string   `json:"status"`
-	Note     string   `json:"note"`
-	Tags     []string `json:"tags"`
-	Children []string `json:"children"`
-	Nodes    []*Node  `json:"nodes"`
+type NodeEntity struct {
+	ID       string        `json:"_id"`
+	Name     string        `json:"name"`
+	Content  string        `json:"content"`
+	Depend   string        `json:"depend"`
+	Father   string        `json:"father"`
+	FatherID string        `json:"father_id"`
+	Done     bool          `json:"done"`
+	Status   string        `json:"status"`
+	Note     string        `json:"note"`
+	Tags     []string      `json:"tags"`
+	Children []string      `json:"children"`
+	Nodes    []*NodeEntity `json:"nodes"`
 }
 
 type Topo struct {
-	*Node
-	Children []*Node `json:"children"`
+	*NodeEntity
+	Children []*NodeEntity `json:"children"`
 }
 
-func GetTopo(ctx context.Context, root *Node) *Node {
+func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 	var (
 		client *elastic.Client
 		daoRes *elastic.SearchResult
@@ -48,7 +48,7 @@ func GetTopo(ctx context.Context, root *Node) *Node {
 	daoRes, err = client.Search().Index(EsNode).Query(bq).Do(ctx)
 	for _, hit := range daoRes.Hits.Hits {
 		var (
-			ephemeralNode Node
+			ephemeralNode NodeEntity
 		)
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
 		root.Nodes = append(root.Nodes, &ephemeralNode)
@@ -60,45 +60,49 @@ func GetTopo(ctx context.Context, root *Node) *Node {
 	return root
 }
 
-//func (node *Node) CreateNode(c *gin.Context) (id string, err error) {
-//	var (
-//		client *elastic.Client
-//		res    *elastic.IndexResponse
-//		logger = logger2.NewLogger()
-//	)
-//	client, err = clients.NewESClient()
-//	defer func() { client.CloseIndex(EsNode) }()
-//	if err != nil {
-//		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
-//		return "", err
-//	}
-//	res, err = client.Index().Index(EsNode).BodyJson(node).Do(c)
-//	if err != nil {
-//		goto ERR
-//	}
-//	return res.Id, nil
-//ERR:
-//	{
-//		return "", err
-//	}
-//}
-
-func (node *Node) CreateNode(c *gin.Context) (id string, err error) {
+func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	var (
-		conn   *clients.EsConn
+		conn   *clients.EsV2Conn
 		res    *elastic.IndexResponse
-		father *Node
+		father *NodeEntity
 		logger = logger2.NewLogger()
 	)
-	conn, err = clients.NewEsConn(nil)
+	conn = clients.NewEsV2Conn(nil)
+	_, err = conn.Client.Info()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return "", err
 	}
-	_, err = conn.Search(nil)
-	if err != nil {
-		goto ERR
+	var (
+		query = map[string]interface{}{}
+		boolq = map[string]interface{}{}
+	)
+	var (
+		getFather = func() {
+			conn.Query("topo", map[string]interface{}{
+				"bool": map[string]interface{}{
+					"term": map[string]interface{}{
+						"_id": node.FatherID,
+					},
+				},
+			})
+		}
+	)
+
+	//if node.FatherID != "" {
+
+	//
+	//}
+	// 说明是root节点
+	if node.FatherID == "" {
+		goto Create
 	}
+
+	//_, err = conn.Query("", query)
+	//if err != nil {
+	//	goto ERR
+	//}
+Create:
 	_, err = conn.Create(nil)
 	if err != nil {
 		goto ERR
@@ -112,11 +116,11 @@ ERR:
 	}
 }
 
-func (node *Node) UpdateNode(c *gin.Context) (id string, err error) {
+func (node *NodeEntity) UpdateNode(c *gin.Context) (id string, err error) {
 	var (
 		conn   *clients.EsConn
 		res    *elastic.IndexResponse
-		father *Node
+		father *NodeEntity
 		logger = logger2.NewLogger()
 	)
 	conn, err = clients.NewEsConn(nil)

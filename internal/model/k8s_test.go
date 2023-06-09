@@ -34,7 +34,6 @@ func (s *K8sParamsSuite) TestConvBson() {
 		Annotations:                nil,
 		OwnerReferences:            nil,
 		Finalizers:                 nil,
-		ZZZ_DeprecatedClusterName:  "",
 		ManagedFields:              nil,
 	}
 	fmt.Println(x2)

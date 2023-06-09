@@ -15,10 +15,10 @@ import (
 func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.Node
+		node   *model.NodeEntity
 	)
 
-	node = &model.Node{
+	node = &model.NodeEntity{
 		Name:     req.Name,
 		Content:  req.Content,
 		Depend:   req.Depend,
@@ -45,7 +45,7 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.Node, err error) {
+func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.NodeEntity, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		queries []elastic.Query
@@ -78,7 +78,7 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 		goto ERR
 	}
 	for _, hit := range daoRes.Hits.Hits {
-		var ephemeralNode *model.Node
+		var ephemeralNode *model.NodeEntity
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
 		ephemeralNode.ID = hit.Id
 		if err != nil {
@@ -99,7 +99,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 		filters []elastic.Query
 		bq      = elastic.NewBoolQuery()
 		client  *elastic.Client
-		//node    *model.Node
+		//node    *model.NodeEntity
 		//daoRes  *elastic.DeleteResponse
 		//err error
 	)
@@ -120,7 +120,7 @@ func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error)
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.Node
+		node    *model.NodeEntity
 		err     error
 	)
 	client, err = clients.NewESClient()
@@ -155,7 +155,7 @@ func GetTopoList(c *gin.Context) (res []*params.GetTopoResponse, err error) {
 		logger = logger2.NewLogger()
 		client *elastic.Client
 		daoRes *elastic.SearchResult
-		node   *model.Node
+		node   *model.NodeEntity
 	)
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()
@@ -201,7 +201,7 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.Node
+		node    *model.NodeEntity
 	)
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()

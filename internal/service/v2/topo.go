@@ -16,10 +16,10 @@ import (
 func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.Node
+		node   *model.NodeEntity
 	)
 
-	node = &model.Node{
+	node = &model.NodeEntity{
 		Name:     req.Name,
 		Content:  req.Content,
 		Depend:   req.Depend,
@@ -34,7 +34,7 @@ func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err e
 	id, err = node.CreateNode(c)
 	if err != nil {
 		logger.Error("创建node 失败")
-		return "", err
+		return id, err
 	}
 	return
 }
@@ -42,7 +42,7 @@ func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err e
 func UpdateNode(c *gin.Context, req *params.UpdateNodeRequest) (id string, err error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.Node
+		node   *model.NodeEntity
 	)
 	if req.Name != "" {
 		node.Name = req.Name
@@ -87,7 +87,7 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.Node, err error) {
+func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.NodeEntity, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		queries = map[string]interface{}{}
@@ -109,7 +109,7 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 	}
 
 	for _, hit := range res.Hits.Hits {
-		var ephemeralNode *model.Node
+		var ephemeralNode *model.NodeEntity
 		data, err := json.Marshal(hit.Source)
 		if err != nil {
 			goto ERR
@@ -134,7 +134,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 		filters []elastic.Query
 		bq      = elastic.NewBoolQuery()
 		client  *elastic.Client
-		//node    *model.Node
+		//node    *model.NodeEntity
 		//daoRes  *elastic.DeleteResponse
 		//err error
 	)
@@ -155,7 +155,7 @@ func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error)
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.Node
+		node    *model.NodeEntity
 		err     error
 	)
 	client, err = clients.NewESClient()
@@ -190,7 +190,7 @@ func GetTopoList(c *gin.Context) (res []*params.GetTopoResponse, err error) {
 		logger = logger2.NewLogger()
 		client *elastic.Client
 		daoRes *elastic.SearchResult
-		node   *model.Node
+		node   *model.NodeEntity
 	)
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()
@@ -236,7 +236,7 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.Node
+		node    *model.NodeEntity
 	)
 	client, err = clients.NewESClient()
 	defer func() { client.CloseIndex(model.EsNode) }()

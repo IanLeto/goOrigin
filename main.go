@@ -7,5 +7,7 @@ import (
 )
 
 func main() {
+	//fmt.Println(fmt.Sprintf(`"%s"`, "dss"))
 	cmd.Execute()
+
 }

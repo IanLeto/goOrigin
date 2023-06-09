@@ -32,7 +32,7 @@ spec: # pod 的规格，也就是内部容器中的详细定义
             - name: dlv
               containerPort: 2345
           volumeMounts: # 我们建立了一个挂载vol 与该容器共生
-            - mountPath: root/config #
+            - mountPath: root/config # 我们把一个vol 挂载到容器的root/config 目录下 该val 必须已经存在
               name: goorigin # 告诉我们要挂载叫goroign 的vol 与下面的vol 呼应
               readOnly: true
           env: # 增加环境变量

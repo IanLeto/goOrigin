@@ -1,0 +1,224 @@
+step 1 准备json
+{
+"_id": "",
+"name": "",
+"content": "",
+"depend": "",
+"father": "",
+"father_id": "",
+"done": false,
+"status": "",
+"note": "",
+"tags": ["docker"],
+"children": ["x"]
+}
+step2 创建临时索引模板
+PUT _template/ephemeral_template
+{
+  "index_patterns": ["ephemeral_*"],
+  "order": 10,
+  "settings": {
+    "index": {
+      "lifecycle": {
+        "name": "default"
+      },
+      "analysis": {
+        "analysis": {
+          "substring_match": {
+            "filter": [
+              "lowercase"
+            ],
+            "type": "custom",
+            "tokenizer": "pattern"
+          }
+        }
+      },
+      "number_of_shards": "1"
+    }
+  }
+}
+step3 新建临时索引
+PUT ephemeral_index
+step4 插入数据
+PUT ephemeral_index/_doc/1
+{
+  "name": "",
+  "content": "",
+  "depend": "",
+  "father": "",
+  "father_id": "",
+  "done": false,
+  "status": "",
+  "note": "",
+  "tags": [
+    "docker"
+  ],
+  "children": [
+    "x"
+  ]
+}
+
+step5 获取mapping
+GET ephemeral_index/_mapping
+step6 将mapping 改造为期望mapping
+{
+  "ephemeral_index": {
+    "mappings": {
+      "properties": {
+        "children": {
+          "type": "text"
+        },
+        "content": {
+          "type": "text"
+        },
+        "depend": {
+          "type": "text"
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "father": {
+          "type": "keyword"
+        },
+        "father_id": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "note": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "tags": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        }
+      }
+    }
+  }
+}
+step6 删除索引
+DELETE ephemeral_index
+step7 新建生命周期策略
+PUT _ilm/policy/node_policy
+{
+  "policy": {
+    "phases": {
+      "warm": {
+        "min_age": "7d",
+        "actions": {
+          "set_priority": {
+            "priority": 50
+          }
+        }
+      }
+    }
+  }
+}
+step8 新建目标索引模板
+PUT _template/node_template
+{
+  "index_patterns": ["node_*"],
+  "order": 1,
+  "settings": {
+    "index": {
+      "lifecycle": {
+        "name": "node_policy"
+      },
+      "analysis": {
+        "analysis": {
+          "substring_match": {
+            "filter": [
+              "lowercase"
+            ],
+            "type": "custom",
+            "tokenizer": "pattern"
+          }
+        }
+      },
+      "number_of_shards": "1",
+      "aliases":{
+        "node":{}
+      }
+    }
+  }
+}
+step9 创建索引
+PUT node
+step10 为索引增加mapping
+PUT node/_mapping
+{
+  "dynamic":"false",
+    "properties": {
+      "children": {
+        "type": "text"
+      },
+      "content": {
+        "type": "text"
+      },
+      "depend": {
+        "type": "text"
+      },
+      "done": {
+        "type": "boolean"
+      },
+      "father": {
+        "type": "keyword"
+      },
+      "father_id": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "note": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "tags": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      }
+
+  }
+}
+
