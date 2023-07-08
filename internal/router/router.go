@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/DeanThompson/ginpprof"
 	_ "github.com/DeanThompson/ginpprof"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -74,6 +75,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
 	g.Use(Jaeger())
+	pprof.Register(g, "debug/pprof")
 
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	indexGroup := g.Group("/")
@@ -115,6 +117,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		k8sGroup.POST("dynamic", k8sHandlers.CreateDeployDynamic)
 		k8sGroup.DELETE("dynamic", k8sHandlers.DeleteDeployDynamic)
 		k8sGroup.PUT("dynamic", k8sHandlers.UpdateDeployDynamic)
+		k8sGroup.GET("log", k8sHandlers.GetCurrentLogs)
 
 	}
 	k8sConfigGroup := g.Group("v1/k8s/configmap")

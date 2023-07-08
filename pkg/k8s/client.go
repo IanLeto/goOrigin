@@ -37,7 +37,7 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if conf == nil {
 		conf = config.Conf
 	}
-	k8sconfig := flag.String("k8sconfig", "/Users/ian/.kube/config", "kubernetes config file path")
+	k8sconfig := flag.String("k8sconfig1", "/Users/ian/.kube/config", "kubernetes config file path")
 	flag.Parse()
 	config, err := clientcmd.BuildConfigFromFlags("", *k8sconfig)
 	if err != nil {

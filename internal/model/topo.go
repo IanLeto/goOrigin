@@ -75,19 +75,19 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	}
 	var (
 		query = map[string]interface{}{}
-		boolq = map[string]interface{}{}
+		//boolq = map[string]interface{}{}
 	)
-	var (
-		getFather = func() {
-			conn.Query("topo", map[string]interface{}{
-				"bool": map[string]interface{}{
-					"term": map[string]interface{}{
-						"_id": node.FatherID,
-					},
-				},
-			})
-		}
-	)
+	//var (
+	//	getFather = func() {
+	//		conn.Query("topo", map[string]interface{}{
+	//			"bool": map[string]interface{}{
+	//				"term": map[string]interface{}{
+	//					"_id": node.FatherID,
+	//				},
+	//			},
+	//		})
+	//	}
+	//)
 
 	//if node.FatherID != "" {
 
@@ -103,7 +103,7 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	//	goto ERR
 	//}
 Create:
-	_, err = conn.Create(nil)
+	_, err = conn.Creat("", query)
 	if err != nil {
 		goto ERR
 	}

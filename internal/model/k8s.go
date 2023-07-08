@@ -217,3 +217,9 @@ func NewDeployParamsV2(req *params.CreateDeploymentReq) (map[string]interface{},
 
 	return structs.Map(req.Content), err
 }
+
+type Log struct {
+	FromDate string
+	ToDate   string
+	Content  []string
+}

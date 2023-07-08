@@ -13,9 +13,15 @@ import (
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
+	"io/ioutil"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/kubernetes/scheme"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func CreateDeployment(c *gin.Context, req *params.CreateDeploymentReq) (string, error) {
@@ -186,4 +192,164 @@ ERR:
 	{
 		return deployment, err
 	}
+}
+
+type Entry struct {
+	Timestamp int64  `json:"timestamp"`
+	Date      string `json:"date"`
+	Content   int    `json:"content"`
+}
+
+func reverseArray(arr []string) {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+}
+
+func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes, error) {
+
+	var (
+		err       error
+		conn      = k8s.K8SConn
+		byteLimit = int64(102400)
+		lineLimit = int64(5000)
+		res       = &params.GetLogsRes{Contents: nil}
+	)
+	logOptions := &v1.PodLogOptions{
+		Container:                    req.Container,
+		Timestamps:                   true,
+		TailLines:                    &lineLimit,
+		LimitBytes:                   &byteLimit,
+		InsecureSkipTLSVerifyBackend: false,
+	}
+
+	reader, err := conn.ClientSet.CoreV1().RESTClient().Get().Namespace(req.Ns).Name(req.PodID).Resource(
+		"pods").SubResource("log").VersionedParams(logOptions, scheme.ParameterCodec).Stream(c)
+	if err != nil {
+		panic(err)
+	}
+	content, err := ioutil.ReadAll(reader) // 没有换行符号？？？
+	contents := strings.Split(string(content), "\n")
+	if req.Size == 0 {
+		req.Size = 100
+	}
+	//
+	if req.Location == "begin" {
+		contents = contents[0:req.Size]
+	}
+	var isForward bool = req.FromDate != "" && req.ToDate != ""
+
+	switch {
+	case len(contents) == 0: // 无数据 返回空
+		break
+	case isForward: // 按时间段查询，contents 返回5000行
+		break
+	case isForward && len(contents) <= req.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
+		contents = contents[0:req.Size]
+	case !isForward && req.Location == "begin": // 从头开始查询
+		contents = contents[0:req.Size]
+	case !isForward && len(contents) <= req.Size:
+		contents = contents[0:req.Size]
+	case !isForward && req.Location == "end":
+		contents = contents[len(contents)-1-req.Size : len(contents)-1]
+	case req.Location == "" && req.FromDate == "" && req.ToDate == "":
+		contents = contents[len(contents)-1-req.Size : len(contents)-1]
+	default:
+		contents = contents[len(contents)-1-req.Size : len(contents)-1]
+	}
+
+	lines := contents
+	entries := make([]Entry, 0)
+	var fromTimestamp, toTimestamp int64
+	if req.FromDate != "" {
+		fromTime, err := time.Parse(time.RFC3339Nano, req.FromDate)
+		fromTimestamp = fromTime.UnixNano()
+		if err != nil {
+			fmt.Printf("Error parsing from date: %v\n", err)
+			return nil, err
+		}
+		toTimest, err := time.Parse(time.RFC3339Nano, req.ToDate)
+		toTimestamp = toTimest.UnixNano()
+		if err != nil {
+			fmt.Printf("Error parsing from date: %v\n", err)
+			return nil, err
+		}
+	}
+	count := 0
+	// 定义一个函数类型，用于处理不同的条件
+	type entryHandler func(timestamp int64, entry Entry) bool
+	// 根据条件选择合适的处理方式
+	var handleEntry entryHandler
+
+	if isForward && req.Step >= 0 {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			if timestamp >= toTimestamp {
+				entries = append(entries, entry)
+				return true
+			}
+			return false
+		}
+	} else if isForward && req.Step < 0 {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			if timestamp <= fromTimestamp {
+				entries = append(entries, entry)
+				return true
+			}
+			return false
+		}
+	} else {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			entries = append(entries, entry)
+			return true
+		}
+	}
+
+	if isForward && req.Step < 0 {
+		reverseArray(lines)
+	}
+
+	for _, line := range lines {
+		parts := strings.SplitN(line, " ", 2)
+		if len(parts) >= 2 {
+			date := parts[0]
+			content, err := strconv.Atoi(parts[1])
+			if err != nil {
+				fmt.Printf("Error converting content to integer: %v\n", err)
+				continue
+			}
+			timestamp, err := time.Parse(time.RFC3339Nano, date)
+			if err != nil {
+				fmt.Printf("Error parsing date: %v\n", err)
+				continue
+			}
+			entry := Entry{
+				Timestamp: timestamp.UnixNano(),
+				Date:      date,
+				Content:   content,
+			}
+
+			if handleEntry(timestamp.UnixNano(), entry) {
+				count++
+				if count >= req.Size {
+					break
+				}
+			}
+		}
+	}
+	if len(entries) == 0 {
+		return res, nil
+	}
+	for _, entry := range entries {
+		var epl Entry = entry
+		res.Contents = append(res.Contents, epl)
+	}
+	res.FromDate = string(entries[0].Date)
+	res.ToDate = string(entries[len(entries)-1].Date)
+
+	return res, err
+
+}
+
+func init() {
+	k8s.InitK8s()
 }

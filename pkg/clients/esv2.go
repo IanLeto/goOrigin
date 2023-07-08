@@ -2,8 +2,10 @@ package clients
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"goOrigin/config"
 	"io"
 )
@@ -30,6 +32,37 @@ func NewEsV2Conn(conf *config.Config) *EsV2Conn {
 	}
 	conn.Client = client
 	return conn
+}
+
+func (c *EsV2Conn) Creat(index string, query map[string]interface{}) (*esapi.Response, error) {
+	var (
+		buf  bytes.Buffer
+		req  = esapi.IndexRequest{}
+		resp *esapi.Response
+	)
+	err := json.NewEncoder(&buf).Encode(query)
+	if err != nil {
+		goto ERR
+	}
+
+	req = esapi.IndexRequest{
+		Index: index,
+		Body:  nil,
+	}
+	if err != nil {
+		goto ERR
+	}
+	resp, err = req.Do(context.TODO(), c.Client)
+	if err != nil {
+		goto ERR
+	}
+	defer func() { _ = resp.Body.Close() }()
+	return resp, nil
+ERR:
+	{
+		return nil, err
+	}
+
 }
 
 func (c *EsV2Conn) Query(index string, q map[string]interface{}) (*Response, error) {
@@ -88,4 +121,7 @@ type Response struct {
 			Source interface{} `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
+}
+
+type CreateRes struct {
 }
