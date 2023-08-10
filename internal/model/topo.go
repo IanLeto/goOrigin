@@ -3,16 +3,19 @@ package model
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"github.com/sirupsen/logrus"
+	"goOrigin/config"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
 )
 
 type NodeEntity struct {
-	ID       string        `json:"_id"`
+	ID       string        `json:"id"`
 	Name     string        `json:"name"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
@@ -63,7 +66,6 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	var (
 		conn   *clients.EsV2Conn
-		res    *elastic.IndexResponse
 		father *NodeEntity
 		logger = logger2.NewLogger()
 	)
@@ -75,41 +77,97 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	}
 	var (
 		query = map[string]interface{}{}
-		//boolq = map[string]interface{}{}
 	)
-	//var (
-	//	getFather = func() {
-	//		conn.Query("topo", map[string]interface{}{
-	//			"bool": map[string]interface{}{
-	//				"term": map[string]interface{}{
-	//					"_id": node.FatherID,
-	//				},
-	//			},
-	//		})
-	//	}
-	//)
+	var (
+		doc                   *clients.EsDoc
+		insertResultInfo      *clients.InsertResultInfo
+		insertResultInfoValue []byte
 
-	//if node.FatherID != "" {
-
-	//
-	//}
-	// 说明是root节点
-	if node.FatherID == "" {
+		insertInfo      map[string]interface{}
+		insertInfoValue []byte
+		value           []byte
+		source          []byte
+	)
+	switch {
+	case node.Father != "":
+		query = map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": map[string]interface{}{
+					"term": map[string]interface{}{
+						"name": node.Father,
+					},
+				},
+			},
+		}
+		goto Query
+	case node.FatherID != "":
+		query = map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": map[string]interface{}{
+					"term": map[string]interface{}{
+						"_id": node.ID,
+					},
+				},
+			},
+		}
+		goto Query
+	default:
 		goto Create
 	}
 
-	//_, err = conn.Query("", query)
-	//if err != nil {
-	//	goto ERR
-	//}
-Create:
-	_, err = conn.Creat("", query)
+Query:
+	logrus.Debugf("query: %s", func() string {
+		b, _ := json.Marshal(query)
+		return string(b)
+	}())
+	value, err = conn.Query(config.NodeMapping, query)
 	if err != nil {
 		goto ERR
 	}
-	node.Tags = utils.Set(append(node.Tags, father.Tags...))
+	err = json.Unmarshal(value, &doc)
+	if err != nil {
+		logrus.Debugf("query: %s", func() string {
+			b, _ := json.Marshal(value)
+			return string(b)
+		}())
+	}
+	if doc.Hits.Total.Value == 0 {
+		err = errors.New("father node not found")
+		goto ERR
+	}
+	source, err = json.Marshal(doc.Hits.Hits[0].Source)
+	if err != nil {
+		goto ERR
+	}
+	err = json.Unmarshal(source, &father)
+
+	if err != nil {
+		goto ERR
+	}
 	node.Father = father.Name
-	return res.Id, nil
+	node.FatherID = father.ID
+	if source == nil {
+		err = errors.New("father node not found")
+		goto ERR
+	}
+	goto Create
+
+Create:
+	insertInfoValue, err = json.Marshal(node)
+	if err != nil {
+		goto ERR
+	}
+	err = json.Unmarshal(insertInfoValue, &insertInfo)
+	if err != nil {
+		goto ERR
+	}
+	insertResultInfoValue, err = conn.Creat("node", insertInfoValue)
+	if err != nil {
+		goto ERR
+	}
+	err = json.Unmarshal(insertResultInfoValue, &insertResultInfo)
+
+	return insertResultInfo.Id, err
 ERR:
 	{
 		return "", err

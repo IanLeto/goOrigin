@@ -8,8 +8,11 @@ type GetLogsReq struct {
 	FromDate  string `json:"from_date"`
 	ToDate    string `json:"to_date"`
 	Size      int    `json:"size"`
-	Location  string `json:"Location"`
+	Location  string `json:"location"`
 	Step      int    `json:"step"`
+
+	LimitByte int `json:"limit_byte"`
+	LimitLine int `json:"limit_line"`
 }
 
 type GetLogsRes struct {

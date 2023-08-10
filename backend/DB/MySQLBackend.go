@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"goOrigin/config"
-	"goOrigin/pkg/logging"
 )
 
 type MySQLBackend struct {
@@ -21,7 +20,6 @@ func (b *MySQLBackend) Close() error {
 }
 
 func NewMySQLBackend(conf *config.Config) (*MySQLBackend, error) {
-	var logger = logging.GetStdLogger()
 
 	if conf == nil {
 		conf = config.Conf
@@ -36,7 +34,6 @@ func NewMySQLBackend(conf *config.Config) (*MySQLBackend, error) {
 
 	db, err := gorm.Open("mysql", mysqlConf)
 	if err != nil {
-		logger.Fatalf("init mysql client error: %s", err)
 		return nil, err
 	}
 

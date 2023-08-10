@@ -157,7 +157,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		scriptGroup.GET("", scriptHandlers.QueryScriptList)
 		scriptGroup.GET("exec", scriptHandlers.RunScript)
 		scriptGroup.POST("", scriptHandlers.CreateScript)
-
 		scriptGroup.DELETE("", scriptHandlers.DeleteScript)
 
 	}
@@ -172,8 +171,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		topov2Group.POST("", topoHandlers.CreateNode)
 		topov2Group.GET("", topoHandlers.GetNodes)
 	}
-
-	//testData := g.Group("")
 
 	return g
 }

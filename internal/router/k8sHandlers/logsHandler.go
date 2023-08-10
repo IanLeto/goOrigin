@@ -23,6 +23,9 @@ func GetCurrentLogs(c *gin.Context) {
 	req.ToDate = c.Query("to_date")
 	req.Size, _ = conv.Int(c.Query("size"))
 	req.Step, _ = conv.Int(c.Query("step"))
+	req.Location, _ = conv.String(c.Query("location"))
+	req.LimitByte, _ = conv.Int(c.Query("limit_byte"))
+	req.LimitLine, _ = conv.Int(c.Query("limit_line"))
 
 	res, err = service.GetCurrentLogs(c, req)
 	if err != nil {

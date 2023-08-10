@@ -10,6 +10,7 @@ import (
 const k8sConfigMap = "/root/config/config.yaml"
 const tencentLocal = "/root/config/config.yaml"
 const debug = "/Users/ian/go/src/goOrigin/config.yaml"
+const NodeMapping = "node"
 
 type Config struct {
 	Name       string `yaml:"name"`

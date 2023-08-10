@@ -34,30 +34,30 @@ func NewEsV2Conn(conf *config.Config) *EsV2Conn {
 	return conn
 }
 
-func (c *EsV2Conn) Creat(index string, query map[string]interface{}) (*esapi.Response, error) {
+func (c *EsV2Conn) Creat(index string, body []byte) ([]byte, error) {
 	var (
-		buf  bytes.Buffer
+		//buf  bytes.Buffer
 		req  = esapi.IndexRequest{}
 		resp *esapi.Response
+		err  error
 	)
-	err := json.NewEncoder(&buf).Encode(query)
-	if err != nil {
-		goto ERR
-	}
+	//err := json.NewEncoder(&buf).Encode(query)
+	//if err != nil {
+	//	goto ERR
+	//}
 
 	req = esapi.IndexRequest{
 		Index: index,
-		Body:  nil,
-	}
-	if err != nil {
-		goto ERR
+		Body:  bytes.NewReader(body),
 	}
 	resp, err = req.Do(context.TODO(), c.Client)
 	if err != nil {
 		goto ERR
 	}
 	defer func() { _ = resp.Body.Close() }()
-	return resp, nil
+
+	return io.ReadAll(resp.Body)
+
 ERR:
 	{
 		return nil, err
@@ -65,15 +65,13 @@ ERR:
 
 }
 
-func (c *EsV2Conn) Query(index string, q map[string]interface{}) (*Response, error) {
+func (c *EsV2Conn) Query(index string, q map[string]interface{}) ([]byte, error) {
 	res, err := c.Client.Info()
 	if err != nil {
 		return nil, err
 	}
 	var (
-		buf        bytes.Buffer
-		resp       Response
-		resContent []byte
+		buf bytes.Buffer
 	)
 
 	err = json.NewEncoder(&buf).Encode(q)
@@ -88,9 +86,8 @@ func (c *EsV2Conn) Query(index string, q map[string]interface{}) (*Response, err
 		goto ERR
 	}
 	defer func() { _ = res.Body.Close() }()
-	resContent, err = io.ReadAll(res.Body)
-	err = json.Unmarshal(resContent, &resp)
-	return &resp, err
+
+	return io.ReadAll(res.Body)
 
 ERR:
 	{
@@ -98,7 +95,7 @@ ERR:
 	}
 }
 
-type Response struct {
+type EsDoc struct {
 	Took     int  `json:"took"`
 	TimedOut bool `json:"timed_out"`
 	Shards   struct {
@@ -124,4 +121,18 @@ type Response struct {
 }
 
 type CreateRes struct {
+}
+type InsertResultInfo struct {
+	Index   string `json:"_index"`
+	Type    string `json:"_type"`
+	Id      string `json:"_id"`
+	Version int    `json:"_version"`
+	Result  string `json:"result"`
+	Shards  struct {
+		Total      int `json:"total"`
+		Successful int `json:"successful"`
+		Failed     int `json:"failed"`
+	} `json:"_shards"`
+	SeqNo       int `json:"_seq_no"`
+	PrimaryTerm int `json:"_primary_term"`
 }

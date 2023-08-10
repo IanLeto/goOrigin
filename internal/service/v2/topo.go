@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
-	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
@@ -88,44 +87,45 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 }
 
 func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.NodeEntity, err error) {
-	var (
-		logger  = logger2.NewLogger()
-		queries = map[string]interface{}{}
-		conn    *clients.EsV2Conn
-	)
-	conn = clients.NewEsV2Conn(config.Conf)
-
-	if name != "" {
-		queries["term"] = map[string]interface{}{
-			"name": name,
-		}
-
-	}
-	res, err := conn.Query("node", queries)
-
-	if err != nil {
-		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
-		goto ERR
-	}
-
-	for _, hit := range res.Hits.Hits {
-		var ephemeralNode *model.NodeEntity
-		data, err := json.Marshal(hit.Source)
-		if err != nil {
-			goto ERR
-		}
-		err = json.Unmarshal(data, &ephemeralNode)
-		ephemeralNode.ID = hit.Id
-		if err != nil {
-			goto ERR
-		}
-		node = append(node, ephemeralNode)
-	}
+	panic(1)
+	//var (
+	//	logger  = logger2.NewLogger()
+	//	queries = map[string]interface{}{}
+	//	conn    *clients.EsV2Conn
+	//)
+	//conn = clients.NewEsV2Conn(config.Conf)
+	//
+	//if name != "" {
+	//	queries["term"] = map[string]interface{}{
+	//		"name": name,
+	//	}
+	//
+	//}
+	//res, err := conn.Query("node", queries)
+	//
+	//if err != nil {
+	//	logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
+	//	goto ERR
+	//}
+	//
+	//for _, hit := range res.Hits.Hits {
+	//	var ephemeralNode *model.NodeEntity
+	//	data, err := json.Marshal(hit.Source)
+	//	if err != nil {
+	//		goto ERR
+	//	}
+	//	err = json.Unmarshal(data, &ephemeralNode)
+	//	ephemeralNode.ID = hit.Id
+	//	if err != nil {
+	//		goto ERR
+	//	}
+	//	node = append(node, ephemeralNode)
+	//}
 	return node, nil
-ERR:
-	{
-		return nil, err
-	}
+	//ERR:
+	//	{
+	//		return nil, err
+	//	}
 }
 
 func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {

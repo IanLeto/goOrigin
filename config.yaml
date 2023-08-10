@@ -39,8 +39,8 @@ backend:
     group: ian
   es:
     #    address: http://124.222.48.125:9200/
-        address: http://localhost:9200/  # 注意是http:// 必须要有
-#    address: "http://49.233.61.57:9211"  # 注意是http:// 必须要有
+#        address: http://localhost:9200/  # 注意是http:// 必须要有
+    address: "http://49.233.61.57:9211"  # 注意是http:// 必须要有
   jaeger:
     address: localhost:6831
 client:

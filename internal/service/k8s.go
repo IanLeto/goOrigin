@@ -205,21 +205,26 @@ func reverseArray(arr []string) {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
 }
+func reverseArray2(arr []interface{}) {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+}
 
 func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes, error) {
-
 	var (
 		err       error
 		conn      = k8s.K8SConn
-		byteLimit = int64(102400)
-		lineLimit = int64(5000)
-		res       = &params.GetLogsRes{Contents: nil}
+		byteLimit = int64(req.LimitByte)
+		lineLimit = int64(req.LimitLine)
+		//sinceTime = int64(100 * time.Second)
+		res = &params.GetLogsRes{Contents: nil}
 	)
 	logOptions := &v1.PodLogOptions{
 		Container:                    req.Container,
-		Timestamps:                   true,
-		TailLines:                    &lineLimit,
-		LimitBytes:                   &byteLimit,
+		Timestamps:                   true,       // 是否附带时间戳
+		TailLines:                    &lineLimit, // 最大行数限制
+		LimitBytes:                   &byteLimit, // 最大字节数限制
 		InsecureSkipTLSVerifyBackend: false,
 	}
 
@@ -233,10 +238,6 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 	if req.Size == 0 {
 		req.Size = 100
 	}
-	//
-	if req.Location == "begin" {
-		contents = contents[0:req.Size]
-	}
 	var isForward bool = req.FromDate != "" && req.ToDate != ""
 
 	switch {
@@ -248,9 +249,9 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 		contents = contents[0:req.Size]
 	case !isForward && req.Location == "begin": // 从头开始查询
 		contents = contents[0:req.Size]
-	case !isForward && len(contents) <= req.Size:
+	case !isForward && len(contents) <= req.Size: // 没有翻页，且总日志量少于期望数量，直接返回所有日志
 		contents = contents[0:req.Size]
-	case !isForward && req.Location == "end":
+	case !isForward && req.Location == "end": // 从尾部
 		contents = contents[len(contents)-1-req.Size : len(contents)-1]
 	case req.Location == "" && req.FromDate == "" && req.ToDate == "":
 		contents = contents[len(contents)-1-req.Size : len(contents)-1]
@@ -280,7 +281,7 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 	type entryHandler func(timestamp int64, entry Entry) bool
 	// 根据条件选择合适的处理方式
 	var handleEntry entryHandler
-
+	// 如果向前翻页，
 	if isForward && req.Step >= 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
 			if timestamp >= toTimestamp {
@@ -339,11 +340,19 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 	if len(entries) == 0 {
 		return res, nil
 	}
+	var fn = func(arr []Entry) {
+		for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	if req.Step < 0 {
+		fn(entries)
+	}
 	for _, entry := range entries {
 		var epl Entry = entry
 		res.Contents = append(res.Contents, epl)
 	}
-	res.FromDate = string(entries[0].Date)
+	res.FromDate = string(entries[0].Date) //
 	res.ToDate = string(entries[len(entries)-1].Date)
 
 	return res, err
