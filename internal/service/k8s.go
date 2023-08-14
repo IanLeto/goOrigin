@@ -281,10 +281,11 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 	type entryHandler func(timestamp int64, entry Entry) bool
 	// 根据条件选择合适的处理方式
 	var handleEntry entryHandler
-	// 如果向前翻页，
+	// 如果向后翻页，
 	if isForward && req.Step >= 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
-			if timestamp >= toTimestamp {
+			// 如果当前数据的时间戳大于等于前端传入的时间片段的最大值,也就是todata
+			if timestamp >= fromTimestamp {
 				entries = append(entries, entry)
 				return true
 			}
@@ -292,7 +293,9 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 		}
 	} else if isForward && req.Step < 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
-			if timestamp <= fromTimestamp {
+			// 因为是向前翻页，所以需要反转数组
+			// 如果当前数据的时间戳小于等于结束时间，就返回
+			if timestamp <= toTimestamp {
 				entries = append(entries, entry)
 				return true
 			}
@@ -304,13 +307,14 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 			return true
 		}
 	}
-
+	// 向前翻页，需要反转数组
 	if isForward && req.Step < 0 {
 		reverseArray(lines)
 	}
 
 	for _, line := range lines {
 		parts := strings.SplitN(line, " ", 2)
+		// 正常的数据格式为：时间戳 内容
 		if len(parts) >= 2 {
 			date := parts[0]
 			content, err := strconv.Atoi(parts[1])
