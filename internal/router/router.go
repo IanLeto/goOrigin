@@ -81,6 +81,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)
+		indexGroup.GET("config", indexHandlers.ConfigInfo)
+		indexGroup.GET("configCheck", indexHandlers.ConfigCheck)
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
 
 	}

@@ -22,7 +22,6 @@ backend:
     port: 2379
   mongo:
     address: 124.222.48.125
-    #    address: localhost
     port: 27017
     user: root
     password: rkkijoorkkiss312joo
@@ -31,18 +30,31 @@ backend:
     address:
       - localhost:2181
     auth: root
-  k8s:
-    address: /Users/ian/.kube/config
   prom:
     address: http://124.222.48.125:9090
     push: http://124.222.48.125:9091
     group: ian
   es:
-    #    address: http://124.222.48.125:9200/
-#        address: http://localhost:9200/  # 注意是http:// 必须要有
-    address: "http://49.233.61.57:9211"  # 注意是http:// 必须要有
+    conn:
+      address: "http://49.233.61.57:9211"  # 注意是http:// 必须要有
+    local:
+      address: "localhost:9200"  # 注意是http:// 必须要有
   jaeger:
     address: localhost:6831
+  cluster:
+    local:
+      apiserver_address: "http://localhost:8080"
+      config_address: "/Users/ian/.kube/config"
+      is_in_cluster: false
+      cluster_name: local
+      token: ""
+    conn:
+      apiserver_address: "http://localhost:8080"
+      config_address: ""
+      is_in_cluster: true
+      cluster_name: test
+      token: ""
+
 client:
   CC:
     address: localhost:1129
@@ -53,6 +65,7 @@ components:
   - cc
   - prom
   - jaeger
+
   #  - redis
   #   - mongo
   #  - k8s

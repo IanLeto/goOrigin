@@ -48,21 +48,6 @@ func init() {
 }
 
 func initConfig(path string) error {
-	//var configPath = ""
-	//fmt.Println(os.Getenv("mode"))
-	//switch os.Getenv("mode") {
-	//case "k8s":
-	//	configPath = k8sConfigMap
-	//case "debug":
-	//	configPath = debug
-	//case "tencent":
-	//	configPath = tencentLocal
-	//case "win":
-	//	configPath = "config.yaml"
-	//default:
-	//	configPath = debug
-	//
-	//}
 
 	viper.SetConfigFile(path)
 

@@ -1,7 +1,9 @@
 package indexHandlers
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"goOrigin/config"
 	"goOrigin/internal/router/baseHandlers"
 	"net/http"
 	"os"
@@ -21,6 +23,31 @@ func Ping(c *gin.Context) {
 		"Maintainer": "ian.liu",
 		"DocUrl":     "",
 	}, nil)
+}
+
+func ConfigInfo(c *gin.Context) {
+	var (
+		result = make(map[string]interface{})
+	)
+	v, err := json.Marshal(config.Conf)
+	if err != nil {
+		baseHandlers.RenderData(c, nil, err)
+		return
+	}
+
+	err = json.Unmarshal(v, &result)
+	baseHandlers.RenderData(c, result, err)
+}
+
+func ConfigCheck(c *gin.Context) {
+
+	res, err := config.Conf.Backend.K8sConfig.Check()
+	if err != nil {
+		baseHandlers.RenderData(c, res, err)
+		return
+	}
+
+	baseHandlers.RenderData(c, "ok", err)
 }
 
 func Prom(handler http.Handler) gin.HandlerFunc {

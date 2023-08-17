@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"goOrigin/internal/params"
 	"goOrigin/internal/service"
+	"strconv"
 )
 
 func GetCurrentLogs(c *gin.Context) {
@@ -22,8 +23,11 @@ func GetCurrentLogs(c *gin.Context) {
 	req.FromDate = c.Query("from_date")
 	req.ToDate = c.Query("to_date")
 	req.Size, _ = conv.Int(c.Query("size"))
-	req.Step, _ = conv.Int(c.Query("step"))
+	paramStr := c.Query("step")
+	// 使用 strconv.Atoi 将字符串转换为整数
+	req.Step, err = strconv.Atoi(paramStr)
 	req.Location, _ = conv.String(c.Query("location"))
+	req.Step, _ = conv.Int(c.Query("step2"))
 	req.LimitByte, _ = conv.Int(c.Query("limit_byte"))
 	req.LimitLine, _ = conv.Int(c.Query("limit_line"))
 

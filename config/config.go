@@ -1,6 +1,17 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"github.com/spf13/viper"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
+)
+
+type Checker interface {
+	Check() (string, error)
+}
 
 type ComponentConfig interface {
 	NewComponent() ComponentConfig
@@ -113,19 +124,6 @@ func NewRedisConfig() *RedisConfig {
 	}
 }
 
-// k8s
-
-type K8sConfig struct {
-	Address string
-	NS      string
-}
-
-func NewK8sConfig() *K8sConfig {
-	return &K8sConfig{
-		Address: viper.GetString("backend.redis.DB"),
-	}
-}
-
 // prom
 
 type PromConfig struct {
@@ -145,11 +143,28 @@ func NewPromConfig() *PromConfig {
 // es
 
 type EsConfig struct {
-	Address string
+	Regions map[string]EsInfo
+}
+type EsInfo struct {
+	Address string `json:"address"`
+	Region  string `json:"region"`
 }
 
 func NewEsConfig() *EsConfig {
-	return &EsConfig{Address: viper.GetString("backend.es.address")}
+	esRegion := viper.GetStringMap("backend.es")
+	esRegions := make(map[string]EsInfo)
+	for s, info := range esRegion {
+		regionInfo := info.(map[string]interface{})
+		esRegions[s] = EsInfo{
+			Address: regionInfo["address"].(string),
+		}
+		esRegions[s] = EsInfo{
+			Region: s,
+		}
+	}
+	return &EsConfig{
+		Regions: esRegions,
+	}
 }
 
 type JaegerConfig struct {
@@ -219,4 +234,68 @@ func NewSSHConfig() *SSHConfig {
 		Auth:    viper.GetString("ssh.auth"),
 		Port:    viper.GetInt("ssh.port"),
 	}
+}
+
+// K8sConfig k8s 配置
+type K8sConfig struct {
+	Clusters map[string]ClusterInfo
+}
+
+type ClusterInfo struct {
+	ClusterName      string `json:"cluster_name"`
+	APIServerAddress string `json:"apiserver_address"`
+	ConfigAddress    string `json:"config_address"`
+	IsInCluster      bool   `json:"is_in_cluster"`
+	Token            string `json:"token"`
+}
+
+func NewK8sConfig() *K8sConfig {
+	cluster := viper.GetStringMap("backend.cluster")
+	clusters := make(map[string]ClusterInfo)
+	for s, info := range cluster {
+		clusterInfo := info.(map[string]interface{})
+		clusters[s] = ClusterInfo{
+			ClusterName:      clusterInfo["cluster_name"].(string),
+			APIServerAddress: clusterInfo["apiserver_address"].(string),
+			ConfigAddress:    clusterInfo["config_address"].(string),
+			IsInCluster:      clusterInfo["is_in_cluster"].(bool),
+			Token:            clusterInfo["token"].(string),
+		}
+	}
+
+	return &K8sConfig{
+		Clusters: clusters,
+	}
+}
+
+func (k K8sConfig) Check() (string, error) {
+	for cluster, info := range k.Clusters {
+		if info.IsInCluster {
+			continue
+		}
+		if info.ConfigAddress != "" {
+			config := flag.String("kubeconfig", info.ConfigAddress, "absolute path to the kubeconfig file")
+			flag.Parse()
+			restConfig, err := clientcmd.BuildConfigFromFlags("", *config)
+			if err != nil {
+				return cluster, err
+			}
+			client, err := kubernetes.NewForConfig(restConfig)
+			version := client.RESTClient().APIVersion().Version
+			if err != nil {
+				return cluster, err
+			}
+			fmt.Println(version)
+			continue
+		}
+		if info.Token == "" {
+			return cluster, errors.New("token is empty")
+		}
+
+		if info.APIServerAddress == "" {
+			return cluster, errors.New("api server address is empty")
+		}
+
+	}
+	return "", nil
 }

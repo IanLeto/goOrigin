@@ -10,21 +10,21 @@ import (
 	"io"
 )
 
+var EsConns = map[string]*EsV2Conn{}
+
 type EsV2Conn struct {
 	Client *elasticsearch7.Client
 }
 
-func NewEsV2Conn(conf *config.Config) *EsV2Conn {
+func NewEsV2Conn(conf *config.EsInfo) *EsV2Conn {
 	var (
 		conn = &EsV2Conn{}
 		err  error
 	)
-	if conf == nil {
-		conf = config.Conf
-	}
+
 	client, err := elasticsearch7.NewClient(elasticsearch7.Config{
 		Addresses: []string{
-			conf.Backend.EsConfig.Address,
+			conf.Address,
 		},
 	})
 	if err != nil {
@@ -41,10 +41,6 @@ func (c *EsV2Conn) Creat(index string, body []byte) ([]byte, error) {
 		resp *esapi.Response
 		err  error
 	)
-	//err := json.NewEncoder(&buf).Encode(query)
-	//if err != nil {
-	//	goto ERR
-	//}
 
 	req = esapi.IndexRequest{
 		Index: index,
@@ -120,8 +116,6 @@ type EsDoc struct {
 	} `json:"hits"`
 }
 
-type CreateRes struct {
-}
 type InsertResultInfo struct {
 	Index   string `json:"_index"`
 	Type    string `json:"_type"`
@@ -135,4 +129,11 @@ type InsertResultInfo struct {
 	} `json:"_shards"`
 	SeqNo       int `json:"_seq_no"`
 	PrimaryTerm int `json:"_primary_term"`
+}
+
+func init() {
+	//for r, info := range config.Conf.Backend.EsConfig.Regions {
+	//	var ephemeral = info
+	//	EsConns[r] = NewEsV2Conn(&ephemeral)
+	//}
 }

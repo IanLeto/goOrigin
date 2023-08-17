@@ -14,7 +14,7 @@ import (
 	"os"
 )
 
-//var defaultConfigPath = "/Users/ian/go/src/goOrigin/config.yaml"
+// var defaultConfigPath = "/Users/ian/go/src/goOrigin/config.yaml"
 var defaultConfigPath = ""
 var preCheck []func() error
 var mode string

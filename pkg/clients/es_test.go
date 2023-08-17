@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/suite"
-	"goOrigin/config"
 	"goOrigin/pkg/clients"
 	"testing"
 	"time"
@@ -18,11 +17,7 @@ type EsAPISuite struct {
 
 func (s *EsAPISuite) SetupTest() {
 	var err error
-	s.conn = clients.NewEsV2Conn(&config.Config{
-		Backend: &config.BackendConfig{
-			EsConfig: &config.EsConfig{Address: "http://49.233.61.57:9211"},
-		},
-	})
+
 	s.NoError(err)
 }
 

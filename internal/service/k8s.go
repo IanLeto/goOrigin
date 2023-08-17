@@ -276,6 +276,7 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 			return nil, err
 		}
 	}
+	fmt.Println(fromTimestamp)
 	count := 0
 	// 定义一个函数类型，用于处理不同的条件
 	type entryHandler func(timestamp int64, entry Entry) bool
@@ -285,7 +286,7 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 	if isForward && req.Step >= 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
 			// 如果当前数据的时间戳大于等于前端传入的时间片段的最大值,也就是todata
-			if timestamp >= fromTimestamp {
+			if timestamp > toTimestamp {
 				entries = append(entries, entry)
 				return true
 			}
@@ -295,7 +296,7 @@ func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes,
 		handleEntry = func(timestamp int64, entry Entry) bool {
 			// 因为是向前翻页，所以需要反转数组
 			// 如果当前数据的时间戳小于等于结束时间，就返回
-			if timestamp <= toTimestamp {
+			if timestamp < fromTimestamp {
 				entries = append(entries, entry)
 				return true
 			}

@@ -23,8 +23,9 @@ type NodeEntity struct {
 	FatherID string        `json:"father_id"`
 	Done     bool          `json:"done"`
 	Status   string        `json:"status"`
-	Note     string        `json:"note"`
 	Tags     []string      `json:"tags"`
+	Note     string        `json:"note"`
+	Region   string        `json:"region"`
 	Children []string      `json:"children"`
 	Nodes    []*NodeEntity `json:"nodes"`
 }
@@ -69,7 +70,7 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 		father *NodeEntity
 		logger = logger2.NewLogger()
 	)
-	conn = clients.NewEsV2Conn(nil)
+	conn = clients.EsConns[node.Region]
 	_, err = conn.Client.Info()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
