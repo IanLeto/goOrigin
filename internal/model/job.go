@@ -6,7 +6,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	pbs "goOrigin/agent/protos"
 	"goOrigin/backend"
-	"goOrigin/internal/db"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
@@ -24,8 +24,8 @@ type Job struct {
 	ScriptIDS  []string
 }
 
-func (j *Job) ToTable() *db.TJob {
-	return &db.TJob{
+func (j *Job) ToTable() *mysql.TJob {
+	return &mysql.TJob{
 		Name:      j.Name,
 		Target:    strings.Join(j.Targets, ","),
 		FilePath:  j.FilePath,
@@ -55,10 +55,10 @@ func (j *Job) Update() error {
 }
 
 func (j *Job) Delete() error {
-	return db.DeleteJobByID(j.ID)
+	return mysql.DeleteJobByID(j.ID)
 }
 
-func (j *Job) QueryDetail() (*db.TJob, error) {
+func (j *Job) QueryDetail() (*mysql.TJob, error) {
 	tJob := j.ToTable()
 	err := storage.GlobalMySQL.Model(tJob).First(tJob).Error
 	if err != nil {

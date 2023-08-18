@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 )
 
 func CreateRecord(c *gin.Context) {
 	var (
-		req = params.CreateRecordReqInfo{}
-		res = params.CreatRecordResInfo{}
+		req = V1.CreateRecordReqInfo{}
+		res = V1.CreatRecordResInfo{}
 		err error
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
@@ -18,8 +18,8 @@ func CreateRecord(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

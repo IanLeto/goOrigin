@@ -5,13 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 )
 
 func CreateScript(c *gin.Context) {
 	var (
-		req = params.CreateScriptRequest{}
+		req = V1.CreateScriptRequest{}
 		res interface{}
 		err error
 	)
@@ -20,10 +20,10 @@ func CreateScript(c *gin.Context) {
 		goto ERR
 	}
 	res, err = service.CreateScript(c, req)
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func DeleteScript(c *gin.Context) {
@@ -35,20 +35,20 @@ func DeleteScript(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(id))
+	V1.BuildResponse(c, V1.BuildInfo(id))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func QueryScriptList(c *gin.Context) {
 	var (
-		req = params.QueryScriptRequest{
+		req = V1.QueryScriptRequest{
 			Type: c.Query("type"),
 			Key:  c.Query("key"),
 			Tags: c.Query("tags"),
 		}
-		res = &params.QueryScriptListResponse{}
+		res = &V1.QueryScriptListResponse{}
 		err error
 	)
 
@@ -56,10 +56,10 @@ func QueryScriptList(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func RunScript(c *gin.Context) {
@@ -72,8 +72,8 @@ func RunScript(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

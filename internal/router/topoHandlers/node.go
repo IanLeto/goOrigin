@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 	v2 "goOrigin/internal/service/v2"
 )
 
 func CreateNode(c *gin.Context) {
 	var (
-		req = params.CreateNodeRequest{}
+		req = V1.CreateNodeRequest{}
 		res interface{}
 		err error
 	)
@@ -20,15 +20,15 @@ func CreateNode(c *gin.Context) {
 		goto ERR
 	}
 	res, err = v2.CreateNode(c, &req)
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func UpdateNode(c *gin.Context) {
 	var (
-		req = params.UpdateNodeRequest{}
+		req = V1.UpdateNodeRequest{}
 		res interface{}
 		err error
 	)
@@ -37,10 +37,10 @@ func UpdateNode(c *gin.Context) {
 		goto ERR
 	}
 	res, err = v2.UpdateNode(c, &req)
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func GetNodes(c *gin.Context) {
@@ -57,10 +57,10 @@ func GetNodes(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func GetNodeDetail(c *gin.Context) {
@@ -76,10 +76,10 @@ func GetNodeDetail(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func GetTopo(c *gin.Context) {
@@ -93,10 +93,10 @@ func GetTopo(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 func GetTopoList(c *gin.Context) {
 	var (
@@ -108,10 +108,10 @@ func GetTopoList(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func DeleteNodes(c *gin.Context) {
@@ -124,8 +124,8 @@ func DeleteNodes(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

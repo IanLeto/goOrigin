@@ -1,4 +1,4 @@
-package params
+package V1
 
 type CreateNodeInfo struct {
 	Name     string   `json:"name"`

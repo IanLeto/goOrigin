@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 )
 
 func CreateDeploy(c *gin.Context) {
 	var (
-		req  = params.CreateDeploymentReq{}
+		req  = V1.CreateDeploymentReq{}
 		name interface{}
 		err  error
 	)
@@ -19,10 +19,10 @@ func CreateDeploy(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.CreateDeployment(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func DeleteDeploy(c *gin.Context) {
@@ -37,15 +37,15 @@ func DeleteDeploy(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func UpdateDeploy(c *gin.Context) {
 	var (
-		req  = params.UpdateDeploymentReq{}
+		req  = V1.UpdateDeploymentReq{}
 		name interface{}
 		err  error
 	)
@@ -54,10 +54,10 @@ func UpdateDeploy(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.UpdateDeployment(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func ListDeploy(c *gin.Context) {
@@ -71,15 +71,15 @@ func ListDeploy(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func CreateConfigMap(c *gin.Context) {
 	var (
-		req  = params.CreateDeploymentReq{}
+		req  = V1.CreateDeploymentReq{}
 		name interface{}
 		err  error
 	)
@@ -88,15 +88,15 @@ func CreateConfigMap(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.CreateDeployment(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func SelectConfigMap(c *gin.Context) {
 	var (
-		req  = params.GetConfigMapRequestInfo{}
+		req  = V1.GetConfigMapRequestInfo{}
 		name interface{}
 		err  error
 	)
@@ -105,15 +105,15 @@ func SelectConfigMap(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.GetConfigMapDetail(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func CreateDeployDynamic(c *gin.Context) {
 	var (
-		req  = params.CreateDeploymentDynamicRequest{}
+		req  = V1.CreateDeploymentDynamicRequest{}
 		name interface{}
 		err  error
 	)
@@ -122,10 +122,10 @@ func CreateDeployDynamic(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.CreateDeploymentDynamic(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func DeleteDeployDynamic(c *gin.Context) {
@@ -140,15 +140,15 @@ func DeleteDeployDynamic(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func UpdateDeployDynamic(c *gin.Context) {
 	var (
-		req  = params.UpdateDeploymentDynamicRequest{}
+		req  = V1.UpdateDeploymentDynamicRequest{}
 		name interface{}
 		err  error
 	)
@@ -157,8 +157,8 @@ func UpdateDeployDynamic(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.UpdateDeploymentDynamicRequest(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

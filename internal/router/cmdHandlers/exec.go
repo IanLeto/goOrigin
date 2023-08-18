@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"goOrigin/API/V1"
 	pbs "goOrigin/agent/protos"
 	"goOrigin/backend"
-	"goOrigin/internal/params"
 )
 
 type JobGroup struct {
@@ -32,8 +32,8 @@ func Ping(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

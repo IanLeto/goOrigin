@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 )
 
-func CreateRecord(c *gin.Context, req *params.CreateRecordReqInfo) {
+func CreateRecord(c *gin.Context, req *V1.CreateRecordReqInfo) {
 
 }

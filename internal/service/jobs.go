@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/db"
+	"goOrigin/API/V1"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
 	"strings"
 )
 
-func CreateJob(c *gin.Context, req params.CreateJobRequest) (uint, error) {
+func CreateJob(c *gin.Context, req V1.CreateJobRequest) (uint, error) {
 	var (
 		job = model.Job{
 			Targets:    req.Targets,
@@ -60,7 +60,7 @@ ERR:
 	}
 }
 
-func UpdateJob(c *gin.Context, req *params.UpdateJobRequest) (uint, error) {
+func UpdateJob(c *gin.Context, req *V1.UpdateJobRequest) (uint, error) {
 	var (
 		job = model.Job{
 			ID: req.ID,
@@ -96,7 +96,7 @@ func DeleteJob(c *gin.Context, id int) error {
 	err = job.Delete()
 	return err
 }
-func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
+func GetJobDetail(c *gin.Context, id int) (*V1.GetJobResponse, error) {
 	var (
 		err error
 		job = &model.Job{ID: uint(id)}
@@ -105,7 +105,7 @@ func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := &params.GetJobResponse{
+	response := &V1.GetJobResponse{
 		ID:       tJob.ID,
 		Name:     tJob.Name,
 		FilePath: tJob.FilePath,
@@ -116,11 +116,11 @@ func GetJobDetail(c *gin.Context, id int) (*params.GetJobResponse, error) {
 
 }
 
-func GetJobs(c *gin.Context) (*params.GetJobsResponse, error) {
+func GetJobs(c *gin.Context) (*V1.GetJobsResponse, error) {
 	var (
 		err   error
-		tJobs []*db.TJob
-		infos []*params.GetJobsResponseInfo
+		tJobs []*mysql.TJob
+		infos []*V1.GetJobsResponseInfo
 	)
 
 	err = storage.GlobalMySQL.Table("t_jobs").Find(&tJobs).Error
@@ -128,24 +128,24 @@ func GetJobs(c *gin.Context) (*params.GetJobsResponse, error) {
 		return nil, err
 	}
 	for _, tJob := range tJobs {
-		infos = append(infos, &params.GetJobsResponseInfo{
+		infos = append(infos, &V1.GetJobsResponseInfo{
 			ID:        tJob.ID,
 			Name:      tJob.Name,
 			Content:   "",
 			ScriptIDs: strings.Split(tJob.ScriptIDs, ","),
 		})
 	}
-	return &params.GetJobsResponse{
+	return &V1.GetJobsResponse{
 		Infos: infos,
 	}, err
 
 }
 
-func RunJob(c *gin.Context, req *params.RunJobRequest) (*params.RunJobResponse, error) {
+func RunJob(c *gin.Context, req *V1.RunJobRequest) (*V1.RunJobResponse, error) {
 	var (
 		err  error
 		job  = &model.Job{}
-		tJob = &db.TJob{}
+		tJob = &mysql.TJob{}
 		//infos []*params.GetJobsResponseInfo
 	)
 	if err != nil {
@@ -168,7 +168,7 @@ func RunJob(c *gin.Context, req *params.RunJobRequest) (*params.RunJobResponse, 
 
 		_ = job.Exec(c)
 	}()
-	return &params.RunJobResponse{}, err
+	return &V1.RunJobResponse{}, err
 ERR:
 	{
 		return nil, err

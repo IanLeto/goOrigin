@@ -1,4 +1,4 @@
-package params
+package V1
 
 type QueryWeightRequest struct {
 	Start  int64  `json:"start"`

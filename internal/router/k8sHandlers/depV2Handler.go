@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 )
 
 func CreateV2Deploy(c *gin.Context) {
 	var (
-		req  = params.CreateDeploymentReq{}
+		req  = V1.CreateDeploymentReq{}
 		name interface{}
 		err  error
 	)
@@ -19,8 +19,8 @@ func CreateV2Deploy(c *gin.Context) {
 		goto ERR
 	}
 	name, err = service.CreateDeploymentV2(c, &req)
-	params.BuildResponse(c, params.BuildInfo(name))
+	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

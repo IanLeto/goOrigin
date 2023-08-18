@@ -1,4 +1,4 @@
-package params
+package V1
 
 import "github.com/gin-gonic/gin"
 

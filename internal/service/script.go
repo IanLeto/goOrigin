@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"goOrigin/API/V1"
 	pbs "goOrigin/agent/protos"
 	"goOrigin/backend"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
 type ScriptApis interface {
-	CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interface{}, err error)
+	CreateScript(c *gin.Context, req V1.CreateScriptRequest) (result interface{}, err error)
 }
 
-func CreateScript(c *gin.Context, req params.CreateScriptRequest) (result interface{}, err error) {
+func CreateScript(c *gin.Context, req V1.CreateScriptRequest) (result interface{}, err error) {
 	var (
 		logger = logger2.NewLogger()
 		script = &model.BaseScript{
@@ -64,7 +64,7 @@ ERR:
 
 }
 
-func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.QueryScriptListResponse, err error) {
+func QueryScript(c *gin.Context, req V1.QueryScriptRequest) (res *V1.QueryScriptListResponse, err error) {
 	var (
 		bq      = elastic.NewBoolQuery()
 		eq      = elastic.NewExistsQuery("Uploader") // 排除无效脚本
@@ -72,7 +72,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		queries []elastic.Query
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
-		infos   []*params.QueryScriptListResponseInfo
+		infos   []*V1.QueryScriptListResponseInfo
 	)
 
 	client, err = clients.NewESClient()
@@ -105,7 +105,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 		var ephemeralSc model.BaseScript
 		err = json.Unmarshal(hit.Source, &ephemeralSc)
 
-		infos = append(infos, &params.QueryScriptListResponseInfo{
+		infos = append(infos, &V1.QueryScriptListResponseInfo{
 			ID:         hit.Id,
 			Name:       ephemeralSc.Name,
 			Comment:    ephemeralSc.Comment,
@@ -144,7 +144,7 @@ func QueryScript(c *gin.Context, req params.QueryScriptRequest) (res *params.Que
 	//		Tags:       v.Tags,
 	//	})
 	//}
-	res = &params.QueryScriptListResponse{Infos: infos}
+	res = &V1.QueryScriptListResponse{Infos: infos}
 	return res, err
 ERR:
 	{

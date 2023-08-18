@@ -1,4 +1,4 @@
-package params
+package V1
 
 type CreateScriptRequest struct {
 	ID         int      `json:"id"`

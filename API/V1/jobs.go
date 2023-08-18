@@ -1,4 +1,4 @@
-package params
+package V1
 
 type CreateJobRequest struct {
 	ID         uint     `json:"id"`

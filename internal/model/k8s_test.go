@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 )
@@ -40,7 +40,7 @@ func (s *K8sParamsSuite) TestConvBson() {
 }
 
 func (s *K8sParamsSuite) TestLocal() {
-	x := params.CreateDeploymentReq{
+	x := V1.CreateDeploymentReq{
 		Name:                        "ian",
 		Namespace:                   "",
 		MetadataName:                "ian",

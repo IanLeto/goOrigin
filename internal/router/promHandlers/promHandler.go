@@ -3,7 +3,7 @@ package promHandlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 )
 
@@ -16,7 +16,7 @@ import (
 // @Router /v1/record [POST]
 func QueryWeight(c *gin.Context) {
 	var (
-		req = params.QueryWeightRequest{}
+		req = V1.QueryWeightRequest{}
 		err error
 		res string
 	)
@@ -27,9 +27,9 @@ func QueryWeight(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }

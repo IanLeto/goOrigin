@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/api/prometheus/v1"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
 	"time"
 )
 
-func QueryPromWeight(c *gin.Context, req *params.QueryWeightRequest) (string, error) {
+func QueryPromWeight(c *gin.Context, req *V1.QueryWeightRequest) (string, error) {
 	var (
 		err error
 		log = logger.Logger

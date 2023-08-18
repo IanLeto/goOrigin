@@ -1,4 +1,4 @@
-package db
+package mysql
 
 type Meta struct {
 	ID         uint  `swaggerignore:"true" gorm:"primary_key" json:"id" binding:"-" `

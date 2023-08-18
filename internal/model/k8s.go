@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/pkg/utils"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -28,7 +28,7 @@ func convJson(s string) map[string]string {
 	return res
 }
 
-func NewDeployParams(req *params.CreateDeploymentReq) (*Deploy, error) {
+func NewDeployParams(req *V1.CreateDeploymentReq) (*Deploy, error) {
 
 	var (
 		dep = &Deploy{
@@ -72,7 +72,7 @@ func NewDeployParams(req *params.CreateDeploymentReq) (*Deploy, error) {
 	return dep, nil
 }
 
-func NewDeployParamsDetail(req *params.CreateDeploymentReq) (*Deploy, error) {
+func NewDeployParamsDetail(req *V1.CreateDeploymentReq) (*Deploy, error) {
 	var (
 		dep                   = &Deploy{}
 		err                   error
@@ -210,7 +210,7 @@ func NewDeployParamsDetail(req *params.CreateDeploymentReq) (*Deploy, error) {
 }
 
 // NewDeployParamsV2 : 非结构化数据，k8s 结构化处理太多了学习过程中不适合，交给前端处理吧
-func NewDeployParamsV2(req *params.CreateDeploymentReq) (map[string]interface{}, error) {
+func NewDeployParamsV2(req *V1.CreateDeploymentReq) (map[string]interface{}, error) {
 	var (
 		err error
 	)

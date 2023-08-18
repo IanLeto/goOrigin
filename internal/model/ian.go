@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 )
 
 type Base struct {
@@ -50,7 +50,7 @@ func (i *Ian) ToString() string {
 	return string(data)
 }
 
-func NewIan(req params.CreateIanRequestInfo) *Ian {
+func NewIan(req V1.CreateIanRequestInfo) *Ian {
 	return &Ian{
 		Name: req.Name,
 		Base: &Base{},

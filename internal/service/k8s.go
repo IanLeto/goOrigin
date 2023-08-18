@@ -8,8 +8,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"goOrigin/API/V1"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
@@ -24,7 +24,7 @@ import (
 	"time"
 )
 
-func CreateDeployment(c *gin.Context, req *params.CreateDeploymentReq) (string, error) {
+func CreateDeployment(c *gin.Context, req *V1.CreateDeploymentReq) (string, error) {
 
 	var (
 		res = ""
@@ -54,7 +54,7 @@ func CreateDeployment(c *gin.Context, req *params.CreateDeploymentReq) (string, 
 
 	return res, err
 }
-func CreateDeploymentV2(c *gin.Context, req *params.CreateDeploymentReq) (string, error) {
+func CreateDeploymentV2(c *gin.Context, req *V1.CreateDeploymentReq) (string, error) {
 
 	var (
 		res = ""
@@ -88,7 +88,7 @@ func CreateDeploymentV2(c *gin.Context, req *params.CreateDeploymentReq) (string
 	return res, err
 }
 
-func UpdateDeployment(c *gin.Context, req *params.UpdateDeploymentReq) (string, error) {
+func UpdateDeployment(c *gin.Context, req *V1.UpdateDeploymentReq) (string, error) {
 	var (
 		err error
 	)
@@ -120,7 +120,7 @@ func ListDeployments(c *gin.Context, ns string) (interface{}, error) {
 	return res, err
 }
 
-func GetConfigMapDetail(c *gin.Context, req *params.GetConfigMapRequestInfo) (interface{}, error) {
+func GetConfigMapDetail(c *gin.Context, req *V1.GetConfigMapRequestInfo) (interface{}, error) {
 	var (
 		ns   = req.NS
 		name = req.Name
@@ -129,7 +129,7 @@ func GetConfigMapDetail(c *gin.Context, req *params.GetConfigMapRequestInfo) (in
 
 }
 
-func CreateDeploymentDynamic(c *gin.Context, req *params.CreateDeploymentDynamicRequest) (interface{}, error) {
+func CreateDeploymentDynamic(c *gin.Context, req *V1.CreateDeploymentDynamicRequest) (interface{}, error) {
 	var (
 		err error
 		obj map[string]interface{}
@@ -162,7 +162,7 @@ func DeleteDeploymentDynamic(c *gin.Context, name, namespace string) error {
 	return err
 }
 
-func UpdateDeploymentDynamicRequest(c *gin.Context, req *params.UpdateDeploymentDynamicRequest) (interface{}, error) {
+func UpdateDeploymentDynamicRequest(c *gin.Context, req *V1.UpdateDeploymentDynamicRequest) (interface{}, error) {
 	var (
 		err error
 	)
@@ -211,14 +211,14 @@ func reverseArray2(arr []interface{}) {
 	}
 }
 
-func GetCurrentLogs(c *gin.Context, req *params.GetLogsReq) (*params.GetLogsRes, error) {
+func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) {
 	var (
 		err       error
 		conn      = k8s.K8SConn
 		byteLimit = int64(req.LimitByte)
 		lineLimit = int64(req.LimitLine)
 		//sinceTime = int64(100 * time.Second)
-		res = &params.GetLogsRes{Contents: nil}
+		res = &V1.GetLogsRes{Contents: nil}
 	)
 	logOptions := &v1.PodLogOptions{
 		Container:                    req.Container,

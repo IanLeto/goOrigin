@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"goOrigin/API/V1"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/internal/service"
 )
 
@@ -19,7 +19,7 @@ import (
 // @Router /v1/record [POST]
 func CreateIanRecord(c *gin.Context) {
 	var (
-		req   = params.CreateIanRequestInfo{}
+		req   = V1.CreateIanRequestInfo{}
 		objID interface{}
 		err   error
 	)
@@ -28,10 +28,10 @@ func CreateIanRecord(c *gin.Context) {
 		goto ERR
 	}
 	objID, err = service.CreateIanRecord(c, req)
-	params.BuildResponse(c, params.BuildInfo(objID))
+	V1.BuildResponse(c, V1.BuildInfo(objID))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func DeleteIanRecord(c *gin.Context) {
@@ -45,15 +45,15 @@ func DeleteIanRecord(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func UpdateIanRecord(c *gin.Context) {
 	var (
-		req = params.CreateIanRequestInfo{}
+		req = V1.CreateIanRequestInfo{}
 		res interface{}
 		err error
 	)
@@ -66,15 +66,15 @@ func UpdateIanRecord(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 func SelectIanRecord(c *gin.Context) {
 	var (
-		req = params.QueryRequest{}
-		res []*params.QueryResponse
+		req = V1.QueryRequest{}
+		res []*V1.QueryResponse
 		err error
 	)
 	req.Name = c.Query("name")
@@ -83,14 +83,14 @@ func SelectIanRecord(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 func AppendIanRecord(c *gin.Context) {
 	var (
-		req = params.AppendRequestInfo{}
+		req = V1.AppendRequestInfo{}
 		res *model.Ian
 		err error
 	)
@@ -103,8 +103,8 @@ func AppendIanRecord(c *gin.Context) {
 		goto ERR
 	}
 
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }

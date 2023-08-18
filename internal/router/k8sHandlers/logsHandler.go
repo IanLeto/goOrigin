@@ -5,15 +5,15 @@ import (
 	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 	"strconv"
 )
 
 func GetCurrentLogs(c *gin.Context) {
 	var (
-		req = &params.GetLogsReq{}
-		res = &params.GetLogsRes{}
+		req = &V1.GetLogsReq{}
+		res = &V1.GetLogsRes{}
 		err error
 	)
 	req.Container = c.Query("container")
@@ -36,10 +36,10 @@ func GetCurrentLogs(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }

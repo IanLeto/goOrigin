@@ -1,4 +1,4 @@
-package params
+package V1
 
 type CreateRoutineReq struct {
 	Content string `json:"content"`

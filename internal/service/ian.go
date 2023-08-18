@@ -11,9 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
+	"goOrigin/API/V1"
 	"goOrigin/config"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
@@ -31,7 +31,7 @@ func newPusher(info prometheus.Gauge) *push.Pusher {
 	return push.New(config.Conf.Backend.PromConfig.Push, config.Conf.Backend.PromConfig.Group).Gatherer(reg)
 }
 
-func CreateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
+func CreateIanRecord(c *gin.Context, req V1.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
 		client *elastic.Client
 		res    *elastic.IndexResponse
@@ -84,7 +84,7 @@ ERR:
 
 }
 
-func UpdateIanRecord(c *gin.Context, req params.CreateIanRequestInfo) (id interface{}, err error) {
+func UpdateIanRecord(c *gin.Context, req V1.CreateIanRequestInfo) (id interface{}, err error) {
 	var (
 		ian = model.NewIan(req)
 	)
@@ -129,7 +129,7 @@ ERR:
 //	return nil, err
 //}
 
-func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {
+func SelectIanRecord(c *gin.Context, req *V1.QueryRequest) (response []*V1.QueryResponse, err error) {
 	var (
 		bq      = elastic.NewBoolQuery()
 		eq      = elastic.NewExistsQuery("name") // 排除无效脚本
@@ -159,7 +159,7 @@ func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*para
 		if err != nil {
 			goto ERR
 		}
-		response = append(response, &params.QueryResponse{
+		response = append(response, &V1.QueryResponse{
 			Name:       ephemeralIan.Name,
 			CreateTime: time.Unix(ephemeralIan.Time.T, 0).Format(time.RFC3339),
 			UpdateTime: time.Unix(ephemeralIan.Time.I, 0).Format(time.RFC3339),
@@ -242,7 +242,7 @@ ERR:
 //	return nil, err
 //}
 
-func AppendIanRecord(c *gin.Context, req *params.AppendRequestInfo) (*model.Ian, error) {
+func AppendIanRecord(c *gin.Context, req *V1.AppendRequestInfo) (*model.Ian, error) {
 	var (
 		bq      = elastic.NewBoolQuery()
 		queries []elastic.Query

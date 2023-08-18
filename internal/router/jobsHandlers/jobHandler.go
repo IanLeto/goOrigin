@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
-	"goOrigin/internal/params"
+	"goOrigin/API/V1"
 	"goOrigin/internal/service"
 	"goOrigin/pkg/logger"
 )
@@ -20,7 +20,7 @@ import (
 func CreateJob(c *gin.Context) {
 
 	var (
-		req = params.CreateJobRequest{}
+		req = V1.CreateJobRequest{}
 		id  uint
 		err error
 	)
@@ -29,10 +29,10 @@ func CreateJob(c *gin.Context) {
 		goto ERR
 	}
 	id, err = service.CreateJob(c, req)
-	params.BuildResponse(c, params.BuildInfo(id))
+	V1.BuildResponse(c, V1.BuildInfo(id))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
 
@@ -46,7 +46,7 @@ ERR:
 func UpdateJob(c *gin.Context) {
 
 	var (
-		req = &params.UpdateJobRequest{}
+		req = &V1.UpdateJobRequest{}
 		id  uint
 		err error
 	)
@@ -61,10 +61,10 @@ func UpdateJob(c *gin.Context) {
 		logger.Logger.Error("errors")
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(id))
+	V1.BuildResponse(c, V1.BuildInfo(id))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 // DeleteJob  @Summary
@@ -84,10 +84,10 @@ func DeleteJob(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(id))
+	V1.BuildResponse(c, V1.BuildInfo(id))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
 
@@ -103,16 +103,16 @@ func GetJobDetail(c *gin.Context) {
 		//id  = utils.QueryInt(c, "id", 0)
 		id  = cast.ToInt(c.Param("id"))
 		err error
-		res = &params.GetJobResponse{}
+		res = &V1.GetJobResponse{}
 	)
 	res, err = service.GetJobDetail(c, id)
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
 
@@ -128,23 +128,23 @@ func GetJobs(c *gin.Context) {
 		//id  = utils.QueryInt(c, "id", 0)
 		//id  = cast.ToInt(c.Param("id"))
 		err error
-		res = &params.GetJobsResponse{}
+		res = &V1.GetJobsResponse{}
 	)
 	res, err = service.GetJobs(c)
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func RunJob(c *gin.Context) {
 
 	var (
-		req = &params.RunJobRequest{}
-		res = &params.RunJobResponse{}
+		req = &V1.RunJobRequest{}
+		res = &V1.RunJobResponse{}
 		err error
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
@@ -155,9 +155,9 @@ func RunJob(c *gin.Context) {
 	if err != nil {
 		goto ERR
 	}
-	params.BuildResponse(c, params.BuildInfo(res))
+	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
-	params.BuildErrResponse(c, params.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }

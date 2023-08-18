@@ -1,4 +1,4 @@
-package params
+package V1
 
 type GetLogsReq struct {
 	Container string `json:"container"`

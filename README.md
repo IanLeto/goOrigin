@@ -1,6 +1,13 @@
 # goOrigin
 自用golang 服务原型
-
+#### package 说明
+    agent 服务端 也就是svc - agent 架构中的agent 和boke历史
+    client 客户端 用来请求其它服务的 比如请求 tool 和 agent
+    config 配置文件  这东西很恶心
+    logs 日志 还没配置
+    internal 服务内部的一些东西 
+    pkg 服务外部的一些东西, 也就是对外的一些东西, 其中他和internal 的区别在于,internal 包含了mvc 架构,会处理业务逻辑,而pkg 只是对外的一些东西,比如grpc 的接口,http 的接口,或者是一些工具类相当于dao层
+    internal 里面会定义业务库表结构,而pkg 里面只会定义接口,不会定义库表结构
 #### logs
     proto 三方库问题
     add log init  9/30

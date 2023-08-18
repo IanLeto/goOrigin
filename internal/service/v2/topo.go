@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"goOrigin/API/V1"
 	"goOrigin/internal/model"
-	"goOrigin/internal/params"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
-func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err error) {
+func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error) {
 	var (
 		logger = logger2.NewLogger()
 		node   *model.NodeEntity
@@ -38,7 +38,7 @@ func CreateNode(c *gin.Context, req *params.CreateNodeRequest) (id string, err e
 	return
 }
 
-func UpdateNode(c *gin.Context, req *params.UpdateNodeRequest) (id string, err error) {
+func UpdateNode(c *gin.Context, req *V1.UpdateNodeRequest) (id string, err error) {
 	var (
 		logger = logger2.NewLogger()
 		node   *model.NodeEntity
@@ -185,7 +185,7 @@ ERR:
 		return nil, err
 	}
 }
-func GetTopoList(c *gin.Context) (res []*params.GetTopoResponse, err error) {
+func GetTopoList(c *gin.Context) (res []*V1.GetTopoResponse, err error) {
 	var (
 		logger = logger2.NewLogger()
 		client *elastic.Client
@@ -209,7 +209,7 @@ func GetTopoList(c *gin.Context) (res []*params.GetTopoResponse, err error) {
 			logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
 			goto ERR
 		}
-		res = append(res, &params.GetTopoResponse{
+		res = append(res, &V1.GetTopoResponse{
 			Name:    node.Name,
 			Content: node.Content,
 			Depend:  node.Depend,
@@ -229,7 +229,7 @@ ERR:
 	}
 }
 
-func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err error) {
+func GetTopo(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		bq      = elastic.NewBoolQuery()
@@ -257,7 +257,7 @@ func GetTopo(c *gin.Context, name string) (res *params.GetTopoResponse, err erro
 		goto ERR
 	}
 	node = model.GetTopo(c, node)
-	res = &params.GetTopoResponse{
+	res = &V1.GetTopoResponse{
 		Name:    node.Name,
 		Content: node.Content,
 		Depend:  node.Depend,

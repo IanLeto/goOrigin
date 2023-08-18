@@ -1,4 +1,4 @@
-package dao
+package elastic
 
 type Doc struct {
 }
