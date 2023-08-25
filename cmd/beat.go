@@ -12,7 +12,6 @@ var beatCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand()
 	beatCmd.Flags().Bool("init", true, "初始化true 时会重新将jinja2模板初始化为新的filebeat文件。")
 	//beatCmd.Flags().Bool("init", true, "rota")
 }

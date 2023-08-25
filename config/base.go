@@ -6,7 +6,6 @@ import (
 	"goOrigin/pkg/utils"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 const k8sConfigMap = "/root/config/config.yaml"
@@ -51,7 +50,8 @@ func NewConfig() *Config {
 	if os.Getenv("configPath") != "" {
 		path = os.Getenv("configPath")
 	}
-	viper.SetConfigFile(filepath.Join(path, "config.yaml"))
+	//viper.SetConfigFile(filepath.Join(path, "config.yaml"))
+	viper.SetConfigFile(path)
 	utils.NoError(viper.ReadInConfig())
 	return &Config{
 		Name:       viper.GetString("name"),

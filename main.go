@@ -4,8 +4,9 @@ import (
 	"goOrigin/cmd"
 	_ "goOrigin/docs"
 	_ "goOrigin/pkg/moniter"
+	"goOrigin/pkg/utils"
 )
 
 func main() {
-	cmd.Execute()
+	utils.NoError(cmd.RootCmd.Execute())
 }

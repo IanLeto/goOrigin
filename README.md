@@ -30,3 +30,5 @@
 
     docker images | grep ianleto/ianhello | awk '{print $3}' | xargs docker rmi -f
     docker ps -a | grep 10c831814d55 | awk '{print $1}' | xargs docker rm -f
+
+####  
