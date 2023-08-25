@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-var K8SConn *KubeConn
+var Conn *KubeConn
 
 type KubeConn struct {
 	ClientSet     kubernetes.Interface
@@ -29,7 +29,7 @@ func (k *KubeConn) InitData(mode string) error {
 }
 
 func InitK8s() error {
-	K8SConn = NewK8sConn(context.TODO(), nil)
+	Conn = NewK8sConn(context.TODO(), nil)
 	return nil
 }
 
@@ -37,21 +37,18 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if conf == nil {
 		conf = config.Conf
 	}
-	// 这里的flag 可以重置命令行
-	//k8sconfig := flag.String("k8sconfig1", "/Users/ian/.kube/config", "kubernetes config file path")
-	//flag.Parse()
-	kubeconfig := filepath.Join(homedir.HomeDir(), ".kube", "config")
+	subconfig := filepath.Join(homedir.HomeDir(), ".kube", "configFromFlags")
 
-	// 使用 kubeconfig 文件创建 config 对象
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	// 使用 subconfig 文件创建 configFromFlags 对象
+	configFromFlags, err := clientcmd.BuildConfigFromFlags("", subconfig)
 	if err != nil {
 		panic(err)
 	}
-	client, err := kubernetes.NewForConfig(config)
+	client, err := kubernetes.NewForConfig(configFromFlags)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dyClient, err := dynamic.NewForConfig(config)
+	dyClient, err := dynamic.NewForConfig(configFromFlags)
 	if err != nil {
 		log.Fatal(err)
 	}

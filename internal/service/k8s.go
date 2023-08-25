@@ -41,7 +41,7 @@ func CreateDeployment(c *gin.Context, req *V1.CreateDeploymentReq) (string, erro
 			return err
 		}
 		data, err := storage.GlobalMongo.DB.Collection("pod").InsertOne(c, &deploy)
-		dep, err := k8s.K8SConn.CreateDeploy(c, "default", deploy.Deployment)
+		dep, err := k8s.Conn.CreateDeploy(c, "default", deploy.Deployment)
 		if err != nil {
 			_ = sessionContext.AbortTransaction(sessionContext)
 			return err
@@ -72,7 +72,7 @@ func CreateDeploymentV2(c *gin.Context, req *V1.CreateDeploymentReq) (string, er
 			return err
 		}
 		data, err := storage.GlobalMongo.DB.Collection("pod").InsertOne(c, &deploy)
-		dep, err := k8s.K8SConn.DynamicClient.Resource(deployments).Namespace("default").Create(context.TODO(),
+		dep, err := k8s.Conn.DynamicClient.Resource(deployments).Namespace("default").Create(context.TODO(),
 			&unstructured.Unstructured{Object: deploy}, metav1.CreateOptions{})
 
 		if err != nil {
@@ -92,7 +92,7 @@ func UpdateDeployment(c *gin.Context, req *V1.UpdateDeploymentReq) (string, erro
 	var (
 		err error
 	)
-	dep, err := k8s.K8SConn.UpdateDeploy(c, req.Name, utils.StrDefault(req.Namespace, "default"), req.Image)
+	dep, err := k8s.Conn.UpdateDeploy(c, req.Name, utils.StrDefault(req.Namespace, "default"), req.Image)
 	if err != nil {
 		return "", err
 	}
@@ -103,7 +103,7 @@ func DeleteDeployment(c *gin.Context, ns, name string) (string, error) {
 	var (
 		err error
 	)
-	res, err := k8s.K8SConn.DeleteDeploy(c, utils.StrDefault(ns, "default"), name)
+	res, err := k8s.Conn.DeleteDeploy(c, utils.StrDefault(ns, "default"), name)
 	if err != nil {
 		return "", err
 	}
@@ -113,7 +113,7 @@ func ListDeployments(c *gin.Context, ns string) (interface{}, error) {
 	var (
 		err error
 	)
-	res, err := k8s.K8SConn.ListDeploy(c, utils.StrDefault(ns, "default"))
+	res, err := k8s.Conn.ListDeploy(c, utils.StrDefault(ns, "default"))
 	if err != nil {
 		return "", err
 	}
@@ -125,7 +125,7 @@ func GetConfigMapDetail(c *gin.Context, req *V1.GetConfigMapRequestInfo) (interf
 		ns   = req.NS
 		name = req.Name
 	)
-	return k8s.K8SConn.GetConfigMapDetail(c, ns, name)
+	return k8s.Conn.GetConfigMapDetail(c, ns, name)
 
 }
 
@@ -141,7 +141,7 @@ func CreateDeploymentDynamic(c *gin.Context, req *V1.CreateDeploymentDynamicRequ
 	}
 	err = json.Unmarshal([]byte(req.Object), &obj)
 	deployment := &unstructured.Unstructured{Object: map[string]interface{}{}}
-	result, err := k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Create(c, deployment, metav1.CreateOptions{})
+	result, err := k8s.Conn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Create(c, deployment, metav1.CreateOptions{})
 	return result, err
 }
 func DeleteDeploymentDynamic(c *gin.Context, name, namespace string) error {
@@ -155,7 +155,7 @@ func DeleteDeploymentDynamic(c *gin.Context, name, namespace string) error {
 	}
 
 	deletePolicy := metav1.DeletePropagationForeground
-	err = k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(namespace).Delete(c, name, metav1.DeleteOptions{
+	err = k8s.Conn.DynamicClient.Resource(deploymentRes).Namespace(namespace).Delete(c, name, metav1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
 	logrus.Errorf("delete deploy error: %s", err)
@@ -171,7 +171,7 @@ func UpdateDeploymentDynamicRequest(c *gin.Context, req *V1.UpdateDeploymentDyna
 		Version:  "v1",
 		Resource: "deployments",
 	}
-	deployment, err := k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Get(c, req.Name, metav1.GetOptions{})
+	deployment, err := k8s.Conn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Get(c, req.Name, metav1.GetOptions{})
 	containers, found, err := unstructured.NestedSlice(deployment.Object, "spec", "template", "spec", "containers")
 	if err != nil || !found || containers == nil {
 		logrus.Errorf("deployment containers not found or error in spec: %v", err)
@@ -185,7 +185,7 @@ func UpdateDeploymentDynamicRequest(c *gin.Context, req *V1.UpdateDeploymentDyna
 	if err != nil {
 		goto ERR
 	}
-	_, err = k8s.K8SConn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Update(c, deployment, metav1.UpdateOptions{})
+	_, err = k8s.Conn.DynamicClient.Resource(deploymentRes).Namespace(req.Namespace).Update(c, deployment, metav1.UpdateOptions{})
 	return nil, err
 
 ERR:
@@ -214,7 +214,7 @@ func reverseArray2(arr []interface{}) {
 func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) {
 	var (
 		err       error
-		conn      = k8s.K8SConn
+		conn      = k8s.Conn
 		byteLimit = int64(req.LimitByte)
 		lineLimit = int64(req.LimitLine)
 		//sinceTime = int64(100 * time.Second)
@@ -365,5 +365,5 @@ func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) 
 }
 
 func init() {
-	k8s.InitK8s()
+	utils.NoError(k8s.InitK8s())
 }

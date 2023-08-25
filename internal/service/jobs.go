@@ -33,22 +33,6 @@ func CreateJob(c *gin.Context, req V1.CreateJobRequest) (uint, error) {
 		log.Error(fmt.Sprintf("创建es client 失败 %s", err.Error()))
 		goto ERR
 	}
-	//res, err = client.Search().Index("script").Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", req.ScriptIDs))).Do(c)
-	//if err != nil {
-	//	log.Error(fmt.Sprintf("查询es client 失败 %s", err.Error()))
-	//	goto ERR
-	//}
-
-	//for _, id := range req.ScriptIDs {
-	//	for i := 0; i < len(scripts); i++ {
-	//		if id == scripts[i].ID {
-	//			playbook[id] = scripts[i].Content
-	//			scripts[i] = scripts[len(scripts)-1]
-	//			scripts[len(scripts)-1] = nil
-	//			scripts = scripts[:len(scripts)-1]
-	//		}
-	//	}
-	//}
 	err = job.Create()
 	if err != nil {
 		goto ERR

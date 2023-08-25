@@ -42,7 +42,7 @@ func (s *k8sClientSuite) TestInner() {
 		err         error
 	)
 	//rabcClient = s.Clientset.RbacV1()
-	sa, err = k8s.K8SConn.ClientSet.CoreV1().ServiceAccounts("rbac-demo").Create(s.ctx, &corev1.ServiceAccount{
+	sa, err = k8s.Conn.ClientSet.CoreV1().ServiceAccounts("rbac-demo").Create(s.ctx, &corev1.ServiceAccount{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ServiceAccount",
 			APIVersion: "",
@@ -57,7 +57,7 @@ func (s *k8sClientSuite) TestInner() {
 		AutomountServiceAccountToken: nil,
 	}, metav1.CreateOptions{})
 	s.NoError(err)
-	role, err = k8s.K8SConn.ClientSet.RbacV1().Roles("rbac-demo").Create(s.ctx, &rbacv1.Role{
+	role, err = k8s.Conn.ClientSet.RbacV1().Roles("rbac-demo").Create(s.ctx, &rbacv1.Role{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:         "hello-role",
@@ -72,7 +72,7 @@ func (s *k8sClientSuite) TestInner() {
 	}, metav1.CreateOptions{})
 	s.NoError(err)
 
-	roleBinding, err = k8s.K8SConn.ClientSet.RbacV1().RoleBindings("rbac-demo").Create(s.ctx, &rbacv1.RoleBinding{
+	roleBinding, err = k8s.Conn.ClientSet.RbacV1().RoleBindings("rbac-demo").Create(s.ctx, &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:         "rb",
 			GenerateName: "",
