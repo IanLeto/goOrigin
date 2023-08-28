@@ -6,6 +6,7 @@ type CreateNodeInfo struct {
 	Depend   string   `json:"depend"`
 	Father   string   `json:"father"`
 	FatherId string   `json:"father_id"`
+	Region   string   `json:"region"`
 	Children []string `json:"children"`
 	Done     bool     `json:"done"`
 	Tags     []string `json:"tags"`

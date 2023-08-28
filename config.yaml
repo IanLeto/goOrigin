@@ -65,6 +65,7 @@ components:
   - cc
   - prom
   - jaeger
+  - es
 
   #  - redis
   #   - mongo

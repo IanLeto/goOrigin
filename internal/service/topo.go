@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
+	"goOrigin/config"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -28,6 +30,7 @@ func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error
 		Note:     req.Note,
 		Tags:     req.Tags,
 		Children: req.Children,
+		Region:   req.Region,
 	}
 
 	id, err = node.CreateNode(c)
@@ -150,26 +153,45 @@ ERR:
 		return nil, err
 	}
 }
-func GetTopoList(c *gin.Context) (res []*V1.GetTopoResponse, err error) {
+
+const DefaultRegion = "conn"
+
+func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err error) {
 	var (
 		logger = logger2.NewLogger()
-		client *elastic.Client
-		daoRes *elastic.SearchResult
 		node   *model.NodeEntity
+		conn   *clients.EsV2Conn
+		doc    *clients.EsDoc
 	)
-	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	var (
+		queries map[string]interface{}
+	)
+	if region == "" {
+		conn = clients.EsConns[DefaultRegion]
+	} else {
+		conn = clients.EsConns[region]
+	}
+	queries = map[string]interface{}{
+		"query": map[string]interface{}{
+			"term": map[string]interface{}{
+				"region.keyword": region,
+			},
+		},
+	}
+	value, err := conn.Query(config.NodeMapping, queries)
+	err = json.Unmarshal(value, &doc)
 	if err != nil {
-		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
-		return nil, err
+		logrus.Debugf("query: %s", func() string {
+			b, _ := json.Marshal(value)
+			return string(b)
+		}())
 	}
-	daoRes, err = client.Search().Index(model.EsNode).Query(elastic.NewTermsQuery("father", "")).Do(c)
-	if len(daoRes.Hits.Hits) == 0 {
-		err = errors.New("不存在该数据")
-		goto ERR
-	}
-	for _, hit := range daoRes.Hits.Hits {
-		err = json.Unmarshal(hit.Source, &node)
+	for _, hit := range doc.Hits.Hits {
+		data, err := json.Marshal(hit.Source)
+		if err != nil {
+			goto ERR
+		}
+		err = json.Unmarshal(data, &node)
 		if err != nil {
 			logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
 			goto ERR
@@ -185,7 +207,7 @@ func GetTopoList(c *gin.Context) (res []*V1.GetTopoResponse, err error) {
 		})
 	}
 
-	node = model.GetTopo(c, node)
+	//node = model.GetTopo(c, node)
 	return
 
 ERR:

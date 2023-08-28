@@ -134,7 +134,7 @@ Query:
 	}
 	if doc.Hits.Total.Value == 0 {
 		err = errors.New("father node not found")
-		goto ERR
+		goto Create
 	}
 	source, err = json.Marshal(doc.Hits.Hits[0].Source)
 	if err != nil {

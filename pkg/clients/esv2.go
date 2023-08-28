@@ -131,9 +131,10 @@ type InsertResultInfo struct {
 	PrimaryTerm int `json:"_primary_term"`
 }
 
-func init() {
-	//for r, info := range config.Conf.Backend.EsConfig.Regions {
-	//	var ephemeral = info
-	//	EsConns[r] = NewEsV2Conn(&ephemeral)
-	//}
+func InitEs() error {
+	for r, info := range config.Conf.Backend.EsConfig.ElasticSearchRegion {
+		var ephemeral = info
+		EsConns[r] = NewEsV2Conn(&ephemeral)
+	}
+	return nil
 }

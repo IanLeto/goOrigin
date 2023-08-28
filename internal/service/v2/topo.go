@@ -24,6 +24,7 @@ func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error
 		Depend:   req.Depend,
 		FatherID: req.FatherId,
 		Done:     req.Done,
+		Region:   req.Region,
 		Status:   "New",
 		Note:     req.Note,
 		Tags:     req.Tags,

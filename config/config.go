@@ -72,7 +72,7 @@ func NewMySqlBackendConfig() *MySqlBackendConfig {
 	}
 }
 
-// mongoDB
+// MongoBackendConfig mongoDB
 type MongoBackendConfig struct {
 	Address  string
 	Port     string
@@ -143,7 +143,7 @@ func NewPromConfig() *PromConfig {
 // es
 
 type EsConfig struct {
-	Regions map[string]EsInfo
+	ElasticSearchRegion map[string]EsInfo `json:"elasticsearch"`
 }
 type EsInfo struct {
 	Address string `json:"address"`
@@ -157,13 +157,11 @@ func NewEsConfig() *EsConfig {
 		regionInfo := info.(map[string]interface{})
 		esRegions[s] = EsInfo{
 			Address: regionInfo["address"].(string),
-		}
-		esRegions[s] = EsInfo{
-			Region: s,
+			Region:  s,
 		}
 	}
 	return &EsConfig{
-		Regions: esRegions,
+		ElasticSearchRegion: esRegions,
 	}
 }
 

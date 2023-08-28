@@ -100,11 +100,12 @@ ERR:
 }
 func GetTopoList(c *gin.Context) {
 	var (
-		res interface{}
-		err error
+		res    interface{}
+		err    error
+		region = c.Query("region")
 	)
 
-	res, err = service.GetTopoList(c)
+	res, err = service.GetTopoList(c, region)
 	if err != nil {
 		goto ERR
 	}

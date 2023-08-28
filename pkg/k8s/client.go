@@ -37,7 +37,7 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	if conf == nil {
 		conf = config.Conf
 	}
-	subconfig := filepath.Join(homedir.HomeDir(), ".kube", "configFromFlags")
+	subconfig := filepath.Join(homedir.HomeDir(), ".kube", "config")
 
 	// 使用 subconfig 文件创建 configFromFlags 对象
 	configFromFlags, err := clientcmd.BuildConfigFromFlags("", subconfig)

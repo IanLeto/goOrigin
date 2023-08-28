@@ -7,6 +7,7 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg"
+	"goOrigin/pkg/clients"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
@@ -30,6 +31,7 @@ var compInit = map[string]func() error{
 	"k8s":   k8s.InitK8s,
 	"redis": storage.InitRedis,
 	"mysql": storage.InitMySQL,
+	"es":    clients.InitEs,
 }
 
 var cronTask = map[string]func() error{
@@ -64,9 +66,9 @@ var initLogger = func() error {
 // step 4 初始化组件
 var initComponents = func() error {
 	// 如果pass ,初始化不执行组件检查
-	if pass := os.Getenv("PASS"); pass != "true" {
-		return nil
-	}
+	//if pass := os.Getenv("PASS"); pass != "true" {
+	//	return nil
+	//}
 	for _, component := range config.Conf.Components {
 		if fn, ok := compInit[component]; ok {
 			utils.NoError(fn())
