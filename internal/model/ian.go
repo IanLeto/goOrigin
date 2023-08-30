@@ -14,7 +14,7 @@ type Base struct {
 
 type Ian struct {
 	*Base
-	Name string `json:"name" bson:"name"`
+	Name string `json:"ToTNode" bson:"ToTNode"`
 	Time struct {
 		T int64 `json:"T"`
 		I int64 `json:"I"`

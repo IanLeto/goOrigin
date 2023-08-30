@@ -17,7 +17,7 @@ type Deploy struct {
 	Id         primitive.ObjectID  `json:"id" bson:"_id,omitempty"`
 	CreateDate primitive.Timestamp `json:"create_date" bson:"create_date"`
 	UpdateDate primitive.Timestamp `json:"update_time" bson:"update_date"`
-	Name       string              `bson:"name"`
+	Name       string              `bson:"ToTNode"`
 	NS         string              `bson:"ns"`
 	*appsv1.Deployment
 }

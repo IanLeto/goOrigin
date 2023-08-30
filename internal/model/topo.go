@@ -19,7 +19,7 @@ import (
 
 type NodeEntity struct {
 	ID       uint          `json:"id"`
-	Name     string        `json:"name"`
+	Name     string        `json:"ToTNode"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
 	Father   string        `json:"father"`
@@ -33,8 +33,20 @@ type NodeEntity struct {
 	Nodes    []*NodeEntity `json:"nodes"`
 }
 
-func (node NodeEntity) name() {
-
+func (n *NodeEntity) ToTNode() *TNode {
+	var node *TNode
+	node = &TNode{
+		Name:     n.Name,
+		Content:  n.Content,
+		Depend:   n.Depend,
+		Father:   n.Father,
+		FatherID: n.FatherID,
+		Done:     n.Done,
+		Status:   n.Status,
+		Region:   n.Region,
+		Note:     n.Note,
+	}
+	return node
 }
 
 type Topo struct {
@@ -116,7 +128,7 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id uint, err error) {
 			"bool": map[string]interface{}{
 				"must": map[string]interface{}{
 					"term": map[string]interface{}{
-						"name": node.Father,
+						"ToTNode": node.Father,
 					},
 				},
 			},

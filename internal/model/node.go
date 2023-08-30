@@ -2,7 +2,7 @@ package model
 
 import "github.com/jinzhu/gorm"
 
-type Node struct {
+type TNode struct {
 	gorm.Model
 	Name     string `gorm:"type:varchar(255)"`
 	Content  string `gorm:"type:varchar(255)"`
