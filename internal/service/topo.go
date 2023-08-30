@@ -14,7 +14,7 @@ import (
 	logger2 "goOrigin/pkg/logger"
 )
 
-func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error) {
+func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id uint, err error) {
 	var (
 		logger = logger2.NewLogger()
 		node   *model.NodeEntity
@@ -36,7 +36,7 @@ func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error
 	id, err = node.CreateNode(c)
 	if err != nil {
 		logger.Error("创建node 失败")
-		return "", err
+		return 0, err
 	}
 	return
 }
@@ -83,7 +83,7 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 	for _, hit := range daoRes.Hits.Hits {
 		var ephemeralNode *model.NodeEntity
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
-		ephemeralNode.ID = hit.Id
+		//ephemeralNode.ID, _ = conv.Uint(hit.Id)
 		if err != nil {
 			goto ERR
 		}
@@ -207,7 +207,6 @@ func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err 
 		})
 	}
 
-	//node = model.GetTopo(c, node)
 	return
 
 ERR:

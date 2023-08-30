@@ -5,22 +5,25 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
 )
 
 type NodeEntity struct {
-	ID       string        `json:"id"`
+	ID       uint          `json:"id"`
 	Name     string        `json:"name"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
 	Father   string        `json:"father"`
-	FatherID string        `json:"father_id"`
+	FatherID uint          `json:"father_id"`
 	Done     bool          `json:"done"`
 	Status   string        `json:"status"`
 	Tags     []string      `json:"tags"`
@@ -28,6 +31,10 @@ type NodeEntity struct {
 	Region   string        `json:"region"`
 	Children []string      `json:"children"`
 	Nodes    []*NodeEntity `json:"nodes"`
+}
+
+func (node NodeEntity) name() {
+
 }
 
 type Topo struct {
@@ -64,7 +71,21 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 	return root
 }
 
-func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
+func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync bool) (id uint, err error) {
+	var (
+		db *gorm.DB
+	)
+	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	res, _, err := mysql.Create(db, &node)
+	if sync {
+		return node.CreateNode(c)
+	}
+	fmt.Println(res)
+	return node.ID, err
+
+}
+
+func (node *NodeEntity) CreateNode(c *gin.Context) (id uint, err error) {
 	var (
 		conn   *clients.EsV2Conn
 		father *NodeEntity
@@ -74,7 +95,7 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 	_, err = conn.Client.Info()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
-		return "", err
+		return 0, err
 	}
 	var (
 		query = map[string]interface{}{}
@@ -101,7 +122,7 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id string, err error) {
 			},
 		}
 		goto Query
-	case node.FatherID != "":
+	case node.FatherID != 0:
 		query = map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": map[string]interface{}{
@@ -162,16 +183,16 @@ Create:
 	if err != nil {
 		goto ERR
 	}
-	insertResultInfoValue, err = conn.Creat("node", insertInfoValue)
+	insertResultInfoValue, err = conn.Create("node", insertInfoValue)
 	if err != nil {
 		goto ERR
 	}
 	err = json.Unmarshal(insertResultInfoValue, &insertResultInfo)
-
-	return insertResultInfo.Id, err
+	id, _ = conv.Uint(insertResultInfo.Id)
+	return id, err
 ERR:
 	{
-		return "", err
+		return 0, err
 	}
 }
 

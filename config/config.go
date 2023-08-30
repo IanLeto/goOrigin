@@ -26,6 +26,7 @@ type BackendConfig struct {
 	*PromConfig
 	*EsConfig
 	*JaegerConfig
+	*MysqlConfig
 }
 
 func NewBackendConfig() *BackendConfig {
@@ -38,6 +39,7 @@ func NewBackendConfig() *BackendConfig {
 		NewPromConfig(),
 		NewEsConfig(),
 		NewJaegerConfig(),
+		NewMysqlConfig(),
 	}
 }
 
@@ -262,6 +264,36 @@ func NewK8sConfig() *K8sConfig {
 	}
 
 	return &K8sConfig{
+		Clusters: clusters,
+	}
+}
+
+type MysqlConfig struct {
+	Clusters map[string]*MysqlInfo `json:"clusters"`
+}
+
+type MysqlInfo struct {
+	Address  string `json:"address"`
+	Port     string `json:"port"`
+	Password string `json:"password"`
+	User     string `json:"user"`
+	Name     string `json:"name"`
+}
+
+func NewMysqlConfig() *MysqlConfig {
+	cluster := viper.GetStringMap("backend.MySql")
+	clusters := make(map[string]*MysqlInfo)
+	for s, info := range cluster {
+		clusterInfo := info.(map[string]interface{})
+		clusters[s] = &MysqlInfo{
+			Address:  clusterInfo["address"].(string),
+			User:     clusterInfo["user"].(string),
+			Password: clusterInfo["password"].(string),
+			Name:     clusterInfo["name"].(string),
+		}
+	}
+
+	return &MysqlConfig{
 		Clusters: clusters,
 	}
 }

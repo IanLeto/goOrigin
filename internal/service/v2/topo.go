@@ -12,7 +12,7 @@ import (
 	logger2 "goOrigin/pkg/logger"
 )
 
-func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error) {
+func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id uint, err error) {
 	var (
 		logger = logger2.NewLogger()
 		node   *model.NodeEntity
@@ -31,7 +31,7 @@ func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id string, err error
 		Children: req.Children,
 	}
 
-	id, err = node.CreateNode(c)
+	id, err = model.CreateNodeAdapter(c, node, req.Region, false)
 	if err != nil {
 		logger.Error("创建node 失败")
 		return id, err
@@ -53,7 +53,7 @@ func UpdateNode(c *gin.Context, req *V1.UpdateNodeRequest) (id string, err error
 	if req.Depend != "" {
 		node.Depend = req.Depend
 	}
-	if req.FatherId != "" {
+	if req.FatherId != 0 {
 		node.FatherID = req.FatherId
 	}
 	if req.Done != nil {

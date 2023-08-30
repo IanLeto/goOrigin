@@ -5,7 +5,7 @@ type CreateNodeInfo struct {
 	Content  string   `json:"content"`
 	Depend   string   `json:"depend"`
 	Father   string   `json:"father"`
-	FatherId string   `json:"father_id"`
+	FatherId uint     `json:"father_id"`
 	Region   string   `json:"region"`
 	Children []string `json:"children"`
 	Done     bool     `json:"done"`
@@ -44,7 +44,7 @@ type UpdateNodeRequest struct {
 	Name     string   `json:"name"`
 	Content  string   `json:"content"`
 	Depend   string   `json:"depend"`
-	FatherId string   `json:"father_id"`
+	FatherId uint     `json:"father_id"`
 	Done     *bool    `json:"done"`
 	Note     string   `json:"note"`
 	Status   string   `json:"status"`
