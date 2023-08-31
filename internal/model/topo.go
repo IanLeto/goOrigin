@@ -19,7 +19,7 @@ import (
 
 type NodeEntity struct {
 	ID       uint          `json:"id"`
-	Name     string        `json:"ToTNode"`
+	Name     string        `json:"name"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
 	Father   string        `json:"father"`
@@ -35,6 +35,10 @@ type NodeEntity struct {
 
 func (n *NodeEntity) ToTNode() *TNode {
 	var node *TNode
+	value, err := json.Marshal(n.Tags)
+	if err != nil {
+		return nil
+	}
 	node = &TNode{
 		Name:     n.Name,
 		Content:  n.Content,
@@ -45,6 +49,7 @@ func (n *NodeEntity) ToTNode() *TNode {
 		Status:   n.Status,
 		Region:   n.Region,
 		Note:     n.Note,
+		Tags:     string(value),
 	}
 	return node
 }
@@ -87,13 +92,14 @@ func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync boo
 	var (
 		db *gorm.DB
 	)
+	tNode := node.ToTNode()
 	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
-	res, _, err := mysql.Create(db, &node)
+	res, _, err := mysql.Create(db, &tNode)
 	if sync {
 		return node.CreateNode(c)
 	}
 	fmt.Println(res)
-	return node.ID, err
+	return tNode.ID, err
 
 }
 

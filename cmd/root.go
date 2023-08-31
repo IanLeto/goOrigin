@@ -24,10 +24,6 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-//func Execute() {
-//	utils.NoError(RootCmd.Execute())
-//}
-
 func init() {
 	RootCmd.Flags().StringP("config", "c", "", "config")
 	RootCmd.Flags().BoolP("pass", "p", false, "pass")
