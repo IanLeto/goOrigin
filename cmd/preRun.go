@@ -3,9 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
-	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/dao/elastic"
+	"goOrigin/internal/model"
 	"goOrigin/pkg"
 	"goOrigin/pkg/clients"
 	"goOrigin/pkg/cron"
@@ -15,13 +17,12 @@ import (
 	"os"
 )
 
-var defaultConfigPath = ""
 var preCheck []func() error
 var mode string
-var connFactory = make([]storage.Conn, 0)
 
 var migrate = map[string]interface{}{
-	"t_jobs": &mysql.TJob{},
+	//"t_jobs":  &mysql.TJob{},
+	"t_nodes": &model.TNode{},
 }
 
 // 初始化组件
@@ -31,7 +32,7 @@ var compInit = map[string]func() error{
 	"k8s":   k8s.InitK8s,
 	"redis": storage.InitRedis,
 	"mysql": storage.InitMySQL,
-	"es":    clients.InitEs,
+	"es":    elastic.InitEs,
 }
 
 var cronTask = map[string]func() error{
@@ -88,18 +89,6 @@ var initMode = func() error {
 
 // step 7 初始化factory 初始数据
 var initData = func() error {
-	//for _, d := range config.Conf.Data {
-	//	switch d {
-	//	case "mongo":
-	//		connFactory = append(connFactory, storage.GloablMongo)
-	//	}
-	//}
-	//// factory 行为执行
-	//for _, conn := range connFactory {
-	//	if err := conn.InitData(mode); err != nil {
-	//		return err
-	//	}
-	//}
 	return nil
 }
 
@@ -119,22 +108,29 @@ var initCronTask = func() error {
 	return nil
 }
 
-//var dbMigrate = func() error {
-//	for name, i := range migrate {
-//		if err := storage.GlobalMySQL.AutoMigrate(i); err != nil {
-//			logrus.Errorf("初始化 table %s failed: %s", name, err.Error)
-//		}
-//	}
-//	return nil
-//}
+var dbMigrate = func() error {
+	for name, i := range migrate {
+		for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
+			// todo 先写死
+			if region != "localhost" {
+				continue
+			}
+			if err := clients.NewMysqlConn(info).Client.AutoMigrate(i); err != nil {
+				logrus.Errorf("%s 初始化 table %s failed: %s", region, name, err.Error)
+			}
+		}
+		//if err := storage.GlobalMySQL.AutoMigrate(i); err != nil {
+		//	logrus.Errorf("初始化 table %s failed: %s", name, err.Error)
+		//}
+	}
+	return nil
+}
 
 func PreRun(configPath string) string {
 	if configPath != "" {
-		defaultConfigPath = configPath
 		utils.NoError(os.Setenv("configPath", configPath))
 		fmt.Println("配置文件路径为:", configPath)
 	}
-
 	for _, f := range preCheck {
 		utils.NoError(f())
 	}
@@ -144,6 +140,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initLogger, initComponents, initMode, initData, initCronTask)
+		initConfig, initLogger, initComponents, initMode, initData, initCronTask, dbMigrate)
 
 }

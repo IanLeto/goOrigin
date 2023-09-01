@@ -1,4 +1,4 @@
-package backend
+package rpcClient
 
 import (
 	pbs "goOrigin/agent/protos"

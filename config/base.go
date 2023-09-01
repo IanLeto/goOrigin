@@ -9,16 +9,12 @@ import (
 )
 
 const k8sConfigMap = "/root/config/config.yaml"
-const tencentLocal = "/root/config/config.yaml"
-const debug = "/Users/ian/go/src/goOrigin/config.yaml"
 const NodeMapping = "node"
-const configPath = "/app/config.yaml"
 
 type Config struct {
 	Name       string `yaml:"name"`
 	Port       string `yaml:"port"`
 	RunMode    string `yaml:"run_mode"`
-	Data       []string
 	SSH        *SSHConfig
 	Backend    *BackendConfig
 	Client     *HttpClientConfig
@@ -58,7 +54,6 @@ func NewConfig() *Config {
 		Port:       viper.GetString("addr"),
 		RunMode:    viper.GetString("run_mode"),
 		Components: viper.GetStringSlice("components"),
-		Data:       viper.GetStringSlice("data"),
 		SSH:        NewSSHConfig(),
 		Logging:    NewLoggingConfig(),
 		Backend:    NewBackendConfig(),

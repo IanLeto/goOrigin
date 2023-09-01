@@ -26,7 +26,8 @@
     open .
 #### ci/cd 
     GOOS=linux GOARCH=amd64 go build -o ori main.go
-    docker build -t ianleto/goorigin -f Dockerfile2 .
+    docker build -t ianleto/goorigin:$(git rev-parse --short HEAD) -f Dockerfile2 .
+    docker push ianleto/goorigin:$(git rev-parse --short HEAD)
     docker images | grep ianleto/ianhello | awk '{print $3}' | xargs docker rmi -f
     docker ps -a | grep 10c831814d55 | awk '{print $1}' | xargs docker rm -f
 

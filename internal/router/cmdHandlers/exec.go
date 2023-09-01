@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"goOrigin/API/V1"
 	pbs "goOrigin/agent/protos"
-	"goOrigin/backend"
+	"goOrigin/rpcClient"
 )
 
 type JobGroup struct {
@@ -24,7 +24,7 @@ func Ping(c *gin.Context) {
 		ctx = context.Background()
 		res *pbs.Pong
 	)
-	cli, err := backend.NewAgentClient()
+	cli, err := rpcClient.NewAgentClient()
 	if err != nil {
 		goto ERR
 	}

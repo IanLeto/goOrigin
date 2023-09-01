@@ -3,8 +3,8 @@ package clients
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 	"goOrigin/config"
-	"goOrigin/pkg/utils"
 )
 
 // MySQLConns 涉及到多集群的, 无须全局长连接
@@ -20,7 +20,9 @@ func NewMysqlConn(conf *config.MysqlInfo) *MySQLConn {
 	)
 	client, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		conf.User, conf.Password, conf.Address, conf.Name, "Asia%2FShanghai"))
-	utils.NoError(err)
+	if err != nil {
+		logrus.Errorf("mysql connect error: %v", err)
+	}
 	return &MySQLConn{
 		Client: client,
 	}

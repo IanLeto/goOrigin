@@ -1,9 +1,9 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "goOrigin/internal/dao/mysql"
 
 type TNode struct {
-	gorm.Model
+	*mysql.Meta
 	Name     string `gorm:"type:varchar(255)"`
 	Content  string `gorm:"type:varchar(255)"`
 	Depend   string `gorm:"type:varchar(255)"`

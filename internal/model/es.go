@@ -1,4 +1,4 @@
-package elastic
+package model
 
 type Doc struct {
 }
@@ -10,9 +10,7 @@ type Aggregations struct {
 }
 
 type Buckets struct {
-	DocCountErrorUpperBound int64 `json:"doc_count_error_upper_bound"`
-	SumOtherDocCount        int64 `json:"sum_other_doc_count"`
-	Buckets                 []Bucket
+	Buckets []Bucket
 }
 type Bucket struct {
 	Key      string `json:"key"`

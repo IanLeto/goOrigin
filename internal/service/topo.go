@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
 	"goOrigin/config"
+	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -160,16 +161,16 @@ func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err 
 	var (
 		logger = logger2.NewLogger()
 		node   *model.NodeEntity
-		conn   *clients.EsV2Conn
-		doc    *clients.EsDoc
+		conn   *elastic2.EsV2Conn
+		doc    *elastic2.EsDoc
 	)
 	var (
 		queries map[string]interface{}
 	)
 	if region == "" {
-		conn = clients.EsConns[DefaultRegion]
+		conn = elastic2.EsConns[DefaultRegion]
 	} else {
-		conn = clients.EsConns[region]
+		conn = elastic2.EsConns[region]
 	}
 	queries = map[string]interface{}{
 		"query": map[string]interface{}{

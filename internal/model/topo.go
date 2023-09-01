@@ -11,6 +11,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
+	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -105,11 +106,11 @@ func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync boo
 
 func (node *NodeEntity) CreateNode(c *gin.Context) (id uint, err error) {
 	var (
-		conn   *clients.EsV2Conn
+		conn   *elastic2.EsV2Conn
 		father *NodeEntity
 		logger = logger2.NewLogger()
 	)
-	conn = clients.EsConns[node.Region]
+	conn = elastic2.EsConns[node.Region]
 	_, err = conn.Client.Info()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
@@ -119,8 +120,8 @@ func (node *NodeEntity) CreateNode(c *gin.Context) (id uint, err error) {
 		query = map[string]interface{}{}
 	)
 	var (
-		doc                   *clients.EsDoc
-		insertResultInfo      *clients.InsertResultInfo
+		doc                   *elastic2.EsDoc
+		insertResultInfo      *elastic2.InsertResultInfo
 		insertResultInfoValue []byte
 
 		insertInfo      map[string]interface{}

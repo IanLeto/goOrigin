@@ -10,7 +10,7 @@ import (
 )
 
 type Checker interface {
-	Check() (string, error)
+	Check()
 }
 
 type ComponentConfig interface {
@@ -108,8 +108,6 @@ func NewZkConfig() *ZKConfig {
 	}
 }
 
-// redis
-
 type RedisConfig struct {
 	DB         int
 	Addr       string
@@ -125,8 +123,6 @@ func NewRedisConfig() *RedisConfig {
 		Auth:       viper.GetString("backend.redis.Auth"),
 	}
 }
-
-// prom
 
 type PromConfig struct {
 	Address string
@@ -215,7 +211,7 @@ func NewLoggingConfig() *LoggingConfig {
 	}
 }
 
-// ssh
+// SSHConfig ssh
 type SSHConfig struct {
 	Address string
 	User    string
@@ -270,6 +266,27 @@ func NewK8sConfig() *K8sConfig {
 
 type MysqlConfig struct {
 	Clusters map[string]*MysqlInfo `json:"clusters"`
+}
+
+func (m MysqlConfig) Check() (string, error) {
+	for cluster, info := range m.Clusters {
+		if info.Address == "" {
+			return cluster, errors.New("mysql address is empty")
+		}
+		if info.Port == "" {
+			return cluster, errors.New("mysql port is empty")
+		}
+		if info.User == "" {
+			return cluster, errors.New("mysql user is empty")
+		}
+		if info.Password == "" {
+			return cluster, errors.New("mysql password is empty")
+		}
+		if info.Name == "" {
+			return cluster, errors.New("mysql name is empty")
+		}
+	}
+	return "", nil
 }
 
 type MysqlInfo struct {

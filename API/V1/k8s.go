@@ -1,18 +1,17 @@
 package V1
 
 type CreateDeploymentReq struct {
-	Name                        string `json:"name"`
-	Namespace                   string `json:"namespace"`
-	MetadataName                string `json:"metadata_name"`
-	RepNums                     int32  `json:"rep_nums"`
-	MetadataSelectorLabels      string `json:"metadata_selector_labels"`
-	SpecSelectorLabels          string `json:"spec_selector_labels"`
-	TemplateSelectorMatchLabels string `json:"template_selector_match_labels"`
-	ContainerImage              string `json:"container_images"`
-	ContainerName               string `json:"container_name"`
-
-	Containers string          `json:"containers"`
-	Content    *CreateUnStruct `json:"content"`
+	Name                        string          `json:"name"`
+	Namespace                   string          `json:"namespace"`
+	MetadataName                string          `json:"metadata_name"`
+	RepNums                     int32           `json:"rep_nums"`
+	MetadataSelectorLabels      string          `json:"metadata_selector_labels"`
+	SpecSelectorLabels          string          `json:"spec_selector_labels"`
+	TemplateSelectorMatchLabels string          `json:"template_selector_match_labels"`
+	ContainerImage              string          `json:"container_images"`
+	ContainerName               string          `json:"container_name"`
+	Containers                  string          `json:"containers"`
+	Content                     *CreateUnStruct `json:"content"`
 }
 
 type CreateUnStruct struct {

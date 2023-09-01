@@ -1,4 +1,4 @@
-package clients
+package elastic
 
 import (
 	"bytes"

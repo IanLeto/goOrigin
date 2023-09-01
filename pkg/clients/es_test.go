@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/suite"
-	"goOrigin/pkg/clients"
+	"goOrigin/internal/dao/elastic"
 	"testing"
 	"time"
 )
 
 type EsAPISuite struct {
 	suite.Suite
-	conn *clients.EsV2Conn
+	conn *elastic.EsV2Conn
 }
 
 func (s *EsAPISuite) SetupTest() {

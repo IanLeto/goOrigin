@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	pbs "goOrigin/agent/protos"
-	"goOrigin/backend"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
+	"goOrigin/rpcClient"
 	"strings"
 )
 
@@ -74,7 +74,7 @@ func (j *Job) Exec(ctx context.Context) error {
 		client  *elastic.Client
 		scripts []*BaseScript
 	)
-	agent, err := backend.NewAgentClient()
+	agent, err := rpcClient.NewAgentClient()
 	if err != nil {
 		log.Error(fmt.Sprintf("agent 创建失败 %s", err))
 		goto ERR
@@ -112,16 +112,3 @@ ERR:
 		return err
 	}
 }
-
-//func QueryList(j []*Job) (*db.TJob, error) {
-//	var tJobs []*db.TJob
-//	for _, job := range j {
-//		tJobs = append(tJobs, job.ToTable())
-//	}
-//	err := storage.GlobalMySQL.Model(&db.TJob{}).Find(tJobs)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return tJob, err
-//
-//}

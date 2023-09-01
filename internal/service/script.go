@@ -7,10 +7,10 @@ import (
 	"github.com/olivere/elastic/v7"
 	"goOrigin/API/V1"
 	pbs "goOrigin/agent/protos"
-	"goOrigin/backend"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
+	"goOrigin/rpcClient"
 )
 
 type ScriptApis interface {
@@ -159,7 +159,7 @@ func RunScript(c *gin.Context, id string) (*pbs.RunScriptResponse, error) {
 		client *elastic.Client
 		script *model.BaseScript
 	)
-	agent, err := backend.NewAgentClient()
+	agent, err := rpcClient.NewAgentClient()
 	client, err = clients.NewESClient()
 	bq.Filter(elastic.NewTermQuery("_id", id))
 	result, err := client.Get().Index("script").Id(id).Do(c)
