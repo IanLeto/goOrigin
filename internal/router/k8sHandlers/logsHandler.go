@@ -43,3 +43,22 @@ ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
+
+func GetPods(c *gin.Context) {
+	var (
+		req = &V1.GetPodRequest{}
+		res = &V1.GetPodResponse{}
+		err error
+	)
+	res, err = service.GetPods(c, req)
+	if err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+
+}

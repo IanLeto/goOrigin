@@ -11,17 +11,20 @@ backend:
       user: ian
       password: l99l8ymm,e
       name: job
+      ismigration: false
     localhost:
       address: localhost:3306
       user: root
       password: root
       name: node
+      ismigration: true
     conn:
       address: localhost:3306
       port: 3306
       user: root
       password: root
       name: topo
+      ismigration: false
   redis:
     addr: 124.222.48.125:6379
     port: 6379
@@ -72,11 +75,11 @@ client:
     heart_beat: 10
     user: root
 components:
-  - mysql
+#  - mysql
   - cc
   - prom
   - jaeger
-  - es
+#  - es
 
   #  - redis
   #   - mongo

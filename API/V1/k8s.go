@@ -80,3 +80,12 @@ type UpdateDeploymentDynamicRequest struct {
 	Namespace string `json:"namespace"`
 	Image     string `json:"Image"`
 }
+
+// --------------------------------------k8s 测试专用 ------------------------------
+
+type GetPodRequest struct {
+	Ns string `json:"ns"`
+}
+type GetPodResponse struct {
+	Item interface{} `json:"item"`
+}

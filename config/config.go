@@ -186,7 +186,7 @@ func NewCCClientConf() *CCConf {
 
 }
 
-// logging 配置
+// LoggingConfig logging 配置
 type LoggingConfig struct {
 	FileName string
 	Level    string
@@ -269,7 +269,11 @@ type MysqlConfig struct {
 }
 
 func (m MysqlConfig) Check() (string, error) {
+
 	for cluster, info := range m.Clusters {
+		if !info.IsMigration {
+			continue
+		}
 		if info.Address == "" {
 			return cluster, errors.New("mysql address is empty")
 		}
@@ -290,11 +294,12 @@ func (m MysqlConfig) Check() (string, error) {
 }
 
 type MysqlInfo struct {
-	Address  string `json:"address"`
-	Port     string `json:"port"`
-	Password string `json:"password"`
-	User     string `json:"user"`
-	Name     string `json:"name"`
+	Address     string `json:"address"`
+	Port        string `json:"port"`
+	Password    string `json:"password"`
+	User        string `json:"user"`
+	Name        string `json:"name"`
+	IsMigration bool   `json:"isMigration"`
 }
 
 func NewMysqlConfig() *MysqlConfig {
@@ -303,10 +308,11 @@ func NewMysqlConfig() *MysqlConfig {
 	for s, info := range cluster {
 		clusterInfo := info.(map[string]interface{})
 		clusters[s] = &MysqlInfo{
-			Address:  clusterInfo["address"].(string),
-			User:     clusterInfo["user"].(string),
-			Password: clusterInfo["password"].(string),
-			Name:     clusterInfo["name"].(string),
+			Address:     clusterInfo["address"].(string),
+			User:        clusterInfo["user"].(string),
+			Password:    clusterInfo["password"].(string),
+			Name:        clusterInfo["name"].(string),
+			IsMigration: clusterInfo["ismigration"].(bool),
 		}
 	}
 

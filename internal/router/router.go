@@ -120,6 +120,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		k8sGroup.DELETE("dynamic", k8sHandlers.DeleteDeployDynamic)
 		k8sGroup.PUT("dynamic", k8sHandlers.UpdateDeployDynamic)
 		k8sGroup.GET("log", k8sHandlers.GetCurrentLogs)
+		k8sGroup.GET("pod", k8sHandlers.GetPods)
 
 	}
 	k8sConfigGroup := g.Group("v1/k8s/configmap")

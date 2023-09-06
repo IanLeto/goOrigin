@@ -111,8 +111,8 @@ var initCronTask = func() error {
 var dbMigrate = func() error {
 	for name, i := range migrate {
 		for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
-			// todo 先写死
-			if region != "localhost" {
+			//// todo 先写死
+			if !info.IsMigration {
 				continue
 			}
 			if err := clients.NewMysqlConn(info).Client.AutoMigrate(i); err != nil {
@@ -140,6 +140,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initLogger, initComponents, initMode, initData, initCronTask, dbMigrate)
+		initConfig, initLogger, initComponents, initMode, initData, initCronTask)
 
 }

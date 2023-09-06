@@ -18,7 +18,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 	"strconv"
 	"strings"
 	"time"
@@ -209,6 +211,33 @@ func reverseArray2(arr []interface{}) {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
+}
+
+func GetPods(c *gin.Context, req *V1.GetPodRequest) (*V1.GetPodResponse, error) {
+	var (
+		err error
+	)
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		logrus.Errorf("get config error: %s", err)
+		return nil, err
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		logrus.Errorf("get clientset error: %s", err)
+		return nil, err
+	}
+	pods, err := clientset.CoreV1().Pods(req.Ns).List(c, metav1.ListOptions{})
+	if err != nil {
+		logrus.Errorf("get pods error: %s", err)
+		return nil, err
+	}
+	res := &V1.GetPodResponse{}
+	for _, pod := range pods.Items {
+		fmt.Println(pod.Name)
+	}
+	res.Item = pods.Items
+	return res, nil
 }
 
 func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) {
