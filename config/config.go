@@ -251,7 +251,7 @@ func NewK8sConfig() *K8sConfig {
 	for s, info := range cluster {
 		clusterInfo := info.(map[string]interface{})
 		clusters[s] = ClusterInfo{
-			ClusterName:      clusterInfo["cluster_name"].(string),
+			ClusterName:      clusterInfo["cluster"].(string),
 			APIServerAddress: clusterInfo["apiserver_address"].(string),
 			ConfigAddress:    clusterInfo["config_address"].(string),
 			IsInCluster:      clusterInfo["is_in_cluster"].(bool),

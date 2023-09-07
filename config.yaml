@@ -5,7 +5,7 @@ url: localhost:8080
 version: v1
 port: 8080
 backend:
-  MySql:
+  mysql:
     unknown:
       address: 124.222.48.125:3306
       user: ian
@@ -31,15 +31,6 @@ backend:
     isSentinal: false
     auth: i012nsl9
     masterName: master
-  etcd:
-    address: localhost
-    port: 2379
-  mongo:
-    address: 124.222.48.125
-    port: 27017
-    user: root
-    password: rkkijoorkkiss312joo
-    db: goOrigin
   zk:
     address:
       - localhost:2181
@@ -60,13 +51,13 @@ backend:
       apiserver_address: "http://localhost:8080"
       config_address: "/Users/ian/.kube/config"
       is_in_cluster: false
-      cluster_name: local
+      cluster: local
       token: ""
     conn:
       apiserver_address: "http://localhost:8080"
       config_address: ""
       is_in_cluster: true
-      cluster_name: test
+      cluster: test
       token: ""
 
 client:
@@ -84,10 +75,6 @@ components:
   #  - redis
   #   - mongo
   #  - k8s
-ssh:
-  address: 113.31.168.103:22
-  auth: 123qweasdzxc
-  user: root
 data:
   - mongo
   - zk
