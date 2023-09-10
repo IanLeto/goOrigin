@@ -5,6 +5,7 @@ import (
 	"goOrigin/config"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 	"log"
@@ -42,7 +43,7 @@ func NewK8sConn(ctx context.Context, conf *config.Config) *KubeConn {
 	// 使用 subconfig 文件创建 configFromFlags 对象
 	configFromFlags, err := clientcmd.BuildConfigFromFlags("", subconfig)
 	if err != nil {
-		panic(err)
+		configFromFlags, err = rest.InClusterConfig()
 	}
 	client, err := kubernetes.NewForConfig(configFromFlags)
 	if err != nil {
