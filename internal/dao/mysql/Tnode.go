@@ -13,9 +13,14 @@ func Create(db *gorm.DB, value interface{}) (interface{}, *gorm.DB, error) {
 	return result.Value, result, result.Error
 }
 
-func GetValueByID(db *gorm.DB, id uint, input interface{}) (interface{}, error) {
+func GetValues(db *gorm.DB, output interface{}) (interface{}, *gorm.DB, error) {
+	result := db.Find(output)
+	return result.Value, result, result.Error
+}
 
-	result := db.First(&input, id)
+func GetValueByID(db *gorm.DB, input interface{}) (interface{}, error) {
+
+	result := db.First(&input)
 	return result.Value, result.Error
 }
 

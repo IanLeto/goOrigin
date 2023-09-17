@@ -33,12 +33,6 @@ func NewEsConn(conf *config.Config) (*EsConn, error) {
 }
 
 func NewESClient() (*elastic.Client, error) {
-	//client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetHealthcheck(false),
-	//	elastic.SetURL(config.Conf.Backend.EsConfig.Address))
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return client, err
 	panic(1)
 }
 

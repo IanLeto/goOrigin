@@ -5,8 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"goOrigin/API/V1"
+	"goOrigin/config"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -72,7 +75,6 @@ func UpdateNode(c *gin.Context, req *V1.UpdateNodeRequest) (id string, err error
 		node.Children = req.Children
 	}
 
-	id, err = node.UpdateNode(c)
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err
@@ -87,8 +89,28 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.NodeEntity, err error) {
-	panic(1)
+func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, error) {
+	var (
+		db     *gorm.DB
+		record = &model.TNode{}
+		result *model.NodeEntity
+	)
+	record.ID = id
+	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	_, err := mysql.GetValueByID(db, record)
+	if err != nil {
+		goto ERR
+	}
+	result = model.NewNodeEntityFromTnode(record)
+	return result, err
+ERR:
+	{
+		return nil, err
+	}
+}
+
+func GetNodes(c *gin.Context, name, father, region string) (node []*model.NodeEntity, err error) {
+	return model.GetNodeAdapter(c, name, father, region)
 	//var (
 	//	logger  = logger2.NewLogger()
 	//	queries = map[string]interface{}{}
@@ -149,7 +171,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 	return daoRes, err
 }
 
-func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error) {
+func SearchNodeDetail(c *gin.Context, id, name, father string) (interface{}, error) {
 	var (
 		logger  = logger2.NewLogger()
 		bq      = elastic.NewBoolQuery()

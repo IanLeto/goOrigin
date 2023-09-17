@@ -2,6 +2,7 @@ package topoHandlers
 
 import (
 	"fmt"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
@@ -26,6 +27,21 @@ ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
+//func GetNodeList(c *gin.Context) {
+//	var (
+//		req = V1.GetNodeListRequest{}
+//		res = V1.GetNodeListResponse{}
+//		err error
+//	)
+//	var (
+//		name    = c.Query("name")
+//		content = c.Query("content")
+//		father  = c.Query("father")
+//		region  = c.Query("region")
+//	)
+//
+//}
+
 func UpdateNode(c *gin.Context) {
 	var (
 		req = V1.UpdateNodeRequest{}
@@ -45,14 +61,12 @@ ERR:
 
 func GetNodes(c *gin.Context) {
 	var (
-		id      = c.Query("id")
-		name    = c.Query("name")
-		father  = c.Query("father")
-		content = c.Query("content")
-		done    = c.GetBool("done")
-		err     error
+		name   = c.Query("name")
+		father = c.Query("father")
+		region = c.Query("region")
+		err    error
 	)
-	res, err := v2.GetNodes(c, id, name, father, content, done)
+	res, err := v2.GetNodes(c, name, father, region)
 	if err != nil {
 		goto ERR
 	}
@@ -65,14 +79,12 @@ ERR:
 
 func GetNodeDetail(c *gin.Context) {
 	var (
-		id     = c.Query("id")
-		name   = c.Query("name")
-		father = c.Query("father")
+		region = c.Query("region")
 		res    interface{}
 		err    error
 	)
-
-	res, err = service.GetNodeDetail(c, id, name, father)
+	id, _ := conv.Uint(c.Query("id"))
+	res, err = v2.GetNodeDetail(c, region, id)
 	if err != nil {
 		goto ERR
 	}

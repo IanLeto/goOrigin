@@ -107,6 +107,10 @@ ERR:
 	return "", res.Err()
 }
 
+func Search() {
+
+}
+
 //func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {
 //	response = make([]*params.QueryResponse, 0)
 //

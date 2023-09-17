@@ -8,14 +8,12 @@ import (
 	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
 	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
-	"goOrigin/pkg/utils"
 )
 
 type NodeEntity struct {
@@ -32,6 +30,37 @@ type NodeEntity struct {
 	Region   string        `json:"region"`
 	Children []string      `json:"children"`
 	Nodes    []*NodeEntity `json:"nodes"`
+}
+
+func NewNodeEntityFromTnode(node *TNode) *NodeEntity {
+	var (
+		tags []string
+	)
+	value, err := json.Marshal(node.Tags)
+	if err != nil {
+		logrus.Errorf("处理tag 失败 %s", err)
+		return nil
+	}
+	err = json.Unmarshal(value, &tags)
+	if err != nil {
+		logrus.Errorf("处理tag 失败 %s", err)
+		return nil
+	}
+	return &NodeEntity{
+		ID:       node.ID,
+		Name:     node.Name,
+		Content:  node.Content,
+		Depend:   node.Depend,
+		Father:   node.Father,
+		FatherID: node.FatherID,
+		Done:     node.Done,
+		Status:   node.Status,
+		Tags:     tags,
+		Note:     node.Note,
+		Region:   node.Region,
+		//Children: node.Children,
+		//Nodes:    node.Nodes,
+	}
 }
 
 func (n *NodeEntity) ToTNode() *TNode {
@@ -61,32 +90,7 @@ type Topo struct {
 }
 
 func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
-	var (
-		client *elastic.Client
-		daoRes *elastic.SearchResult
-		bq     = elastic.NewBoolQuery()
-		err    error
-	)
-	client, err = clients.NewESClient()
-	defer func() { _ = client.CloseIndex("") }()
-	if err != nil {
-
-	}
-
-	bq.Filter(elastic.NewTermQuery("father", root.Name))
-	daoRes, err = client.Search().Index(EsNode).Query(bq).Do(ctx)
-	for _, hit := range daoRes.Hits.Hits {
-		var (
-			ephemeralNode NodeEntity
-		)
-		err = json.Unmarshal(hit.Source, &ephemeralNode)
-		root.Nodes = append(root.Nodes, &ephemeralNode)
-		GetTopo(ctx, &ephemeralNode)
-	}
-	if err != nil {
-		return nil
-	}
-	return root
+	return nil
 }
 
 func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync bool) (id uint, err error) {
@@ -102,6 +106,60 @@ func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync boo
 	fmt.Println(res)
 	return tNode.ID, err
 
+}
+
+func GetNodeAdapter(c *gin.Context, name, father, region string) ([]*NodeEntity, error) {
+	var (
+		db    *gorm.DB
+		res   []*NodeEntity
+		dbRes []*TNode
+	)
+	tNode := TNode{
+		Name:   name,
+		Father: father,
+	}
+	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	data, _, err := mysql.GetValues(db, &tNode)
+	if err != nil {
+		logrus.Errorf("get node failed by %s", err)
+		return nil, err
+	}
+	values, err := json.Marshal(data)
+	if err != nil {
+		logrus.Errorf("get node failed by %s", err)
+		return nil, err
+	}
+	err = json.Unmarshal(values, &dbRes)
+	if err != nil {
+		goto ERR
+	}
+	for _, v := range dbRes {
+		bytes, err := json.Marshal(v.Tags)
+		if err != nil {
+			goto ERR
+		}
+		ephemeralTags := []string{}
+		err = json.Unmarshal(bytes, &ephemeralTags)
+		if err != nil {
+			goto ERR
+		}
+		res = append(res, &NodeEntity{
+			ID:       v.ID,
+			Name:     v.Name,
+			Content:  v.Content,
+			Depend:   v.Depend,
+			Father:   v.Father,
+			FatherID: v.FatherID,
+			Done:     v.Done,
+			Status:   v.Status,
+			Tags:     ephemeralTags,
+			Note:     v.Note,
+			Region:   v.Region,
+		})
+	}
+	return res, err
+ERR:
+	return nil, err
 }
 
 func (node *NodeEntity) CreateNode(c *gin.Context) (id uint, err error) {
@@ -212,30 +270,5 @@ Create:
 ERR:
 	{
 		return 0, err
-	}
-}
-
-func (node *NodeEntity) UpdateNode(c *gin.Context) (id string, err error) {
-	var (
-		conn   *clients.EsConn
-		res    *elastic.IndexResponse
-		father *NodeEntity
-		logger = logger2.NewLogger()
-	)
-	conn, err = clients.NewEsConn(nil)
-	if err != nil {
-		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
-		return "", err
-	}
-	_, err = conn.Update(nil)
-	if err != nil {
-		goto ERR
-	}
-	node.Tags = utils.Set(append(node.Tags, father.Tags...))
-	node.Father = father.Name
-	return res.Id, nil
-ERR:
-	{
-		return "", err
 	}
 }

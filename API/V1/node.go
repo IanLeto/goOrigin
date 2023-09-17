@@ -28,6 +28,18 @@ type GetNodeRequest struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
 	Father  string `json:"father"`
+	Region  string `json:"region"`
+}
+type GetNodeResponse struct {
+}
+
+type GetNodeListRequest struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+	Father  string `json:"father"`
+	Region  string `json:"region"`
+}
+type GetNodeListResponse struct {
 }
 
 type GetTopoResponse struct {
@@ -50,4 +62,15 @@ type UpdateNodeRequest struct {
 	Status   string   `json:"status"`
 	Tags     []string `json:"tags"`
 	Children []string `json:"children"`
+}
+
+type SearchNodeRequest struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+	Father  string `json:"father"`
+	Keyword string `json:"keyword"`
+}
+
+type SearchNodeResponse struct {
+	Items []interface{} `json:"items"`
 }
