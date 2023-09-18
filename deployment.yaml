@@ -19,7 +19,7 @@ spec: # pod 的规格，也就是内部容器中的详细定义
         master: ian
       containers:
         - name: go-ori
-          image: ianleto/goorigin:2192027
+          image: ianleto/goorigin:latest
           imagePullPolicy: IfNotPresent # 如果这个image 不存在本地则拉取
           ports:
             - name: init   # 这里的名字要和svc 中服务中的名字对照上
