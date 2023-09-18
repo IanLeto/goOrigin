@@ -1,4 +1,3 @@
-#### 首次使用
 git pull origin master
 GOOS=linux GOARCH=amd64 go build -o ori main.go
 docker build -t ianleto/goorigin -f Dockerfile2 .  && docker push ianleto/goorigin:latest
