@@ -10,6 +10,5 @@ func NewAgentClient() (pbs.AgentClient, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return pbs.NewAgentClient(conn), nil
 }
