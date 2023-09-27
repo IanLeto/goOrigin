@@ -114,12 +114,11 @@ func GetNodeAdapter(c *gin.Context, name, father, region string) ([]*NodeEntity,
 		res   []*NodeEntity
 		dbRes []*TNode
 	)
-	tNode := TNode{
-		Name:   name,
-		Father: father,
+	tNode := []*TNode{
+		{Name: name, Father: father},
 	}
 	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
-	data, _, err := mysql.GetValues(db, &tNode)
+	data, _, err := mysql.GetValues(db, tNode, 100)
 	if err != nil {
 		logrus.Errorf("get node failed by %s", err)
 		return nil, err
