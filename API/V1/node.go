@@ -17,6 +17,11 @@ type CreateNodeRequest struct {
 	*CreateNodeInfo
 }
 
+type CreateNodesRequest struct {
+	Region string `json:"region"`
+	Info   string `json:"info"`
+}
+
 type CreateNodeResponse struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`

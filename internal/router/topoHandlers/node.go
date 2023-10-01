@@ -27,6 +27,23 @@ ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
+func CreateNodes(c *gin.Context) {
+	var (
+		req = V1.CreateNodesRequest{}
+		res interface{}
+		err error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	res, err = v2.CreateNodes(c, req.Info, req.Region)
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
 //func GetNodeList(c *gin.Context) {
 //	var (
 //		req = V1.GetNodeListRequest{}
@@ -133,6 +150,30 @@ func DeleteNodes(c *gin.Context) {
 		err error
 	)
 	res, err := service.DeleteNodes(c, ids)
+	if err != nil {
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+func DeleteNode(c *gin.Context) {
+	var (
+		err error
+		res interface{}
+	)
+	id, _ := conv.Uint(c.Query("id"))
+	region := c.Query("region")
+
+	single := c.Query("single")
+	isSingle, _ := conv.Bool(single)
+	if isSingle {
+		res, err = service.DeleteSingleNode(c, id, region)
+	} else {
+		res, err = service.DeleteNode(c, id, region)
+	}
 	if err != nil {
 		goto ERR
 	}

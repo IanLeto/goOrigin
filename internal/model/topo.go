@@ -63,6 +63,38 @@ func NewNodeEntityFromTnode(node *TNode) *NodeEntity {
 	}
 }
 
+// Epl 接收一个callback ，callback 为递归查询子节点的实现，目前支持 mysql ， searchlight
+func (n *NodeEntity) Epl(fn func(entity *NodeEntity) (*NodeEntity, error)) {
+	for _, child := range n.Children {
+		var epl = &NodeEntity{
+			Name: child,
+		}
+		result, err := fn(epl)
+		if err != nil {
+			logrus.Errorf("获取topo失败 %s", err)
+			return
+		}
+		n.Nodes = append(n.Nodes, result)
+	}
+}
+
+// todo 获取node的所有节点，并将其转为slice
+func (n *NodeEntity) ToNodes() []*NodeEntity {
+	var (
+		res []*NodeEntity
+	)
+	for _, v := range n.Nodes {
+		if res != nil {
+			res = append(res, v)
+		}
+		if len(v.Nodes) != 0 {
+			v.ToNodes()
+		}
+
+	}
+	return res
+}
+
 func (n *NodeEntity) ToTNode() *TNode {
 	var node *TNode
 	value, err := json.Marshal(n.Tags)

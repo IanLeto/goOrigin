@@ -10,6 +10,7 @@ import (
 	"goOrigin/API/V1"
 	"goOrigin/config"
 	elastic2 "goOrigin/internal/dao/elastic"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -97,6 +98,54 @@ ERR:
 	}
 }
 
+func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
+	var (
+		err   error
+		nodes []*model.NodeEntity
+		root  *model.NodeEntity
+	)
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	// 先找到该节点信息
+	record, _, err := mysql.GetValue(db, &model.NodeEntity{ID: id}, "")
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
+	}
+	values, err := json.Marshal(record)
+	if err != nil {
+		goto ERR
+	}
+	err = json.Unmarshal(values, &root)
+	if err != nil {
+		goto ERR
+	}
+	// 正式环境，删除之前要归档到es中
+	if region == "" {
+		// todo es 归档
+	}
+	nodes = root.ToNodes()
+	// 1. 查询node 对应的所有topo数据
+	// todo 依赖tree结构，先搞定脚手架
+	err = mysql.DeleteValues(db, nodes)
+	return nil, err
+ERR:
+	return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
+
+}
+
+func DeleteSingleNode(c *gin.Context, id uint, region string) (interface{}, error) {
+	var (
+		err  error
+		node *model.NodeEntity
+	)
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+
+	err = mysql.DeleteValues(db, node)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
+	}
+	return nil, err
+}
+
 func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 	var (
 		logger  = logger2.NewLogger()
@@ -157,6 +206,29 @@ ERR:
 
 const DefaultRegion = "conn"
 
+func GetTopo(c *gin.Context, name string, id uint, region string) (interface{}, error) {
+	var (
+		err  error
+		root *model.NodeEntity
+	)
+	queryMysqlCallback := func(node model.NodeEntity) (*model.NodeEntity, error) {
+		var (
+			err error
+		)
+		return nil, err
+	}
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	record, _, err := mysql.GetValue(db, root, "node")
+	
+	if err != nil {
+		goto ERR
+	}
+
+ERR:
+	logrus.Errorf("获取topo 失败 %s", err)
+	return record, err
+}
+
 func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err error) {
 	var (
 		logger = logger2.NewLogger()
@@ -216,7 +288,7 @@ ERR:
 	}
 }
 
-func GetTopo(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) {
+func GetTopo2(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		bq      = elastic.NewBoolQuery()
