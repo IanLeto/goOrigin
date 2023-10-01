@@ -211,7 +211,7 @@ func GetTopo(c *gin.Context, name string, id uint, region string) (interface{}, 
 		err  error
 		root *model.NodeEntity
 	)
-	queryMysqlCallback := func(node model.NodeEntity) (*model.NodeEntity, error) {
+	queryMysqlCallback := func(node *model.NodeEntity) (*model.NodeEntity, error) {
 		var (
 			err error
 		)
@@ -219,7 +219,7 @@ func GetTopo(c *gin.Context, name string, id uint, region string) (interface{}, 
 	}
 	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	record, _, err := mysql.GetValue(db, root, "node")
-	
+	root.Epl(queryMysqlCallback)
 	if err != nil {
 		goto ERR
 	}
