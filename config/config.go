@@ -265,7 +265,7 @@ func NewK8sConfig() *K8sConfig {
 }
 
 type MysqlConfig struct {
-	Clusters map[string]*MysqlInfo `json:"clusters"`
+	Clusters map[string]*MysqlInfo `json:"mysql"`
 }
 
 func (m MysqlConfig) Check() (string, error) {
@@ -303,7 +303,7 @@ type MysqlInfo struct {
 }
 
 func NewMysqlConfig() *MysqlConfig {
-	cluster := viper.GetStringMap("backend.MySql")
+	cluster := viper.GetStringMap("backend.mysql")
 	clusters := make(map[string]*MysqlInfo)
 	for s, info := range cluster {
 		clusterInfo := info.(map[string]interface{})

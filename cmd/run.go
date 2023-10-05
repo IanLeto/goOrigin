@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
+	"goOrigin/config"
 	"goOrigin/internal/router"
 	"goOrigin/pkg/utils"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.NoError(http.ListenAndServe("0.0.0.0:8008", g))
+	utils.NoError(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", config.Conf.Port), g))
 }
 
 var runCmd = &cobra.Command{
