@@ -78,7 +78,7 @@ func (n *NodeEntity) Epl(fn func(entity *NodeEntity) (*NodeEntity, error)) {
 	}
 }
 
-// todo 获取node的所有节点，并将其转为slice
+// ToNodes todo 获取node的所有节点，并将其转为slice
 func (n *NodeEntity) ToNodes() []*NodeEntity {
 	var (
 		res []*NodeEntity
