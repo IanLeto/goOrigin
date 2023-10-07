@@ -113,12 +113,17 @@ ERR:
 
 func GetTopo(c *gin.Context) {
 	var (
-		name = c.Query("name")
-		res  interface{}
-		err  error
+		name   = c.Query("name")
+		region = c.Query("region")
+		res    interface{}
+		err    error
 	)
+	id, err := conv.Uint(c.Query("id"))
+	if err != nil {
+		goto ERR
+	}
 
-	res, err = service.GetTopo(c, name)
+	res, err = service.GetTopo(c, name, id, region)
 	if err != nil {
 		goto ERR
 	}
