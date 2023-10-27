@@ -188,10 +188,10 @@ func NewCCClientConf() *CCConf {
 
 // LoggingConfig logging 配置
 type LoggingConfig struct {
-	FileName string
-	Level    string
-	Path     string
-	Rotation RotationConfig
+	FileName string         `json:"file_name"`
+	Level    string         `json:"level"`
+	Path     string         `json:"path"`
+	Rotation RotationConfig `json:"rotation"`
 }
 
 type RotationConfig struct {
@@ -213,12 +213,12 @@ func NewLoggingConfig() *LoggingConfig {
 
 // SSHConfig ssh
 type SSHConfig struct {
-	Address string
-	User    string
-	Type    string
-	KeyPath string // ssh_id 路径
-	Port    int
-	Auth    string
+	Address string `json:"address"`
+	User    string `json:"user"`
+	Type    string `json:"type"`
+	KeyPath string `json:"key_path"` // ssh_id 路径
+	Port    int    `json:"port"`
+	Auth    string `json:"auth"`
 }
 
 func NewSSHConfig() *SSHConfig {
