@@ -3,13 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
-	"goOrigin/internal/model"
 	"goOrigin/pkg"
-	"goOrigin/pkg/clients"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
@@ -19,11 +16,6 @@ import (
 
 var preCheck []func() error
 var mode string
-
-var migrate = map[string]interface{}{
-	//"t_jobs":  &mysql.TJob{},
-	"t_nodes": &model.TNode{},
-}
 
 // 初始化组件
 var compInit = map[string]func() error{
@@ -104,24 +96,6 @@ var initCronTask = func() error {
 		go func(task pkg.Job) {
 			_ = task.Exec(taskRootCtx, nil)
 		}(t)
-	}
-	return nil
-}
-
-var dbMigrate = func() error {
-	for name, i := range migrate {
-		for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
-			//// todo 先写死
-			if !info.IsMigration {
-				continue
-			}
-			if err := clients.NewMysqlConn(info).Client.AutoMigrate(i); err != nil {
-				logrus.Errorf("%s 初始化 table %s failed: %s", region, name, err.Error)
-			}
-		}
-		//if err := storage.GlobalMySQL.AutoMigrate(i); err != nil {
-		//	logrus.Errorf("初始化 table %s failed: %s", name, err.Error)
-		//}
 	}
 	return nil
 }

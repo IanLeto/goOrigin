@@ -1,12 +1,15 @@
 package mysql
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"goOrigin/config"
+	"goOrigin/pkg/clients"
+)
 
 type Meta struct {
 	ID         uint  `swaggerignore:"true" gorm:"primary_key" json:"id" binding:"-" `
 	CreateTime int64 `swaggerignore:"true" gorm:"autoCreateTime;" json:"created_time" binding:"-"`
 	ModifyTime int64 `swaggerignore:"true" gorm:"autoUpdateTime;" json:"modify_time" binding:"-"`
-	//DeleteTime soft_delete.DeletedAt `swaggerignore:"true" json:"delete_time" binding:"-"`
 }
 
 type DBOpt interface {
@@ -84,4 +87,18 @@ func UpdateValue(db *gorm.DB, tableName string, where string, value interface{})
 func GetValuesByField(db *gorm.DB, fieldName string, fieldValue interface{}, output interface{}) error {
 	result := db.Where(fieldName+" = ?", fieldValue).Find(output)
 	return result.Error
+}
+
+var migrate = map[string]interface{}{
+	"t_record": &TRecord{},
+}
+
+func DBMigrate(region string) error {
+	for _, table := range migrate {
+		err := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
