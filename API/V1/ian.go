@@ -79,7 +79,7 @@ type AppendRequestInfo struct {
 	} `json:"worker"`
 }
 
-type CreateIanRecordRequestInfo struct {
+type CreateIanRecordRequest struct {
 	Name       string            `json:"name"`
 	Weight     float32           `json:"weight"`
 	BF         string            `json:"bf"`
@@ -99,28 +99,38 @@ type CreateIanRecordRequestInfo struct {
 	Vol4       string            `json:"vol4"`
 	Content    string            `json:"content"`
 	Extra      map[string]string `json:"Extra"`
+	Region     string            `json:"region"`
 }
 
-type CreateIanResponseRequestInfo struct {
-	Id         int     `json:"id"`
-	Name       string  `json:"name"`
-	Weight     float32 `json:"weight"`
-	BF         string  `json:"bf"`
-	LUN        string  `json:"lun"`
-	DIN        string  `json:"din"`
-	EXTRA      string  `json:"extra"`
-	Core       int     `json:"core"`
-	Runner     int     `json:"runner"`
-	Support    int     `json:"support"`
-	Squat      int     `json:"squat"`
-	EasyBurpee int     `json:"easy_burpee"`
-	Chair      int     `json:"chair"`
-	Stretch    int     `json:"stretch"`
-	Vol1       string  `json:"vol1"`
-	Vol2       string  `json:"vol2"`
-	Vol3       string  `json:"vol3"`
-	Vol4       string  `json:"vol4"`
-	Content    string  `json:"content"`
-	CreateTime string  `json:"create_time"`
-	UpdateTime string  `json:"update_time"`
+type CreateIanRecordResponse struct {
+	Id uint `json:"id"`
+}
+
+type SelectIanRecordResponse struct {
+	Items []IanRecordInfo `json:"items"`
+}
+type IanRecordInfo struct {
+	Id         uint              `json:"id"`
+	CreateTime int64             `json:"create_time"`
+	ModifyTime int64             `json:"modify_time"`
+	Name       string            `json:"name"`
+	Weight     float32           `json:"weight"`
+	BF         string            `json:"bf"`
+	LUN        string            `json:"lun"`
+	DIN        string            `json:"din"`
+	EXTRA      string            `json:"extra"`
+	Core       int               `json:"core"`
+	Runner     int               `json:"runner"`
+	Support    int               `json:"support"`
+	Squat      int               `json:"squat"`
+	EasyBurpee int               `json:"easy_burpee"`
+	Chair      int               `json:"chair"`
+	Stretch    int               `json:"stretch"`
+	Vol1       string            `json:"vol1"`
+	Vol2       string            `json:"vol2"`
+	Vol3       string            `json:"vol3"`
+	Vol4       string            `json:"vol4"`
+	Content    string            `json:"content"`
+	Extra      map[string]string `json:"Extra"`
+	Region     string            `json:"region"`
 }

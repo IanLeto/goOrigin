@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"goOrigin/API/V1"
 	"goOrigin/config"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -279,6 +280,100 @@ func AppendIanRecord(c *gin.Context, req *V1.AppendRequestInfo) (*model.Ian, err
 
 ERR:
 	return nil, nil
+}
+
+func CreateIanRecordV2(c *gin.Context, req *V1.CreateIanRecordRequest) (*V1.CreateIanRecordResponse, error) {
+	var (
+		err error
+	)
+	tRecord := mysql.TRecord{
+		Name:       req.Name,
+		Weight:     req.Weight,
+		BF:         req.BF,
+		LUN:        req.LUN,
+		DIN:        req.DIN,
+		EXTRA:      req.EXTRA,
+		Core:       req.Core,
+		Runner:     req.Runner,
+		Support:    req.Support,
+		Squat:      req.Squat,
+		EasyBurpee: req.EasyBurpee,
+		Chair:      req.Chair,
+		Stretch:    req.Stretch,
+		Vol1:       req.Vol1,
+		Vol2:       req.Vol2,
+		Vol3:       req.Vol3,
+		Vol4:       req.Vol4,
+		Content:    req.Content,
+		Region:     req.Region,
+	}
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Region])
+	res, _, err := mysql.Create(db.Client, &tRecord)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, res)
+		return &V1.CreateIanRecordResponse{}, err
+	}
+	return &V1.CreateIanRecordResponse{
+		Id: tRecord.ID,
+	}, nil
+
+}
+
+func SelectIanRecordsV2(c *gin.Context, region string, name string, startTime, modifyTime int64, limit int) (*V1.SelectIanRecordResponse, error) {
+	var (
+		err     error
+		records []*mysql.TRecord
+		where   = "1 = 1"
+		res     = &V1.SelectIanRecordResponse{
+			Items: []V1.IanRecordInfo{},
+		}
+	)
+	if name != "" {
+		where = fmt.Sprintf("%s and name = '%s'", where, name)
+	}
+	if startTime != 0 {
+		where = fmt.Sprintf("%s and create_time >= %d", where, startTime)
+	}
+	if modifyTime != 0 {
+		where = fmt.Sprintf("%s and update_time >= %d", where, modifyTime)
+	}
+
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+	result, _, err := mysql.GetValueByRaw(db.Client, &records, "t_record", where)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, result)
+		return nil, err
+	}
+	for _, record := range records {
+		res.Items = append(res.Items, V1.IanRecordInfo{
+			Id:         record.ID,
+			CreateTime: record.CreateTime,
+			ModifyTime: record.ModifyTime,
+			Name:       record.Name,
+			Weight:     record.Weight,
+			BF:         record.BF,
+			LUN:        record.LUN,
+			DIN:        record.DIN,
+			EXTRA:      record.EXTRA,
+			Core:       record.Core,
+			Runner:     record.Runner,
+			Support:    record.Support,
+			Squat:      record.Squat,
+			EasyBurpee: record.EasyBurpee,
+			Chair:      record.Chair,
+			Stretch:    record.Stretch,
+			Vol1:       record.Vol1,
+			Vol2:       record.Vol2,
+			Vol3:       record.Vol3,
+			Vol4:       record.Vol4,
+			Content:    record.Content,
+			Extra:      record.Extra,
+			Region:     record.Region,
+		})
+	}
+
+	return res, nil
+
 }
 
 //func AddDayForm(c *gin.Context) {

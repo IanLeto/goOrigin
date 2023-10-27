@@ -21,4 +21,5 @@ type TRecord struct {
 	Vol4       string            `json:"vol4"`
 	Content    string            `json:"content"`
 	Extra      map[string]string `json:"Extra"`
+	Region     string            `json:"region"`
 }
