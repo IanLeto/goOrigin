@@ -319,7 +319,7 @@ func CreateIanRecordV2(c *gin.Context, req *V1.CreateIanRecordRequest) (*V1.Crea
 
 }
 
-func SelectIanRecordsV2(c *gin.Context, region string, name string, startTime, modifyTime int64, limit int) (*V1.SelectIanRecordResponse, error) {
+func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, modifyTime int64, limit int) (*V1.SelectIanRecordResponse, error) {
 	var (
 		err     error
 		records []*mysql.TRecord
@@ -339,7 +339,7 @@ func SelectIanRecordsV2(c *gin.Context, region string, name string, startTime, m
 	}
 
 	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
-	result, _, err := mysql.GetValueByRaw(db.Client, &records, "t_record", where)
+	result, _, err := mysql.GetValueByRaw(db.Client, &records, "t_records", where)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, result)
 		return nil, err
@@ -367,7 +367,6 @@ func SelectIanRecordsV2(c *gin.Context, region string, name string, startTime, m
 			Vol3:       record.Vol3,
 			Vol4:       record.Vol4,
 			Content:    record.Content,
-			Extra:      record.Extra,
 			Region:     record.Region,
 		})
 	}

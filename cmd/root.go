@@ -21,7 +21,9 @@ var RootCmd = &cobra.Command{
 		}
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
-		if v, err := cmd.Flags().GetString("init"); err != nil && v != "" {
+		v, err := cmd.Flags().GetString("init")
+		utils.NoError(err)
+		if v != "" {
 			utils.NoError(mysql.DBMigrate(v))
 			return
 		}

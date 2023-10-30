@@ -6,31 +6,43 @@ version: v1
 port: 8080
 backend:
   mysql:
-    unknown:
+    conn:
       address: 124.222.48.125:3306
       user: ian
       password: l99l8ymm,e
       name: job
       ismigration: false
-    localhost:
+    mac:
       address: localhost:3306
       user: root
       password: root
       name: node
       ismigration: true
-    conn:
+    mack8s:
       address: localhost:3306
       port: 3306
       user: root
       password: root
       name: topo
       ismigration: false
+    win:
+      address: localhost:3306
+      user: root
+      password: root
+      name: go-ori
+      ismigration: false
+    wink8s:
+      address: localhost:3306
+      user: root
+      password: root
+      name: node
+      ismigration: true
   redis:
     addr: 124.222.48.125:6379
     port: 6379
     isSentinal: false
     auth: i012nsl9
-    masterName: master
+    masterName: mac
   zk:
     address:
       - localhost:2181
@@ -51,7 +63,7 @@ backend:
       apiserver_address: "http://localhost:8080"
       config_address: "/Users/ian/.kube/config"
       is_in_cluster: false
-      cluster: local
+      cluster: start.sh
       token: ""
     conn:
       apiserver_address: "http://localhost:8080"
@@ -66,15 +78,9 @@ client:
     heart_beat: 10
     user: root
 components:
-#  - mysql
   - cc
   - prom
   - jaeger
-#  - es
-
-  #  - redis
-  #   - mongo
-  #  - k8s
 data:
   - mongo
   - zk

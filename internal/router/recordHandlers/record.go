@@ -29,16 +29,16 @@ func CreateRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
-func SelectRecord(c *gin.Context) {
+func QueryRecord(c *gin.Context) {
 	var (
-		region = c.GetString("region")
-		name   = c.GetString("name")
+		region = c.Query("region")
+		name   = c.Query("name")
 		res    = &V1.SelectIanRecordResponse{}
 		err    error
 	)
 	startTime, _ := conv.Int64(c.Query("start_time"))
 	endTime, _ := conv.Int64(c.Query("modify_time"))
-	res, err = service.SelectIanRecordsV2(c, region, name, startTime, endTime, 0)
+	res, err = service.QueryIanRecordsV2(c, region, name, startTime, endTime, 0)
 	if err != nil {
 		goto ERR
 	}
