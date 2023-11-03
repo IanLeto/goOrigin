@@ -429,7 +429,7 @@ func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, mo
 //	if err = utils.EnsureJson(c, &queryInfo); err != nil {
 //		goto ERR
 //	}
-//	if err = bson.UnmarshalJSON([]byte(queryInfo.Query), &selector); err != nil {
+//	if err = bson.UnmarshalJSON([]byte(queryInfo.Search), &selector); err != nil {
 //		goto ERR
 //	}
 //	if err = storage.GloablMongo.C("ian").Find(&selector).One(&ian); err != nil {

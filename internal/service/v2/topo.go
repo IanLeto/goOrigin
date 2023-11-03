@@ -97,7 +97,7 @@ func GetNodes(c *gin.Context, name, father, region string) (node []*model.NodeEn
 	//	}
 	//
 	//}
-	//res, err := conn.Query("node", queries)
+	//res, err := conn.Search("node", queries)
 	//
 	//if err != nil {
 	//	logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))

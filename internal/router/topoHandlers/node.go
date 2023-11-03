@@ -51,10 +51,10 @@ ERR:
 //		err error
 //	)
 //	var (
-//		name    = c.Query("name")
-//		content = c.Query("content")
-//		father  = c.Query("father")
-//		region  = c.Query("region")
+//		name    = c.Search("name")
+//		content = c.Search("content")
+//		father  = c.Search("father")
+//		region  = c.Search("region")
 //	)
 //
 //}

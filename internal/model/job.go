@@ -84,7 +84,7 @@ func (j *Job) Exec(ctx context.Context) error {
 	//	}
 	//	for _, id := range j.ScriptIDS {
 	//		// 先全部遍历出来
-	//		res, err := BoolQueryScript(ctx, client, elastic.Query(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", id))))
+	//		res, err := BoolQueryScript(ctx, client, elastic.Search(elastic.NewBoolQuery().Filter(elastic.NewTermQuery("ID", id))))
 	//		if err != nil {
 	//			log.Error(fmt.Sprintf("查询es client 失败 %s", err.Error()))
 	//			goto ERR

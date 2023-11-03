@@ -108,6 +108,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
 		recordGroup.PUT("", recordHandlers.UpdateIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
+
 	}
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{

@@ -61,7 +61,7 @@ ERR:
 
 }
 
-func (c *EsV2Conn) Query(index string, q map[string]interface{}) ([]byte, error) {
+func (c *EsV2Conn) Search(index string, q map[string]interface{}) ([]byte, error) {
 	res, err := c.Client.Info()
 	if err != nil {
 		return nil, err

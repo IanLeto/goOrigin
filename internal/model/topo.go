@@ -250,7 +250,7 @@ Query:
 		b, _ := json.Marshal(query)
 		return string(b)
 	}())
-	value, err = conn.Query(config.NodeMapping, query)
+	value, err = conn.Search(config.NodeMapping, query)
 	if err != nil {
 		goto ERR
 	}

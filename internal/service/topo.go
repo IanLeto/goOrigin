@@ -251,7 +251,7 @@ func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err 
 			},
 		},
 	}
-	value, err := conn.Query(config.NodeMapping, queries)
+	value, err := conn.Search(config.NodeMapping, queries)
 	err = json.Unmarshal(value, &doc)
 	if err != nil {
 		logrus.Debugf("query: %s", func() string {
