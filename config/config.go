@@ -321,6 +321,11 @@ func NewMysqlConfig() *MysqlConfig {
 	}
 }
 
+type Logger struct {
+	Level string `json:"level,omitempty"`
+	Path  string `json:"path,omitempty"`
+}
+
 func (k K8sConfig) Check() (string, error) {
 	for cluster, info := range k.Clusters {
 		if info.IsInCluster {
