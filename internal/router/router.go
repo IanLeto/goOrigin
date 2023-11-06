@@ -23,6 +23,7 @@ import (
 	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/topoHandlers"
 	"goOrigin/internal/router/userHandlers"
+	_ "goOrigin/pkg/collector"
 	"io"
 )
 
@@ -188,6 +189,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		topov2Group.GET("list", topoHandlers.GetTopoList)
 	}
-
+	metricGroup := g.Group("v1/metric")
+	{
+		metricGroup.GET("", gin.WrapH(promhttp.Handler()))
+	}
 	return g
 }
