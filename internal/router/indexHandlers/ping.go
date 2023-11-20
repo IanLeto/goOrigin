@@ -6,22 +6,26 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/router/baseHandlers"
 	"net/http"
-	"os"
-	"runtime/pprof"
 )
 
 func Ping(c *gin.Context) {
-	file, _ := os.OpenFile("cpu", os.O_CREATE|os.O_RDWR, 0777)
-	err := pprof.StartCPUProfile(file)
+	//file, _ := os.OpenFile("cpu", os.O_CREATE|os.O_RDWR, 0777)
+	//err := pprof.StartCPUProfile(file)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer pprof.StopCPUProfile()
+	res, err := json.MarshalIndent(config.Conf, " ", " ")
 	if err != nil {
-		panic(err)
+		baseHandlers.RenderData(c, nil, err)
+		return
 	}
-	defer pprof.StopCPUProfile()
 
 	baseHandlers.RenderData(c, map[string]string{
 		"Version":    "0.0.1",
 		"Maintainer": "ian.liu",
 		"DocUrl":     "",
+		"Config":     string(res),
 	}, nil)
 }
 
