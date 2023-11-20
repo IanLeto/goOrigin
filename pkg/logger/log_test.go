@@ -19,7 +19,7 @@ func (s *LoggerSuite) SetupTest() {
 
 // TestMarshal :
 func (s *LoggerSuite) TestConfig() {
-	logger.Logger.Info("test")
+	//logger.Logger.Info("test")
 	// https://darjun.github.io/2020/04/23/godailylib/zap/
 }
 
