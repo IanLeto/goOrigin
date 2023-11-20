@@ -55,7 +55,7 @@ func InitLogger() {
 
 	// 创建一个 zap logger，并设置 caller（调用者信息）和 stacktrace（堆栈跟踪）的选项
 	Logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	Logger.Sugar().Info("test")
+	//Logger.Sugar().Info("test")
 	//Logger = zap.NewExample()
 	// 结束函数
 	return

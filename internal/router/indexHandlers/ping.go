@@ -15,18 +15,8 @@ func Ping(c *gin.Context) {
 	//	panic(err)
 	//}
 	//defer pprof.StopCPUProfile()
-	res, err := json.MarshalIndent(config.Conf, " ", " ")
-	if err != nil {
-		baseHandlers.RenderData(c, nil, err)
-		return
-	}
 
-	baseHandlers.RenderData(c, map[string]string{
-		"Version":    "0.0.1",
-		"Maintainer": "ian.liu",
-		"DocUrl":     "",
-		"Config":     string(res),
-	}, nil)
+	baseHandlers.RenderData(c, config.Conf, nil)
 }
 
 func ConfigInfo(c *gin.Context) {

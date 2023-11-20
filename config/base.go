@@ -49,6 +49,7 @@ func NewConfig() *Config {
 	//viper.SetConfigFile(filepath.Join(path, "config.yaml"))
 	viper.SetConfigFile(path)
 	utils.NoError(viper.ReadInConfig())
+	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {
 		Conf = NewConfig()
 	})
