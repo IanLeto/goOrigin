@@ -139,7 +139,6 @@ func NewPromConfig() *PromConfig {
 }
 
 // es
-
 type EsConfig struct {
 	ElasticSearchRegion map[string]EsInfo `json:"elasticsearch"`
 }
