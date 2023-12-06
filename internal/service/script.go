@@ -123,27 +123,6 @@ func QueryScript(c *gin.Context, req V1.QueryScriptRequest) (res *V1.QueryScript
 
 	}
 
-	//for _, item := range daoRes.Each(reflect.TypeOf(script)) {
-	//	v, ok := item.(*model.BaseScript)
-	//	if !ok {
-	//		goto ERR
-	//	}
-	//	infos = append(infos, &params.QueryScriptListResponseInfo{
-	//		ID:,
-	//		Name:       v.Name,
-	//		Comment:    v.Comment,
-	//		Type:       v.Type,
-	//		Content:    v.Content,
-	//		File:       v.File,
-	//		Uploader:   v.Uploader,
-	//		Time: v.Time,
-	//		UpdateTime: v.UpdateTime,
-	//		System:     v.System,
-	//		IsFile:     v.IsFile,
-	//		Timeout:    v.Timeout,
-	//		Tags:       v.Tags,
-	//	})
-	//}
 	res = &V1.QueryScriptListResponse{Infos: infos}
 	return res, err
 ERR:
