@@ -14,6 +14,14 @@ type MySQLConn struct {
 	Client *gorm.DB
 }
 
+func NewMySQLConns() error {
+	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
+		MySQLConns[region] = NewMysqlConn(info)
+	}
+
+	return nil
+}
+
 func NewMysqlConn(conf *config.MysqlInfo) *MySQLConn {
 	var (
 		err error

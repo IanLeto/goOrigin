@@ -7,6 +7,7 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/pkg"
+	"goOrigin/pkg/clients"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
@@ -23,7 +24,7 @@ var compInit = map[string]func() error{
 	"zk":    storage.InitZk,
 	"k8s":   k8s.InitK8s,
 	"redis": storage.InitRedis,
-	"mysql": storage.InitMySQL,
+	"mysql": clients.NewMySQLConns,
 	"es":    elastic.InitEs,
 }
 
