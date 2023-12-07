@@ -11,12 +11,23 @@ import (
 var MySQLConns = map[string]*MySQLConn{}
 
 type MySQLConn struct {
-	Client *gorm.DB
+	Client    *gorm.DB
+	IsMigrate bool
 }
+
+//func (m *MySQLConn) Migrate() error {
+//	if !m.IsMigrate {
+//		return nil
+//	}
+//	return m.Client.AutoMigrate(mysql.TRecord{}).Error
+//}
 
 func NewMySQLConns() error {
 	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
 		MySQLConns[region] = NewMysqlConn(info)
+		if err := MySQLConns[region].Migrate(); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -32,6 +43,7 @@ func NewMysqlConn(conf *config.MysqlInfo) *MySQLConn {
 		logrus.Errorf("mysql connect error: %v", err)
 	}
 	return &MySQLConn{
-		Client: client,
+		Client:    client,
+		IsMigrate: conf.IsMigration,
 	}
 }
