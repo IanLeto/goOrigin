@@ -375,6 +375,60 @@ func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, mo
 
 }
 
-func UpdateIanRecordsV2() {
+func UpdateIanRecordsV2(c *gin.Context, req *V1.UpdateIanRecordRequest) (res *V1.UpdateIanRecordResponse, err error) {
+	var (
+		record = mysql.TRecord{
+			Name:       req.Info.Name,
+			Weight:     req.Info.Weight,
+			BF:         req.Info.BF,
+			LUN:        req.Info.LUN,
+			DIN:        req.Info.DIN,
+			EXTRA:      req.Info.EXTRA,
+			Core:       req.Info.Core,
+			Runner:     req.Info.Runner,
+			Support:    req.Info.Support,
+			Squat:      req.Info.Squat,
+			EasyBurpee: req.Info.EasyBurpee,
+			Chair:      req.Info.Chair,
+			Stretch:    req.Info.Stretch,
+			Vol1:       req.Info.Vol1,
+			Vol2:       req.Info.Vol2,
+			Vol3:       req.Info.Vol3,
+			Vol4:       req.Info.Vol4,
+			Content:    req.Info.Content,
+			Region:     req.Info.Region,
+		}
+	)
+	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Info.Region])
+	result, _, err := mysql.UpdateValue(db.Client, "", "", &record)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, result)
+		return
+	}
+	res = &V1.UpdateIanRecordResponse{
+		Item: V1.IanRecordInfo{
+			Id:         record.ID,
+			Name:       record.Name,
+			Weight:     record.Weight,
+			BF:         record.BF,
+			LUN:        record.LUN,
+			DIN:        record.DIN,
+			EXTRA:      record.EXTRA,
+			Core:       record.Core,
+			Runner:     record.Runner,
+			Support:    record.Support,
+			Squat:      record.Squat,
+			EasyBurpee: record.EasyBurpee,
+			Chair:      record.Chair,
+			Stretch:    record.Stretch,
+			Vol1:       record.Vol1,
+			Vol2:       record.Vol2,
+			Vol3:       record.Vol3,
+			Vol4:       record.Vol4,
+			Content:    record.Content,
+			Region:     record.Region,
+		},
+	}
+	return
 
 }

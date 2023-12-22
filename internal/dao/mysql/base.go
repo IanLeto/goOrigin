@@ -79,9 +79,9 @@ func DeleteValues(db *gorm.DB, value interface{}) error {
 	return result.Error
 }
 
-func UpdateValue(db *gorm.DB, tableName string, where string, value interface{}) error {
+func UpdateValue(db *gorm.DB, tableName string, where string, value interface{}) (interface{}, *gorm.DB, error) {
 	result := db.Table(tableName).Where(where).Updates(value)
-	return result.Error
+	return result.Value, result, result.Error
 }
 
 func GetValuesByField(db *gorm.DB, fieldName string, fieldValue interface{}, output interface{}) error {

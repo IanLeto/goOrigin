@@ -71,23 +71,7 @@ func UpdateIanRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
-func SelectIanRecord(c *gin.Context) {
-	var (
-		req = V1.QueryRequest{}
-		res []*V1.QueryResponse
-		err error
-	)
-	req.Name = c.Query("name")
-	res, err = service.SelectIanRecord(c, &req)
-	if err != nil {
-		goto ERR
-	}
 
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
 func AppendIanRecord(c *gin.Context) {
 	var (
 		req = V1.AppendRequestInfo{}

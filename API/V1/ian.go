@@ -116,6 +116,13 @@ type CreateIanRecordResponse struct {
 type SelectIanRecordResponse struct {
 	Items []IanRecordInfo `json:"items"`
 }
+type UpdateIanRecordRequest struct {
+	Info IanRecordInfo `json:"info"`
+}
+
+type UpdateIanRecordResponse struct {
+	Item IanRecordInfo `json:"item"`
+}
 type IanRecordInfo struct {
 	Id         uint              `json:"id"`
 	CreateTime int64             `json:"create_time"`

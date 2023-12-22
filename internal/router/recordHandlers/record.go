@@ -48,3 +48,25 @@ func QueryRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
+func UpdateRecord(c *gin.Context) {
+	var (
+		req = &V1.UpdateIanRecordRequest{}
+		res = &V1.UpdateIanRecordResponse{}
+		err error
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+	res, err = service.UpdateIanRecordsV2(c, req)
+	if err != nil {
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}

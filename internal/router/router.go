@@ -22,7 +22,6 @@ import (
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/topoHandlers"
-	"goOrigin/internal/router/userHandlers"
 	_ "goOrigin/pkg/collector"
 	"io"
 )
@@ -75,7 +74,7 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
-	g.Use(Jaeger())
+	//g.Use(Jaeger())
 	pprof.Register(g, "debug/pprof")
 
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -87,17 +86,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
 
 	}
-
-	userGroup := g.Group("/v1/user")
-	{
-		userGroup.POST("", userHandlers.Create)
-		userGroup.PUT("/:id", userHandlers.Update)
-		userGroup.GET("", userHandlers.List)
-		userGroup.GET("/:username", userHandlers.Get)
-		userGroup.DELETE("/:id", userHandlers.Delete)
-	}
-	ginpprof.WrapGroup(userGroup)
-
 	execGroup := g.Group("/v1/exec")
 	{
 		execGroup.POST("/:id")
@@ -106,11 +94,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		recordGroup.POST("", recordHandlers.CreateRecord)
 		recordGroup.GET("", recordHandlers.QueryRecord)
+		recordGroup.PUT("", recordHandlers.UpdateRecord)
 		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
-		recordGroup.PUT("", recordHandlers.UpdateIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
 
 	}
+	ginpprof.WrapGroup(recordGroup)
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{
 
