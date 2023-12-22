@@ -108,10 +108,6 @@ ERR:
 	return "", res.Err()
 }
 
-func Search() {
-
-}
-
 //func SelectIanRecord(c *gin.Context, req *params.QueryRequest) (response []*params.QueryResponse, err error) {
 //	response = make([]*params.QueryResponse, 0)
 //
@@ -210,43 +206,6 @@ ERR:
 	return nil, err
 }
 
-//func AppendIanRecord(c *gin.Context, req *params.AppendRequestInfo) (*model.Ian, error) {
-//	var (
-//		ian = model.Ian{}
-//		err error
-//	)
-//
-//	filter := bson.M{
-//		"name": req.Name,
-//	}
-//	res := storage.GlobalMongo.DB.Collection("ian").FindOne(context.TODO(), filter)
-//	if res.Err() != nil {
-//		logrus.Errorf("查询日常数据失败 %s", res.Err())
-//		goto ERR
-//	}
-//	if err := res.Decode(&ian); err != nil {
-//		goto ERR
-//	}
-//	ian.BETre.Core += req.BETre.Core
-//	ian.BETre.Runner += req.BETre.Runner
-//	ian.BETre.Support += req.BETre.Support
-//	ian.BETre.Squat += req.BETre.Squat
-//	ian.BETre.EasyBurpee += req.BETre.EasyBurpee
-//	ian.BETre.Chair += req.BETre.Chair
-//	ian.BETre.Stretch += req.BETre.Stretch
-//	ian.Worker.Vol1 = fmt.Sprintf("%s;%s", ian.Worker.Vol1, req.Worker.Vol1)
-//	ian.Worker.Vol2 = fmt.Sprintf("%s;%s", ian.Worker.Vol2, req.Worker.Vol2)
-//	ian.Worker.Vol3 = fmt.Sprintf("%s;%s", ian.Worker.Vol3, req.Worker.Vol3)
-//	ian.Worker.Vol4 = fmt.Sprintf("%s;%s", ian.Worker.Vol4, req.Worker.Vol4)
-//
-//	if storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), filter, &ian).Err() != nil {
-//		goto ERR
-//	}
-//	return &ian, nil
-//ERR:
-//	return nil, err
-//}
-
 func AppendIanRecord(c *gin.Context, req *V1.AppendRequestInfo) (*model.Ian, error) {
 	var (
 		bq      = elastic.NewBoolQuery()
@@ -319,6 +278,47 @@ func CreateIanRecordV2(c *gin.Context, req *V1.CreateIanRecordRequest) (*V1.Crea
 
 }
 
+func BatchCreateIanRecordsV2(c *gin.Context, req *V1.BatchCreateIanRecordRequest) (res *V1.BatchCreateIanRecordResponse, err error) {
+	var (
+		dbs map[string][]*mysql.TRecord
+	)
+
+	for _, item := range req.Items {
+		tRecord := mysql.TRecord{
+			Name:       item.Name,
+			Weight:     item.Weight,
+			BF:         item.BF,
+			LUN:        item.LUN,
+			DIN:        item.DIN,
+			EXTRA:      item.EXTRA,
+			Core:       item.Core,
+			Runner:     item.Runner,
+			Support:    item.Support,
+			Squat:      item.Squat,
+			EasyBurpee: item.EasyBurpee,
+			Chair:      item.Chair,
+			Stretch:    item.Stretch,
+			Vol1:       item.Vol1,
+			Vol2:       item.Vol2,
+			Vol3:       item.Vol3,
+			Vol4:       item.Vol4,
+			Content:    item.Content,
+			Region:     item.Region,
+		}
+		dbs[item.Region] = append(dbs[item.Region], &tRecord)
+	}
+	for region, records := range dbs {
+		db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+		res, _, err := mysql.BatchCreate(db.Client, records)
+		if err != nil {
+			logrus.Errorf("create record failed %s: %s", err, res)
+			return
+		}
+	}
+
+	return
+}
+
 func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, modifyTime int64, limit int) (*V1.SelectIanRecordResponse, error) {
 	var (
 		err     error
@@ -371,75 +371,10 @@ func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, mo
 		})
 	}
 
-	return res, nil
+	return res, err
 
 }
 
-//func AddDayForm(c *gin.Context) {
-//	var (
-//		ian model.ShadowPriest
-//		err error
-//	)
-//
-//	err = c.ShouldBindJSON(&ian)
-//	if err != nil {
-//		logrus.Errorf("%s", err)
-//		baseHandlers.RenderData(c, nil, err)
-//		return
-//	}
-//	err = storage.GloablMongo.C("ian").Insert(ian)
-//	if err != nil {
-//		logrus.Errorf("%s", err)
-//		baseHandlers.RenderData(c, nil, err)
-//		return
-//	}
-//	baseHandlers.RenderData(c, nil, nil)
-//
-//}
-//
-//func UpdateForm(c *gin.Context) {
-//	var (
-//		ian model.ShadowPriest
-//		err error
-//	)
-//	if err := utils.EnsureJson(c, &ian); err != nil {
-//		baseHandlers.RenderData(c, nil, err)
-//		return
-//	}
-//
-//	err = storage.GloablMongo.C("ian").Update(bson.M{
-//		"id": ian.Id,
-//	}, bson.M{
-//		"$set": utils.ConvBsonNoErr(ian),
-//	})
-//	if err != nil {
-//		logrus.Errorf("%s", err)
-//	}
-//	baseHandlers.RenderData(c, nil, err)
-//
-//}
-//
-//func SelectForm(c *gin.Context) {
-//	var (
-//		ian       model.ShadowPriest
-//		queryInfo model.ShadowPriestQueryRequestInfo
-//		err       error
-//		selector  bson.M
-//	)
-//	if err = utils.EnsureJson(c, &queryInfo); err != nil {
-//		goto ERR
-//	}
-//	if err = bson.UnmarshalJSON([]byte(queryInfo.Search), &selector); err != nil {
-//		goto ERR
-//	}
-//	if err = storage.GloablMongo.C("ian").Find(&selector).One(&ian); err != nil {
-//		goto ERR
-//	}
-//
-//	baseHandlers.RenderData(c, ian, err)
-//	return
-//ERR:
-//	baseHandlers.RenderData(c, nil, err)
-//	return
-//
-//}
+func UpdateIanRecordsV2() {
+
+}

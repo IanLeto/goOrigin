@@ -30,7 +30,7 @@ func Create(db *gorm.DB, value interface{}) (interface{}, *gorm.DB, error) {
 	return result.Value, result, result.Error
 }
 
-func BatchCreate(db *gorm.DB, values []interface{}) (interface{}, *gorm.DB, error) {
+func BatchCreate(db *gorm.DB, values interface{}) (interface{}, *gorm.DB, error) {
 	result := db.Create(values)
 	return result.Value, result, result.Error
 }

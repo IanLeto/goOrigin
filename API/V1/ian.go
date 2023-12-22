@@ -78,6 +78,13 @@ type AppendRequestInfo struct {
 		Vol4 string `json:"vol4"`
 	} `json:"worker"`
 }
+type BatchCreateIanRecordRequest struct {
+	Items []CreateIanRecordRequest `json:"items"`
+}
+
+type BatchCreateIanRecordResponse struct {
+	Items []CreateIanRecordResponse `json:"items"`
+}
 
 type CreateIanRecordRequest struct {
 	Name       string            `json:"name"`
