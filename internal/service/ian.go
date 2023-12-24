@@ -278,9 +278,11 @@ func CreateIanRecordV2(c *gin.Context, req *V1.CreateIanRecordRequest) (*V1.Crea
 
 }
 
-func BatchCreateIanRecordsV2(c *gin.Context, req *V1.BatchCreateIanRecordRequest) (res *V1.BatchCreateIanRecordResponse, err error) {
+func BatchCreateIanRecordsV2(c *gin.Context, req *V1.BatchCreateIanRecordRequest) (*V1.BatchCreateIanRecordResponse, error) {
 	var (
 		dbs map[string][]*mysql.TRecord
+		res = &V1.BatchCreateIanRecordResponse{}
+		err error
 	)
 
 	for _, item := range req.Items {
@@ -309,14 +311,15 @@ func BatchCreateIanRecordsV2(c *gin.Context, req *V1.BatchCreateIanRecordRequest
 	}
 	for region, records := range dbs {
 		db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
-		res, _, err := mysql.BatchCreate(db.Client, records)
+		result, _, err := mysql.BatchCreate(db.Client, records)
 		if err != nil {
 			logrus.Errorf("create record failed %s: %s", err, res)
-			return
+			return res, err
 		}
+		res.Items = append(res.Items, result)
 	}
 
-	return
+	return res, err
 }
 
 func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, modifyTime int64, limit int) (*V1.SelectIanRecordResponse, error) {

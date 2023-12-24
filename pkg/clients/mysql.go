@@ -25,8 +25,9 @@ type MySQLConn struct {
 func NewMySQLConns() error {
 	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
 		MySQLConns[region] = NewMysqlConn(info)
-		if err := MySQLConns[region].Migrate(); err != nil {
-			return err
+
+		if err := MySQLConns[region].Client.AutoMigrate(); err != nil {
+			return fmt.Errorf("mysql migrate error: %v", err)
 		}
 	}
 

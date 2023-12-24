@@ -83,7 +83,7 @@ type BatchCreateIanRecordRequest struct {
 }
 
 type BatchCreateIanRecordResponse struct {
-	Items []CreateIanRecordResponse `json:"items"`
+	Items []interface{} `json:"items"`
 }
 
 type CreateIanRecordRequest struct {
