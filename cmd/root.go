@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -21,12 +20,12 @@ var RootCmd = &cobra.Command{
 		}
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
-		v, err := cmd.Flags().GetString("init")
-		utils.NoError(err)
-		if v != "" {
-			utils.NoError(mysql.DBMigrate(v))
-			return
-		}
+		//v, err := cmd.Flags().GetString("init")
+		//utils.NoError(err)
+		//if v != "" {
+		//	utils.NoError(mysql.DBMigrate(v))
+		//	return
+		//}
 		DebugServer()
 	},
 }
