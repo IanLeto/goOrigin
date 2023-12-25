@@ -7,7 +7,6 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
-	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
@@ -52,7 +51,7 @@ func CreateNodes(c *gin.Context, topoInfo, region string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	nodes = node.ToNodes()
 	record, _, err := mysql.Create(db, nodes)
 	if err != nil {

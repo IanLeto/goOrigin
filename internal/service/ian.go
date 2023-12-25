@@ -266,7 +266,7 @@ func CreateIanRecordV2(c *gin.Context, req *V1.CreateIanRecordRequest) (*V1.Crea
 		Content:    req.Content,
 		Region:     req.Region,
 	}
-	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Region])
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Region])
 	res, _, err := mysql.Create(db.Client, &tRecord)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, res)
@@ -310,7 +310,7 @@ func BatchCreateIanRecordsV2(c *gin.Context, req *V1.BatchCreateIanRecordRequest
 		dbs[item.Region] = append(dbs[item.Region], &tRecord)
 	}
 	for region, records := range dbs {
-		db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+		db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 		result, _, err := mysql.BatchCreate(db.Client, records)
 		if err != nil {
 			logrus.Errorf("create record failed %s: %s", err, res)
@@ -341,7 +341,7 @@ func QueryIanRecordsV2(c *gin.Context, region string, name string, startTime, mo
 		where = fmt.Sprintf("%s and update_time >= %d", where, modifyTime)
 	}
 
-	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 	result, _, err := mysql.GetValueByRaw(db.Client, &records, "t_records", where)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, result)
@@ -402,7 +402,7 @@ func UpdateIanRecordsV2(c *gin.Context, req *V1.UpdateIanRecordRequest) (res *V1
 			Region:     req.Info.Region,
 		}
 	)
-	db := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Info.Region])
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Info.Region])
 	result, _, err := mysql.UpdateValue(db.Client, "", "", &record)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, result)

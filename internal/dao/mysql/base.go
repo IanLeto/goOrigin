@@ -3,7 +3,6 @@ package mysql
 import (
 	"github.com/jinzhu/gorm"
 	"goOrigin/config"
-	"goOrigin/pkg/clients"
 )
 
 type Meta struct {
@@ -95,7 +94,7 @@ var migrate = map[string]interface{}{
 
 func DBMigrate(region string) error {
 	for _, table := range migrate {
-		err := clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error
+		err := NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error
 		if err != nil {
 			return err
 		}

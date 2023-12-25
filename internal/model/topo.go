@@ -12,7 +12,6 @@ import (
 	"goOrigin/config"
 	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
-	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
@@ -130,7 +129,7 @@ func CreateNodeAdapter(c *gin.Context, node *NodeEntity, region string, sync boo
 		db *gorm.DB
 	)
 	tNode := node.ToTNode()
-	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	res, _, err := mysql.Create(db, &tNode)
 	if sync {
 		return node.CreateNode(c)
@@ -149,7 +148,7 @@ func GetNodeAdapter(c *gin.Context, name, father, region string) ([]*NodeEntity,
 	tNode := []*TNode{
 		{Name: name, Father: father},
 	}
-	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	data, _, err := mysql.GetValues(db, tNode, 100)
 	if err != nil {
 		logrus.Errorf("get node failed by %s", err)

@@ -69,7 +69,7 @@ func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, e
 		result *model.NodeEntity
 	)
 	record.ID = id
-	db = clients.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	_, err := mysql.GetValueByID(db, record)
 	if err != nil {
 		goto ERR
