@@ -36,7 +36,6 @@ func NewEsV2Conn(conf *config.EsInfo) *EsV2Conn {
 
 func (c *EsV2Conn) Create(index string, body []byte) ([]byte, error) {
 	var (
-		//buf  bytes.Buffer
 		req  = esapi.IndexRequest{}
 		resp *esapi.Response
 		err  error
