@@ -15,13 +15,6 @@ type MySQLConn struct {
 	IsMigrate bool
 }
 
-//func (m *MySQLConn) Migrate() error {
-//	if !m.IsMigrate {
-//		return nil
-//	}
-//	return m.Client.AutoMigrate(mysql.TRecord{}).Error
-//}
-
 func NewMySQLConns() error {
 	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
 		MySQLConns[region] = NewMysqlConn(info)
