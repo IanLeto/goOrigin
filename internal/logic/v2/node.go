@@ -110,16 +110,16 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, error) {
 	var (
 		db     *gorm.DB
-		record = &model.TNode{}
+		tNode  = &mysql.TNode{}
 		result *model.NodeEntity
 	)
-	record.ID = id
+	tNode.ID = id
 	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
-	_, err := mysql.GetValueByID(db, record)
+	_, err := mysql.GetValueByID(db, tNode)
 	if err != nil {
 		goto ERR
 	}
-	result = model.NewNodeEntityFromTnode(record)
+	result = model.NewNodeEntityFromTnode(tNode)
 	return result, err
 ERR:
 	{

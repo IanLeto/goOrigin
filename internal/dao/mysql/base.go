@@ -11,6 +11,10 @@ type Meta struct {
 	ModifyTime int64 `swaggerignore:"true" gorm:"autoUpdateTime;" json:"modify_time" binding:"-"`
 }
 
+type Table interface {
+	GetID() uint
+}
+
 type DBOpt interface {
 	Create() (DBOpt, error)
 	Update() (DBOpt, error)
