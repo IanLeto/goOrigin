@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 )
 
 func CreateDeploy(c *gin.Context) {
@@ -18,7 +18,7 @@ func CreateDeploy(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.CreateDeployment(c, &req)
+	name, err = logic.CreateDeployment(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
@@ -32,7 +32,7 @@ func DeleteDeploy(c *gin.Context) {
 		res  string
 		err  error
 	)
-	res, err = service.DeleteDeployment(c, name, ns)
+	res, err = logic.DeleteDeployment(c, name, ns)
 	if err != nil {
 		goto ERR
 	}
@@ -53,7 +53,7 @@ func UpdateDeploy(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.UpdateDeployment(c, &req)
+	name, err = logic.UpdateDeployment(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
@@ -66,7 +66,7 @@ func ListDeploy(c *gin.Context) {
 		res interface{}
 		err error
 	)
-	res, err = service.ListDeployments(c, ns)
+	res, err = logic.ListDeployments(c, ns)
 	if err != nil {
 		goto ERR
 	}
@@ -87,7 +87,7 @@ func CreateConfigMap(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.CreateDeployment(c, &req)
+	name, err = logic.CreateDeployment(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
@@ -104,7 +104,7 @@ func SelectConfigMap(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.GetConfigMapDetail(c, &req)
+	name, err = logic.GetConfigMapDetail(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
@@ -121,7 +121,7 @@ func CreateDeployDynamic(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.CreateDeploymentDynamic(c, &req)
+	name, err = logic.CreateDeploymentDynamic(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
@@ -135,7 +135,7 @@ func DeleteDeployDynamic(c *gin.Context) {
 		res  string
 		err  error
 	)
-	err = service.DeleteDeploymentDynamic(c, name, ns)
+	err = logic.DeleteDeploymentDynamic(c, name, ns)
 	if err != nil {
 		goto ERR
 	}
@@ -156,7 +156,7 @@ func UpdateDeployDynamic(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.UpdateDeploymentDynamicRequest(c, &req)
+	name, err = logic.UpdateDeploymentDynamicRequest(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 )
 
 // QueryWeight  @Summary
@@ -23,7 +23,7 @@ func QueryWeight(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		goto ERR
 	}
-	res, err = service.QueryPromWeight(c, &req)
+	res, err = logic.QueryPromWeight(c, &req)
 	if err != nil {
 		goto ERR
 	}

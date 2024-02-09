@@ -20,7 +20,7 @@ type NodeEntity struct {
 	Name     string        `json:"name"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
-	Father   string        `json:"father"`
+	Father   string        `json:"father_name"`
 	FatherID uint          `json:"father_id"`
 	Done     bool          `json:"done"`
 	Status   string        `json:"status"`

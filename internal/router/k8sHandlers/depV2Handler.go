@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 )
 
 func CreateV2Deploy(c *gin.Context) {
@@ -18,7 +18,7 @@ func CreateV2Deploy(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	name, err = service.CreateDeploymentV2(c, &req)
+	name, err = logic.CreateDeploymentV2(c, &req)
 	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:

@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
-	v2 "goOrigin/internal/service/v2"
+	"goOrigin/internal/logic"
+	v2 "goOrigin/internal/logic/v2"
 )
 
 func CreateNode(c *gin.Context) {
@@ -123,7 +123,7 @@ func GetTopo(c *gin.Context) {
 		goto ERR
 	}
 
-	res, err = service.GetTopo(c, name, id, region)
+	res, err = logic.GetTopo(c, name, id, region)
 	if err != nil {
 		goto ERR
 	}
@@ -139,7 +139,7 @@ func GetTopoList(c *gin.Context) {
 		region = c.Query("region")
 	)
 
-	res, err = service.GetTopoList(c, region)
+	res, err = logic.GetTopoList(c, region)
 	if err != nil {
 		goto ERR
 	}
@@ -154,7 +154,7 @@ func DeleteNodes(c *gin.Context) {
 		ids = c.QueryArray("ids")
 		err error
 	)
-	res, err := service.DeleteNodes(c, ids)
+	res, err := logic.DeleteNodes(c, ids)
 	if err != nil {
 		goto ERR
 	}
@@ -175,9 +175,9 @@ func DeleteNode(c *gin.Context) {
 	single := c.Query("single")
 	isSingle, _ := conv.Bool(single)
 	if isSingle {
-		res, err = service.DeleteSingleNode(c, id, region)
+		res, err = logic.DeleteSingleNode(c, id, region)
 	} else {
-		res, err = service.DeleteNode(c, id, region)
+		res, err = logic.DeleteNode(c, id, region)
 	}
 	if err != nil {
 		goto ERR

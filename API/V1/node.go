@@ -1,16 +1,16 @@
 package V1
 
 type CreateNodeInfo struct {
-	Name     string   `json:"name"`
-	Content  string   `json:"content"`
-	Depend   string   `json:"depend"`
-	Father   string   `json:"father"`
-	FatherId uint     `json:"father_id"`
-	Region   string   `json:"region"`
-	Children []string `json:"children"`
-	Done     bool     `json:"done"`
-	Tags     []string `json:"tags"`
-	Note     string   `json:"note"`
+	Name       string   `json:"name"`
+	Content    string   `json:"content"`
+	Depend     string   `json:"depend"`
+	FatherName string   `json:"father_name"`
+	FatherId   uint     `json:"father_id"`
+	Region     string   `json:"region"`
+	Children   []string `json:"children"`
+	Done       bool     `json:"done"`
+	Tags       []string `json:"tags"`
+	Note       string   `json:"note"`
 }
 
 type CreateNodeRequest struct {

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 )
 
 func CreateRecord(c *gin.Context) {
@@ -19,7 +19,7 @@ func CreateRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = service.CreateIanRecordV2(c, req)
+	res, err = logic.CreateIanRecordV2(c, req)
 	if err != nil {
 		goto ERR
 	}
@@ -38,7 +38,7 @@ func QueryRecord(c *gin.Context) {
 	)
 	startTime, _ := conv.Int64(c.Query("start_time"))
 	endTime, _ := conv.Int64(c.Query("modify_time"))
-	res, err = service.QueryIanRecordsV2(c, region, name, startTime, endTime, 0)
+	res, err = logic.QueryIanRecordsV2(c, region, name, startTime, endTime, 0)
 	if err != nil {
 		goto ERR
 	}
@@ -59,7 +59,7 @@ func UpdateRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = service.UpdateIanRecordsV2(c, req)
+	res, err = logic.UpdateIanRecordsV2(c, req)
 	if err != nil {
 		goto ERR
 	}

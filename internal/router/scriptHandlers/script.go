@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 )
 
 func CreateScript(c *gin.Context) {
@@ -19,7 +19,7 @@ func CreateScript(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = service.CreateScript(c, req)
+	res, err = logic.CreateScript(c, req)
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
@@ -31,7 +31,7 @@ func DeleteScript(c *gin.Context) {
 		id  = cast.ToInt(c.Param("id"))
 		err error
 	)
-	err = service.DeleteJob(c, id)
+	err = logic.DeleteJob(c, id)
 	if err != nil {
 		goto ERR
 	}
@@ -52,7 +52,7 @@ func QueryScriptList(c *gin.Context) {
 		err error
 	)
 
-	res, err = service.QueryScript(c, req)
+	res, err = logic.QueryScript(c, req)
 	if err != nil {
 		goto ERR
 	}
@@ -68,7 +68,7 @@ func RunScript(c *gin.Context) {
 		id  = c.Query("id")
 	)
 
-	res, err := service.RunScript(c, id)
+	res, err := logic.RunScript(c, id)
 	if err != nil {
 		goto ERR
 	}

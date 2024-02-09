@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 	"goOrigin/pkg/logger"
 )
 
@@ -28,7 +28,7 @@ func CreateJob(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	id, err = service.CreateJob(c, req)
+	id, err = logic.CreateJob(c, req)
 	V1.BuildResponse(c, V1.BuildInfo(id))
 	return
 ERR:
@@ -55,7 +55,7 @@ func UpdateJob(c *gin.Context) {
 		logger.Logger.Error(fmt.Sprintf("errors : %s", err))
 		goto ERR
 	}
-	id, err = service.UpdateJob(c, req)
+	id, err = logic.UpdateJob(c, req)
 	if err != nil {
 		//logger.Logger.Errorf("fail to ")
 		logger.Logger.Error("errors")
@@ -80,7 +80,7 @@ func DeleteJob(c *gin.Context) {
 		id  = cast.ToInt(c.Param("id"))
 		err error
 	)
-	err = service.DeleteJob(c, id)
+	err = logic.DeleteJob(c, id)
 	if err != nil {
 		goto ERR
 	}
@@ -105,7 +105,7 @@ func GetJobDetail(c *gin.Context) {
 		err error
 		res = &V1.GetJobResponse{}
 	)
-	res, err = service.GetJobDetail(c, id)
+	res, err = logic.GetJobDetail(c, id)
 	if err != nil {
 		goto ERR
 	}
@@ -130,7 +130,7 @@ func GetJobs(c *gin.Context) {
 		err error
 		res = &V1.GetJobsResponse{}
 	)
-	res, err = service.GetJobs(c)
+	res, err = logic.GetJobs(c)
 	if err != nil {
 		goto ERR
 	}
@@ -151,7 +151,7 @@ func RunJob(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = service.RunJob(c, req)
+	res, err = logic.RunJob(c, req)
 	if err != nil {
 		goto ERR
 	}

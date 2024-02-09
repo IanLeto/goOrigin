@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/service"
+	"goOrigin/internal/logic"
 	"strconv"
 )
 
@@ -31,7 +31,7 @@ func GetCurrentLogs(c *gin.Context) {
 	req.LimitByte, _ = conv.Int(c.Query("limit_byte"))
 	req.LimitLine, _ = conv.Int(c.Query("limit_line"))
 
-	res, err = service.GetCurrentLogs(c, req)
+	res, err = logic.GetCurrentLogs(c, req)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
@@ -50,7 +50,7 @@ func GetPods(c *gin.Context) {
 		res = &V1.GetPodResponse{}
 		err error
 	)
-	res, err = service.GetPods(c, req)
+	res, err = logic.GetPods(c, req)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
