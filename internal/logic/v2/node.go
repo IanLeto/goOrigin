@@ -60,44 +60,20 @@ func CreateNodes(c *gin.Context, topoInfo, region string) (interface{}, error) {
 	return record, err
 }
 
-func UpdateNode(c *gin.Context, req *V1.UpdateNodeRequest) (id string, err error) {
+func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *model.NodeEntity) (interface{}, error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.NodeEntity
+		err    error
 	)
-	if req.Name != "" {
-		node.Name = req.Name
-	}
-	if req.Content != "" {
-		node.Content = req.Content
-	}
-	if req.Depend != "" {
-		node.Depend = req.Depend
-	}
-	if req.FatherId != 0 {
-		node.FatherID = req.FatherId
-	}
-	if req.Done != nil {
-		node.Done = *req.Done
-	}
-	if req.Note != "" {
-		node.Note = req.Note
-	}
-	if req.Status != "" {
-		node.Status = req.Status
-	}
-	if len(req.Tags) != 0 {
-		node.Tags = req.Tags
-	}
-	if len(req.Children) != 0 {
-		node.Children = req.Children
-	}
-
+	nodeEntity, err := GetNodeDetail(c, region, id)
+	nodeEntity.MergeWith(nodeUpdate)
+	tNode, err := nodeEntity.ToMySQLTable()
+	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, tNode)
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err
 	}
-	return
+	return record, nil
 }
 
 func NewExistEsQuery(param string, query elastic.Query) elastic.Query {

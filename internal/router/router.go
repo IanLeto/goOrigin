@@ -163,13 +163,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	nodev2Group := g.Group("v2/node")
 	{
 		nodev2Group.POST("", topoHandlers.CreateNode)
+		nodev2Group.POST("", topoHandlers.UpdateNode)
 		//nodev2Group.POST("/batch", topoHandlers.CreateNodes)
 		//nodev2Group.DELETE("", topoHandlers.DeleteNode)
 		//nodev2Group.DELETE("", topoHandlers.DeleteNodes)
 		//nodev2Group.GET("", topoHandlers.GetNodes)
 		//nodev2Group.GET("", topoHandlers.GetNodeDetail)
 		//nodev2Group.GET("", topoHandlers.GetTopo)
-		//nodev2Group.POST("", topoHandlers.UpdateNode)
+
 		//nodev2Group.POST("/batch")
 
 	}

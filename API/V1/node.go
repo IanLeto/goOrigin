@@ -58,15 +58,16 @@ type GetTopoResponse struct {
 }
 
 type UpdateNodeRequest struct {
-	Name     string   `json:"name"`
-	Content  string   `json:"content"`
-	Depend   string   `json:"depend"`
-	FatherId uint     `json:"father_id"`
-	Done     *bool    `json:"done"`
-	Note     string   `json:"note"`
-	Status   string   `json:"status"`
-	Tags     []string `json:"tags"`
-	Children []string `json:"children"`
+	ID         uint   `json:"id"`
+	Name       string `json:"name"`
+	Region     string `json:"region"`
+	Content    string `json:"content"`
+	Depend     string `json:"depend"`
+	FatherId   uint   `json:"father_id"`
+	FatherName string `json:"father_name"`
+	Done       *bool  `json:"done"`
+	Note       string `json:"note"`
+	Status     string `json:"status"`
 }
 
 type SearchNodeRequest struct {

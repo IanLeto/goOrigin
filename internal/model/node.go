@@ -31,6 +31,73 @@ type NodeEntity struct {
 	Nodes    []*NodeEntity `json:"nodes"`
 }
 
+func (n *NodeEntity) MergeWith(other *NodeEntity) {
+	if other.ID != 0 && n.ID != other.ID {
+		n.ID = other.ID
+	}
+	if other.Name != "" && n.Name != other.Name {
+		n.Name = other.Name
+	}
+	if other.Content != "" && n.Content != other.Content {
+		n.Content = other.Content
+	}
+	if other.Depend != "" && n.Depend != other.Depend {
+		n.Depend = other.Depend
+	}
+	if other.Father != "" && n.Father != other.Father {
+		n.Father = other.Father
+	}
+	if other.FatherID != 0 && n.FatherID != other.FatherID {
+		n.FatherID = other.FatherID
+	}
+	if other.Status != "" && n.Status != other.Status {
+		n.Status = other.Status
+	}
+	if other.Note != "" && n.Note != other.Note {
+		n.Note = other.Note
+	}
+	if other.Region != "" && n.Region != other.Region {
+		n.Region = other.Region
+	}
+	if len(other.Tags) != 0 && !equalStringSlices(n.Tags, other.Tags) {
+		n.Tags = other.Tags
+	}
+	if len(other.Children) != 0 && !equalStringSlices(n.Children, other.Children) {
+		n.Children = other.Children
+	}
+	if other.Nodes != nil && !equalNodeEntitySlices(n.Nodes, other.Nodes) {
+		n.Nodes = other.Nodes
+	}
+}
+
+// Helper function to compare two slices of strings.
+func equalStringSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// Helper function to compare two slices of *NodeEntity.
+func equalNodeEntitySlices(a, b []*NodeEntity) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		// This is a simple comparison that can be made more complex if needed.
+		// For example, you might want to compare IDs or other identifying fields.
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func (n *NodeEntity) ToMySQLTable() (mysql.Table, error) {
 
 	table := mysql.TNode{

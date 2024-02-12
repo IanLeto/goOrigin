@@ -8,6 +8,7 @@ import (
 	"goOrigin/API/V1"
 	"goOrigin/internal/logic"
 	v2 "goOrigin/internal/logic/v2"
+	"goOrigin/internal/model"
 )
 
 func CreateNode(c *gin.Context) {
@@ -65,11 +66,21 @@ func UpdateNode(c *gin.Context) {
 		res interface{}
 		err error
 	)
+	nodeEntity := &model.NodeEntity{
+		Name:     req.Name,
+		Content:  req.Content,
+		Depend:   req.Depend,
+		Father:   req.FatherName,
+		FatherID: req.FatherId,
+		Status:   req.Status,
+		Note:     req.Note,
+	}
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = v2.UpdateNode(c, &req)
+
+	res, err = v2.UpdateNode(c, req.ID, req.Region, nodeEntity)
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
