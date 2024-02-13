@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
-	"goOrigin/API/V1"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model"
@@ -14,26 +13,15 @@ import (
 	logger2 "goOrigin/pkg/logger"
 )
 
-func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id uint, err error) {
+func CreateNode(c *gin.Context, region string, entity *model.NodeEntity) (id uint, err error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.NodeEntity
 	)
 
-	node = &model.NodeEntity{
-		Name:     req.Name,
-		Content:  req.Content,
-		Depend:   req.Depend,
-		FatherID: req.FatherId,
-		Done:     req.Done,
-		Region:   req.Region,
-		Status:   "New",
-		Note:     req.Note,
-		Tags:     req.Tags,
-		Children: req.Children,
-	}
-
-	id, err = model.CreateNodeAdapter(c, node, req.Region, false)
+	id, err = model.CreateNodeAdapter(c, entity, region, false)
+	tNode, err := entity.ToMySQLTable()
+	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, tNode)
+	logger.Debug(fmt.Sprintf("create node %s", record))
 	if err != nil {
 		logger.Error("创建node 失败")
 		return id, err
@@ -41,18 +29,14 @@ func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id uint, err error) 
 	return
 }
 
-func CreateNodes(c *gin.Context, topoInfo, region string) (interface{}, error) {
+func CreateNodes(c *gin.Context, nodes []*model.NodeEntity) (interface{}, error) {
 	var (
-		err   error
-		node  *model.NodeEntity
-		nodes []*model.NodeEntity
+		err error
 	)
-	err = json.Unmarshal([]byte(topoInfo), node)
 	if err != nil {
 		return nil, err
 	}
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
-	nodes = node.ToNodes()
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[""]).Client
 	record, _, err := mysql.Create(db, nodes)
 	if err != nil {
 		return nil, err
@@ -81,6 +65,10 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 		return nil
 	}
 	return query
+}
+
+func SearchNodes(ctx *gin.Context, name string, region string, content string) {
+
 }
 
 func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, error) {

@@ -13,15 +13,26 @@ import (
 
 func CreateNode(c *gin.Context) {
 	var (
-		req = V1.CreateNodeRequest{}
-		res interface{}
-		err error
+		req    = V1.CreateNodeRequest{}
+		res    interface{}
+		err    error
+		entity = &model.NodeEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = v2.CreateNode(c, &req)
+	entity.Name = req.Name
+	entity.Content = req.Content
+	entity.Depend = req.Depend
+	entity.FatherID = req.FatherId
+	entity.Done = req.Done
+	entity.Region = req.Region
+	entity.Status = "New"
+	entity.Note = req.Note
+	entity.Tags = req.Tags
+	entity.Children = req.Children
+	res, err = v2.CreateNode(c, req.Region, entity)
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
@@ -30,15 +41,30 @@ ERR:
 
 func CreateNodes(c *gin.Context) {
 	var (
-		req = V1.CreateNodesRequest{}
-		res interface{}
-		err error
+		req      = V1.CreateNodesRequest{}
+		res      interface{}
+		err      error
+		entities []*model.NodeEntity
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = v2.CreateNodes(c, req.Info, req.Region)
+	for _, info := range req.Info {
+		entities = append(entities, &model.NodeEntity{
+			Name:     info.Name,
+			Content:  info.Content,
+			Depend:   info.Depend,
+			Father:   info.FatherName,
+			FatherID: info.FatherId,
+			Done:     info.Done,
+			Tags:     info.Tags,
+			Note:     info.Note,
+			Region:   info.Region,
+			Children: info.Children,
+		})
+	}
+	res, err = v2.CreateNodes(c, entities)
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:
@@ -95,6 +121,25 @@ func GetNodes(c *gin.Context) {
 		err    error
 	)
 	res, err := v2.GetNodes(c, name, father, region)
+	if err != nil {
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func SearchNode(c *gin.Context) {
+	var (
+		name    = c.Query("name")
+		region  = c.Query("region")
+		content = c.Query("content")
+		res     interface{}
+		err     error
+	)
+	v2.SearchNodes(c, name, region, content)
 	if err != nil {
 		goto ERR
 	}
