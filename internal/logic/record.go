@@ -1,6 +1,17 @@
 package logic
 
-//import (
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"goOrigin/config"
+	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/model/dao"
+	"goOrigin/internal/model/entity"
+	"goOrigin/internal/model/repository"
+)
+
+// import (
+//
 //	"context"
 //	"encoding/json"
 //	"fmt"
@@ -19,8 +30,25 @@ package logic
 //	logger2 "goOrigin/pkg/logger"
 //	"goOrigin/pkg/storage"
 //	"time"
-//)
 //
+// )
+func CreateRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+	var (
+		tRecord = &dao.TRecord{}
+	)
+	tRecord = repository.ToRecordDAO(record)
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+	res, _, err := mysql.Create(db.Client, tRecord)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, res)
+		goto ERR
+	}
+	return tRecord.ID, err
+ERR:
+	return 0, err
+
+}
+
 //var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 //	Name: "ianRecord",
 //	Help: "record ian",

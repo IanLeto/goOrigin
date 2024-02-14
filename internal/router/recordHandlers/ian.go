@@ -12,7 +12,7 @@ import (
 
 // CreateIanRecord @Summary
 // @Description
-// @Tags Ian
+// @Tags Record
 // @Accept json
 // @param record body params.CreateIanRequestInfo true "1"
 // @Router /v1/record [POST]
@@ -74,7 +74,7 @@ ERR:
 func AppendIanRecord(c *gin.Context) {
 	var (
 		req = V1.AppendRequestInfo{}
-		res *entity.Ian
+		res *entity.Record
 		err error
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {

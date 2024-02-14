@@ -5,20 +5,34 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
+	"goOrigin/internal/logic"
+	"goOrigin/internal/model/entity"
 )
 
 func CreateRecord(c *gin.Context) {
 	var (
-		req = &V1.CreateIanRecordRequest{}
-		res = &V1.CreateIanRecordResponse{}
-		err error
+		req    = &V1.CreateIanRecordRequest{}
+		res    = &V1.CreateIanRecordResponse{}
+		err    error
+		record = &entity.Record{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	//res, err = logic.CreateIanRecordV2(c, req)
+	record.Name = req.Name
+	record.Weight = req.Weight
+	record.Vol1 = req.Vol1
+	record.Vol2 = req.Vol2
+	record.Vol3 = req.Vol3
+	record.Vol4 = req.Vol4
+	record.Content = req.Content
+	record.Region = req.Region
+	record.Retire = req.Retire
+	record.Cost = req.Cost
+	res.Id, err = logic.CreateRecord(c, record)
 	if err != nil {
+		logrus.Errorf("%s", err)
 		goto ERR
 	}
 

@@ -2,10 +2,7 @@ package cron
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
-	"goOrigin/internal/model/entity"
 	"goOrigin/pkg"
-	"goOrigin/pkg/storage"
 	"time"
 )
 
@@ -14,29 +11,8 @@ type NoteIan struct {
 }
 
 func (n *NoteIan) Exec(ctx context.Context, info pkg.JobMessageInfo) error {
-	var (
-		err error
-	)
-	for {
-
-		select {
-		case <-n.Trick.C:
-			_, err := storage.GlobalRedisCon.Client.LPush("noteian", "1").Result()
-			if err != nil {
-				logrus.Errorf("error in reging redis %s", err)
-			}
-			root := entity.Ian{
-				Body:   entity.Body{},
-				BETre:  entity.BETre{},
-				Worker: entity.Worker{},
-			}
-			root.Save()
-		case <-ctx.Done():
-			return err
-		}
-
-	}
-
+	//TODO implement me
+	panic("implement me")
 }
 
 func (n *NoteIan) Stop(ctx context.Context, kill chan struct{}) error {

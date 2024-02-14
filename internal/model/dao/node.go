@@ -7,7 +7,7 @@ type TNode struct {
 	Depend   string `gorm:"type:varchar(255)"`
 	Father   string `gorm:"type:varchar(255)"`
 	FatherID uint   `gorm:"type:int(11) unsigned"` // 0 means root
-	Done     bool
+	Done     bool   `gorm:"type:tinyint(1)"`
 	Status   string `gorm:"type:varchar(255)"`
 	Region   string `gorm:"type:varchar(255)"`
 	Note     string `gorm:"type:text"`
