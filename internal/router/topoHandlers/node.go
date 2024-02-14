@@ -8,7 +8,7 @@ import (
 	"goOrigin/API/V1"
 	"goOrigin/internal/logic"
 	v2 "goOrigin/internal/logic/v2"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 )
 
 func CreateNode(c *gin.Context) {
@@ -16,7 +16,7 @@ func CreateNode(c *gin.Context) {
 		req    = V1.CreateNodeRequest{}
 		res    interface{}
 		err    error
-		entity = &model.NodeEntity{}
+		entity = &entity.NodeEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
@@ -44,14 +44,14 @@ func CreateNodes(c *gin.Context) {
 		req      = V1.CreateNodesRequest{}
 		res      interface{}
 		err      error
-		entities []*model.NodeEntity
+		entities []*entity.NodeEntity
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
 	for _, info := range req.Info {
-		entities = append(entities, &model.NodeEntity{
+		entities = append(entities, &entity.NodeEntity{
 			Name:     info.Name,
 			Content:  info.Content,
 			Depend:   info.Depend,
@@ -92,7 +92,7 @@ func UpdateNode(c *gin.Context) {
 		res interface{}
 		err error
 	)
-	nodeEntity := &model.NodeEntity{
+	nodeEntity := &entity.NodeEntity{
 		Name:     req.Name,
 		Content:  req.Content,
 		Depend:   req.Depend,
@@ -220,7 +220,26 @@ func DeleteNodes(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
 func DeleteNode(c *gin.Context) {
+	var (
+		region = c.Query("region")
+		err    error
+	)
+	id, err := conv.Uint(c.Query("id"))
+
+	res, err := v2.DeleteNode(c, id, region)
+	if err != nil {
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+
+func EDeleteNode(c *gin.Context) {
 	var (
 		err error
 		res interface{}

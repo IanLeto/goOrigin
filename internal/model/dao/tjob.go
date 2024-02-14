@@ -1,9 +1,11 @@
-package mysql
+package dao
 
-import "goOrigin/pkg/storage"
+import (
+	"goOrigin/internal/dao/mysql"
+	"goOrigin/pkg/storage"
+)
 
 type TJob struct {
-	*Meta
 	Name      string `json:"name" gorm:"name"`
 	Target    string `json:"target" gorm:"target"`
 	FilePath  string `json:"file_path" gorm:"file_path"`
@@ -11,29 +13,29 @@ type TJob struct {
 	ScriptIDs string `json:"script_ids" gorm:"script_ids"`
 }
 
-func (t *TJob) Create() (DBOpt, error) {
+func (t *TJob) Create() (mysql.DBOpt, error) {
 	return nil, storage.GlobalMySQL.Create(t).Error
 }
 
-func (t *TJob) Update() (DBOpt, error) {
+func (t *TJob) Update() (mysql.DBOpt, error) {
 	return nil, storage.GlobalMySQL.Model(t).Update(t).Error
 }
 
-func (t *TJob) Delete() (DBOpt, error) {
+func (t *TJob) Delete() (mysql.DBOpt, error) {
 	return nil, storage.GlobalMySQL.Delete(t).Error
 }
 
-func (t *TJob) List() (DBOpt, error) {
+func (t *TJob) List() (mysql.DBOpt, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TJob) BatchCreate(dbOpts []DBOpt) error {
+func (t *TJob) BatchCreate(dbOpts []mysql.DBOpt) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TJob) BatchUpdate(opts []DBOpt) {
+func (t *TJob) BatchUpdate(opts []mysql.DBOpt) {
 	//TODO implement me
 	panic("implement me")
 }

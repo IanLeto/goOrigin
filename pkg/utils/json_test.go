@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goOrigin/API/V1"
-	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/model/dao"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -25,7 +25,7 @@ func (s *JsonSuit) TestStruct() {
 		res []byte
 		err error
 	)
-	res, err = json.MarshalIndent(mysql.TRecord{}, "", "    ")
+	res, err = json.MarshalIndent(dao.TRecord{}, "", "    ")
 	s.NoError(err)
 	fmt.Println(string(res))
 

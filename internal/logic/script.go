@@ -7,7 +7,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"goOrigin/API/V1"
 	pbs "goOrigin/agent/protos"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 	"goOrigin/rpcClient"
@@ -20,7 +20,7 @@ type ScriptApis interface {
 func CreateScript(c *gin.Context, req V1.CreateScriptRequest) (result interface{}, err error) {
 	var (
 		logger = logger2.NewLogger()
-		script = &model.BaseScript{
+		script = &entity.BaseScript{
 			Name:       req.Name,
 			Comment:    req.Comment,
 			Type:       req.Type,
@@ -102,7 +102,7 @@ func QueryScript(c *gin.Context, req V1.QueryScriptRequest) (res *V1.QueryScript
 	}
 
 	for _, hit := range daoRes.Hits.Hits {
-		var ephemeralSc model.BaseScript
+		var ephemeralSc entity.BaseScript
 		err = json.Unmarshal(hit.Source, &ephemeralSc)
 
 		infos = append(infos, &V1.QueryScriptListResponseInfo{
@@ -136,7 +136,7 @@ func RunScript(c *gin.Context, id string) (*pbs.RunScriptResponse, error) {
 		bq     = elastic.NewBoolQuery()
 		logger = logger2.NewLogger()
 		client *elastic.Client
-		script *model.BaseScript
+		script *entity.BaseScript
 	)
 	agent, err := rpcClient.NewAgentClient()
 	client, err = clients.NewESClient()

@@ -19,7 +19,7 @@ func NewMySQLConns() error {
 	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
 		MySQLConns[region] = NewMysqlConn(info)
 		if info.IsMigration {
-			if db := MySQLConns[region].Client.AutoMigrate(&TRecord{}); db.Error != nil {
+			if db := MySQLConns[region].Client.AutoMigrate(nil); db.Error != nil {
 				return fmt.Errorf("mysql migrate error: %v", db.Error)
 			}
 		}

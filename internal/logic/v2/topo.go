@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 	"goOrigin/API/V1"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
@@ -17,15 +17,15 @@ func GetTopoList(c *gin.Context) (res []*V1.GetTopoResponse, err error) {
 		logger = logger2.NewLogger()
 		client *elastic.Client
 		daoRes *elastic.SearchResult
-		node   *model.NodeEntity
+		node   *entity.NodeEntity
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
 		return nil, err
 	}
-	daoRes, err = client.Search().Index(model.EsNode).Query(elastic.NewTermsQuery("father", "")).Do(c)
+	daoRes, err = client.Search().Index(entity.EsNode).Query(elastic.NewTermsQuery("father", "")).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")
 		goto ERR
@@ -47,7 +47,7 @@ func GetTopoList(c *gin.Context) (res []*V1.GetTopoResponse, err error) {
 		})
 	}
 
-	node = model.GetTopo(c, node)
+	node = entity.GetTopo(c, node)
 	return
 
 ERR:
@@ -63,17 +63,17 @@ func GetTopo(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) {
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.NodeEntity
+		node    *entity.NodeEntity
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
 		return nil, err
 	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
 	bq.Filter(queries...)
-	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
+	daoRes, err = client.Search().Index(entity.EsNode).Query(bq).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")
 		goto ERR
@@ -83,7 +83,7 @@ func GetTopo(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) {
 		logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
 		goto ERR
 	}
-	node = model.GetTopo(c, node)
+	node = entity.GetTopo(c, node)
 	res = &V1.GetTopoResponse{
 		Name:    node.Name,
 		Content: node.Content,

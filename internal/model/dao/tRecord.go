@@ -1,7 +1,7 @@
-package mysql
+package dao
 
 type TRecord struct {
-	*Meta
+	//*mysql.Meta
 	Name       string  `json:"name"`
 	Weight     float32 `json:"weight"`
 	BF         string  `json:"bf"`

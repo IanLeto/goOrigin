@@ -2,24 +2,25 @@ package v2
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/dao"
+	"goOrigin/internal/model/entity"
+	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
 
-func CreateNode(c *gin.Context, region string, entity *model.NodeEntity) (id uint, err error) {
+func CreateNode(c *gin.Context, region string, entity *entity.NodeEntity) (id uint, err error) {
 	var (
 		logger = logger2.NewLogger()
 	)
-
-	id, err = model.CreateNodeAdapter(c, entity, region, false)
-	tNode, err := entity.ToMySQLTable()
+	tNode := repository.ToDAO(entity)
 	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, tNode)
 	logger.Debug(fmt.Sprintf("create node %s", record))
 	if err != nil {
@@ -29,14 +30,17 @@ func CreateNode(c *gin.Context, region string, entity *model.NodeEntity) (id uin
 	return
 }
 
-func CreateNodes(c *gin.Context, nodes []*model.NodeEntity) (interface{}, error) {
+func CreateNodes(c *gin.Context, nodes []*entity.NodeEntity) (interface{}, error) {
 	var (
 		err error
 	)
 	if err != nil {
 		return nil, err
 	}
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[""]).Client
+	if len(nodes) == 0 {
+		return nil, err
+	}
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[nodes[0].Region]).Client
 	record, _, err := mysql.Create(db, nodes)
 	if err != nil {
 		return nil, err
@@ -44,15 +48,14 @@ func CreateNodes(c *gin.Context, nodes []*model.NodeEntity) (interface{}, error)
 	return record, err
 }
 
-func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *model.NodeEntity) (interface{}, error) {
+func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *entity.NodeEntity) (interface{}, error) {
 	var (
 		logger = logger2.NewLogger()
 		err    error
 	)
 	nodeEntity, err := GetNodeDetail(c, region, id)
 	nodeEntity.MergeWith(nodeUpdate)
-	tNode, err := nodeEntity.ToMySQLTable()
-	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, tNode)
+	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, repository.ToDAO(nodeEntity))
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err
@@ -71,11 +74,11 @@ func SearchNodes(ctx *gin.Context, name string, region string, content string) {
 
 }
 
-func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, error) {
+func GetNodeDetail(c *gin.Context, region string, id uint) (*entity.NodeEntity, error) {
 	var (
 		db     *gorm.DB
-		tNode  = &mysql.TNode{}
-		result *model.NodeEntity
+		tNode  = &dao.TNode{}
+		result *entity.NodeEntity
 	)
 	tNode.ID = id
 	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
@@ -83,7 +86,7 @@ func GetNodeDetail(c *gin.Context, region string, id uint) (*model.NodeEntity, e
 	if err != nil {
 		goto ERR
 	}
-	result = model.NewNodeEntityFromTnode(tNode)
+	result = repository.ToEntity(tNode)
 	return result, err
 ERR:
 	{
@@ -91,45 +94,37 @@ ERR:
 	}
 }
 
-func GetNodes(c *gin.Context, name, father, region string) (node []*model.NodeEntity, err error) {
-	return model.GetNodeAdapter(c, name, father, region)
-	//var (
-	//	logger  = logger2.NewLogger()
-	//	queries = map[string]interface{}{}
-	//	conn    *clients.EsV2Conn
-	//)
-	//conn = clients.NewEsV2Conn(config.Conf)
-	//
-	//if name != "" {
-	//	queries["term"] = map[string]interface{}{
-	//		"name": name,
-	//	}
-	//
-	//}
-	//res, err := conn.Search("node", queries)
-	//
-	//if err != nil {
-	//	logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
-	//	goto ERR
-	//}
-	//
-	//for _, hit := range res.Hits.Hits {
-	//	var ephemeralNode *model.NodeEntity
-	//	data, err := json.Marshal(hit.Source)
-	//	if err != nil {
-	//		goto ERR
-	//	}
-	//	err = json.Unmarshal(data, &ephemeralNode)
-	//	ephemeralNode.ID = hit.Id
-	//	if err != nil {
-	//		goto ERR
-	//	}
-	//	node = append(node, ephemeralNode)
-	//}
-	//ERR:
-	//	{
-	//		return nil, err
-	//	}
+func GetNodes(c *gin.Context, name, father, region string) (nodes []*entity.NodeEntity, err error) {
+	var (
+		db     *gorm.DB
+		tNodes []*dao.TNode
+	)
+	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	err = db.Table("t_node").Where("name = ? and father = ?", name, father).Find(&tNodes).Error
+	if err != nil {
+		goto ERR
+	}
+	for _, v := range tNodes {
+		nodes = append(nodes, repository.ToEntity(v))
+	}
+ERR:
+	{
+		return nil, err
+	}
+}
+
+func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
+	var (
+		err   error
+		tNode = &dao.TNode{}
+	)
+	tNode.ID = id
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	err = mysql.DeleteValue(db, tNode)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
+	}
+	return nil, err
 }
 
 func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
@@ -144,7 +139,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 	)
 	filters = append(filters, NewExistEsQuery("_id", elastic.NewTermsQuery("_id", ids)))
 	bq.Filter(filters...)
-	daoRes, err := client.DeleteByQuery().Index(model.EsNode).Query(bq).Do(c)
+	daoRes, err := client.DeleteByQuery().Index(entity.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error("delete 失败")
 		return nil, err
@@ -159,11 +154,11 @@ func SearchNodeDetail(c *gin.Context, id, name, father string) (interface{}, err
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.NodeEntity
+		node    *entity.NodeEntity
 		err     error
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return nil, err

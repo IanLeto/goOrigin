@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"goOrigin/API/V1"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/k8s"
 	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
@@ -32,7 +32,7 @@ func CreateDeployment(c *gin.Context, req *V1.CreateDeploymentReq) (string, erro
 		res = ""
 		err error
 	)
-	deploy, err := model.NewDeployParams(req)
+	deploy, err := entity.NewDeployParams(req)
 	if err != nil {
 		return "", err
 	}
@@ -62,7 +62,7 @@ func CreateDeploymentV2(c *gin.Context, req *V1.CreateDeploymentReq) (string, er
 		res = ""
 		err error
 	)
-	deploy, err := model.NewDeployParamsV2(req)
+	deploy, err := entity.NewDeployParamsV2(req)
 	if err != nil {
 		return "", err
 	}

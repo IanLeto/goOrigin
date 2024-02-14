@@ -3,7 +3,7 @@ package cron
 import (
 	"context"
 	"github.com/sirupsen/logrus"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg"
 	"goOrigin/pkg/storage"
 	"time"
@@ -25,10 +25,10 @@ func (n *NoteIan) Exec(ctx context.Context, info pkg.JobMessageInfo) error {
 			if err != nil {
 				logrus.Errorf("error in reging redis %s", err)
 			}
-			root := model.Ian{
-				Body:   model.Body{},
-				BETre:  model.BETre{},
-				Worker: model.Worker{},
+			root := entity.Ian{
+				Body:   entity.Body{},
+				BETre:  entity.BETre{},
+				Worker: entity.Worker{},
 			}
 			root.Save()
 		case <-ctx.Done():

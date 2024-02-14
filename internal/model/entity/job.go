@@ -1,8 +1,8 @@
-package model
+package entity
 
 import (
 	"context"
-	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/model/dao"
 	"goOrigin/pkg/storage"
 	"strings"
 )
@@ -18,8 +18,8 @@ type Job struct {
 	ScriptIDS  []string
 }
 
-func (j *Job) ToTable() *mysql.TJob {
-	return &mysql.TJob{
+func (j *Job) ToTable() *dao.TJob {
+	return &dao.TJob{
 		Name:      j.Name,
 		Target:    strings.Join(j.Targets, ","),
 		FilePath:  j.FilePath,
@@ -34,7 +34,7 @@ func (j *Job) Create() error {
 	if err != nil {
 		return err
 	}
-	j.ID = tJob.ID
+	//j.ID = tJob.ID
 	return nil
 }
 
@@ -44,15 +44,15 @@ func (j *Job) Update() error {
 	if err != nil {
 		return err
 	}
-	j.ID = tJob.ID
+	//j.ID = tJob.ID
 	return nil
 }
 
 func (j *Job) Delete() error {
-	return mysql.DeleteJobByID(j.ID)
+	return dao.DeleteJobByID(j.ID)
 }
 
-func (j *Job) QueryDetail() (*mysql.TJob, error) {
+func (j *Job) QueryDetail() (*dao.TJob, error) {
 	tJob := j.ToTable()
 	err := storage.GlobalMySQL.Model(tJob).First(tJob).Error
 	if err != nil {

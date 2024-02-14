@@ -5,8 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/logic"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 )
 
 // param $参数名 参数类型 参数数据类型 是否必须 描述 其他
@@ -27,7 +26,7 @@ func CreateIanRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	objID, err = logic.CreateIanRecord(c, req)
+	//objID, err = logic.CreateIanRecord(c, req)
 	V1.BuildResponse(c, V1.BuildInfo(objID))
 	return
 ERR:
@@ -36,11 +35,11 @@ ERR:
 
 func DeleteIanRecord(c *gin.Context) {
 	var (
-		id  = c.GetString("id")
+		//id  = c.GetString("id")
 		res int64
 		err error
 	)
-	res, err = logic.DeleteIanRecord(c, id)
+	//res, err = logic.DeleteIanRecord(c, id)
 	if err != nil {
 		goto ERR
 	}
@@ -61,7 +60,7 @@ func UpdateIanRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = logic.UpdateIanRecord(c, req)
+	//res, err = logic.UpdateIanRecord(c, req)
 	if err != nil {
 		goto ERR
 	}
@@ -75,14 +74,14 @@ ERR:
 func AppendIanRecord(c *gin.Context) {
 	var (
 		req = V1.AppendRequestInfo{}
-		res *model.Ian
+		res *entity.Ian
 		err error
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res, err = logic.AppendIanRecord(c, &req)
+	//res, err = logic.AppendIanRecord(c, &req)
 	if err != nil {
 		goto ERR
 	}

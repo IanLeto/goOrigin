@@ -11,37 +11,10 @@ import (
 	"goOrigin/config"
 	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
-
-func CreateNode(c *gin.Context, req *V1.CreateNodeRequest) (id uint, err error) {
-	var (
-		logger = logger2.NewLogger()
-		node   *model.NodeEntity
-	)
-
-	node = &model.NodeEntity{
-		Name:     req.Name,
-		Content:  req.Content,
-		Depend:   req.Depend,
-		FatherID: req.FatherId,
-		Done:     req.Done,
-		Status:   "New",
-		Note:     req.Note,
-		Tags:     req.Tags,
-		Children: req.Children,
-		Region:   req.Region,
-	}
-
-	id, err = node.CreateNode(c)
-	if err != nil {
-		logger.Error("创建node 失败")
-		return 0, err
-	}
-	return
-}
 
 func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	if param == "" {
@@ -50,7 +23,7 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*model.NodeEntity, err error) {
+func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*entity.NodeEntity, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		queries []elastic.Query
@@ -59,7 +32,7 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 		daoRes  *elastic.SearchResult
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return nil, err
@@ -77,13 +50,13 @@ func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node
 
 	}
 	bq.Must(queries...)
-	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
+	daoRes, err = client.Search().Index(entity.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("查询topo失败%s", err.Error()))
 		goto ERR
 	}
 	for _, hit := range daoRes.Hits.Hits {
-		var ephemeralNode *model.NodeEntity
+		var ephemeralNode *entity.NodeEntity
 		err = json.Unmarshal(hit.Source, &ephemeralNode)
 		//ephemeralNode.ID, _ = conv.Uint(hit.Id)
 		if err != nil {
@@ -101,12 +74,12 @@ ERR:
 func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
 	var (
 		err   error
-		nodes []*model.NodeEntity
-		root  *model.NodeEntity
+		nodes []*entity.NodeEntity
+		root  *entity.NodeEntity
 	)
 	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 	// 先找到该节点信息
-	record, _, err := mysql.GetValue(db, &model.NodeEntity{ID: id}, "")
+	record, _, err := mysql.GetValue(db, &entity.NodeEntity{ID: id}, "")
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
 	}
@@ -135,7 +108,7 @@ ERR:
 func DeleteSingleNode(c *gin.Context, id uint, region string) (interface{}, error) {
 	var (
 		err  error
-		node *model.NodeEntity
+		node *entity.NodeEntity
 	)
 	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 
@@ -158,7 +131,7 @@ func DeleteNodes(c *gin.Context, ids []string) (interface{}, error) {
 	)
 	filters = append(filters, NewExistEsQuery("_id", elastic.NewTermsQuery("_id", ids)))
 	bq.Filter(filters...)
-	daoRes, err := client.DeleteByQuery().Index(model.EsNode).Query(bq).Do(c)
+	daoRes, err := client.DeleteByQuery().Index(entity.EsNode).Query(bq).Do(c)
 	if err != nil {
 		logger.Error("delete 失败")
 		return nil, err
@@ -173,11 +146,11 @@ func GetNodeDetail(c *gin.Context, id, name, father string) (interface{}, error)
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.NodeEntity
+		node    *entity.NodeEntity
 		err     error
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 		return nil, err
@@ -209,9 +182,9 @@ const DefaultRegion = "conn"
 func GetTopo(c *gin.Context, name string, id uint, region string) (interface{}, error) {
 	var (
 		err  error
-		root *model.NodeEntity
+		root *entity.NodeEntity
 	)
-	queryMysqlCallback := func(node *model.NodeEntity) (*model.NodeEntity, error) {
+	queryMysqlCallback := func(node *entity.NodeEntity) (*entity.NodeEntity, error) {
 		var (
 			err error
 		)
@@ -232,7 +205,7 @@ ERR:
 func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err error) {
 	var (
 		logger = logger2.NewLogger()
-		node   *model.NodeEntity
+		node   *entity.NodeEntity
 		conn   *elastic2.EsV2Conn
 		doc    *elastic2.EsDoc
 	)
@@ -295,17 +268,17 @@ func GetTopo2(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) 
 		client  *elastic.Client
 		daoRes  *elastic.SearchResult
 		queries []elastic.Query
-		node    *model.NodeEntity
+		node    *entity.NodeEntity
 	)
 	client, err = clients.NewESClient()
-	defer func() { client.CloseIndex(model.EsNode) }()
+	defer func() { client.CloseIndex(entity.EsNode) }()
 	if err != nil {
 		logger.Error(fmt.Sprintf("初始化es 失败 %s", err))
 		return nil, err
 	}
 	queries = append(queries, NewExistEsQuery(name, elastic.NewTermsQuery("name", name)))
 	bq.Filter(queries...)
-	daoRes, err = client.Search().Index(model.EsNode).Query(bq).Do(c)
+	daoRes, err = client.Search().Index(entity.EsNode).Query(bq).Do(c)
 	if len(daoRes.Hits.Hits) == 0 {
 		err = errors.New("不存在该数据")
 		goto ERR
@@ -315,7 +288,7 @@ func GetTopo2(c *gin.Context, name string) (res *V1.GetTopoResponse, err error) 
 		logger.Error(fmt.Sprintf("json 错误 %s", err.Error()))
 		goto ERR
 	}
-	node = model.GetTopo(c, node)
+	node = entity.GetTopo(c, node)
 	res = &V1.GetTopoResponse{
 		Name:    node.Name,
 		Content: node.Content,

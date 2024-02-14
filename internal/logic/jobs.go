@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/dao/mysql"
-	"goOrigin/internal/model"
+	"goOrigin/internal/model/dao"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/logger"
 	"goOrigin/pkg/storage"
 	"strings"
@@ -14,7 +14,7 @@ import (
 
 func CreateJob(c *gin.Context, req V1.CreateJobRequest) (uint, error) {
 	var (
-		job = model.Job{
+		job = entity.Job{
 			Targets:    req.Targets,
 			FilePath:   req.FilePath,
 			Name:       req.Name,
@@ -46,7 +46,7 @@ ERR:
 
 func UpdateJob(c *gin.Context, req *V1.UpdateJobRequest) (uint, error) {
 	var (
-		job = model.Job{
+		job = entity.Job{
 			ID: req.ID,
 			//Target:   req.Target,
 			FilePath: req.FilePath,
@@ -73,7 +73,7 @@ ERR:
 func DeleteJob(c *gin.Context, id int) error {
 	var (
 		err error
-		job = &model.Job{
+		job = &entity.Job{
 			ID: uint(id),
 		}
 	)
@@ -83,14 +83,14 @@ func DeleteJob(c *gin.Context, id int) error {
 func GetJobDetail(c *gin.Context, id int) (*V1.GetJobResponse, error) {
 	var (
 		err error
-		job = &model.Job{ID: uint(id)}
+		job = &entity.Job{ID: uint(id)}
 	)
 	tJob, err := job.QueryDetail()
 	if err != nil {
 		return nil, err
 	}
 	response := &V1.GetJobResponse{
-		ID:       tJob.ID,
+		//ID:       tJob.ID,
 		Name:     tJob.Name,
 		FilePath: tJob.FilePath,
 		Target:   strings.Split(tJob.Target, ","),
@@ -103,7 +103,7 @@ func GetJobDetail(c *gin.Context, id int) (*V1.GetJobResponse, error) {
 func GetJobs(c *gin.Context) (*V1.GetJobsResponse, error) {
 	var (
 		err   error
-		tJobs []*mysql.TJob
+		tJobs []*dao.TJob
 		infos []*V1.GetJobsResponseInfo
 	)
 
@@ -113,7 +113,7 @@ func GetJobs(c *gin.Context) (*V1.GetJobsResponse, error) {
 	}
 	for _, tJob := range tJobs {
 		infos = append(infos, &V1.GetJobsResponseInfo{
-			ID:        tJob.ID,
+			//ID:        tJob.ID,
 			Name:      tJob.Name,
 			Content:   "",
 			ScriptIDs: strings.Split(tJob.ScriptIDs, ","),
@@ -128,8 +128,8 @@ func GetJobs(c *gin.Context) (*V1.GetJobsResponse, error) {
 func RunJob(c *gin.Context, req *V1.RunJobRequest) (*V1.RunJobResponse, error) {
 	var (
 		err  error
-		job  = &model.Job{}
-		tJob = &mysql.TJob{}
+		job  = &entity.Job{}
+		tJob = &dao.TJob{}
 		//infos []*params.GetJobsResponseInfo
 	)
 	if err != nil {
@@ -140,8 +140,8 @@ func RunJob(c *gin.Context, req *V1.RunJobRequest) (*V1.RunJobResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	job = &model.Job{
-		ID:        tJob.ID,
+	job = &entity.Job{
+		//ID:        tJob.ID,
 		Targets:   strings.Split(tJob.ScriptIDs, ","),
 		FilePath:  tJob.FilePath,
 		Name:      tJob.Name,
