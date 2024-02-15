@@ -43,8 +43,6 @@ ERR:
 }
 func QueryRecord(c *gin.Context) {
 	var (
-		//region = c.Query("region")
-		//name   = c.Query("name")
 		res = &V1.SelectIanRecordResponse{}
 		err error
 	)
@@ -63,15 +61,16 @@ ERR:
 
 func UpdateRecord(c *gin.Context) {
 	var (
-		req = &V1.UpdateIanRecordRequest{}
-		res = &V1.UpdateIanRecordResponse{}
-		err error
+		req    = &V1.UpdateIanRecordRequest{}
+		res    = &V1.UpdateIanRecordResponse{}
+		err    error
+		record = &entity.Record{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	//res, err = logic.UpdateIanRecordsV2(c, req)
+	res.ID, err = logic.UpdateRecord(c, record)
 	if err != nil {
 		goto ERR
 	}

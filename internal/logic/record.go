@@ -49,6 +49,40 @@ ERR:
 
 }
 
+func UpdateRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+	var (
+		tRecord = &dao.TRecord{}
+	)
+	tRecord = repository.ToRecordDAO(record)
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+	res, _, err := mysql.Create(db.Client, tRecord)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, res)
+		goto ERR
+	}
+	return tRecord.ID, err
+ERR:
+	return 0, err
+
+}
+
+func DeleteRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+	var (
+		tRecord = &dao.TRecord{}
+	)
+	tRecord = repository.ToRecordDAO(record)
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+	res, _, err := mysql.Create(db.Client, tRecord)
+	if err != nil {
+		logrus.Errorf("create record failed %s: %s", err, res)
+		goto ERR
+	}
+	return tRecord.ID, err
+ERR:
+	return 0, err
+
+}
+
 //var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 //	Name: "ianRecord",
 //	Help: "record ian",

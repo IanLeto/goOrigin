@@ -112,7 +112,8 @@ type UpdateIanRecordRequest struct {
 }
 
 type UpdateIanRecordResponse struct {
-	Item IanRecordInfo `json:"item"`
+	//Item IanRecordInfo `json:"item"`
+	ID uint `json:"id"`
 }
 type IanRecordInfo struct {
 	Id         uint              `json:"id"`
@@ -120,9 +121,6 @@ type IanRecordInfo struct {
 	ModifyTime int64             `json:"modify_time"`
 	Name       string            `json:"name"`
 	Weight     float32           `json:"weight"`
-	BF         string            `json:"bf"`
-	LUN        string            `json:"lun"`
-	DIN        string            `json:"din"`
 	EXTRA      string            `json:"extra"`
 	Core       int               `json:"core"`
 	Runner     int               `json:"runner"`
