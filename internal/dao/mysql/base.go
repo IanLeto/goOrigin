@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"github.com/jinzhu/gorm"
-	"goOrigin/config"
 )
 
 type Table interface {
@@ -84,18 +83,4 @@ func UpdateValue(db *gorm.DB, tableName string, where string, value interface{})
 func GetValuesByField(db *gorm.DB, fieldName string, fieldValue interface{}, output interface{}) error {
 	result := db.Where(fieldName+" = ?", fieldValue).Find(output)
 	return result.Error
-}
-
-var migrate = map[string]interface{}{
-	//"t_record": &dao.TRecord{},
-}
-
-func DBMigrate(region string) error {
-	for _, table := range migrate {
-		err := NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }

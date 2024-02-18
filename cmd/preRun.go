@@ -45,19 +45,19 @@ var initLogger = func() error {
 	return nil
 }
 
-//// step 4 初始化组件
-//var initComponents = func() error {
-//	// 如果pass ,初始化不执行组件检查
-//	//if pass := os.Getenv("PASS"); pass != "true" {
-//	//	return nil
-//	//}
-//	for _, component := range config.Conf.Components {
-//		if fn, ok := compInit[component]; ok {
-//			utils.NoError(fn())
-//		}
-//	}
-//	return nil
-//}
+// step 4 初始化组件
+var initComponents = func() error {
+	// 如果pass ,初始化不执行组件检查
+	//if pass := os.Getenv("PASS"); pass != "true" {
+	//	return nil
+	//}
+	for _, component := range config.Conf.Components {
+		if fn, ok := compInit[component]; ok {
+			utils.NoError(fn())
+		}
+	}
+	return nil
+}
 
 // step 6 启动模式
 var initMode = func() error {
@@ -103,6 +103,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initLogger, initMode, initData, initCronTask)
+		initConfig, initComponents, initLogger, initMode, initData, initCronTask)
 
 }

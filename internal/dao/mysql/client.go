@@ -15,18 +15,18 @@ type MySQLConn struct {
 	IsMigrate bool
 }
 
-func NewMySQLConns() error {
-	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
-		MySQLConns[region] = NewMysqlConn(info)
-		if info.IsMigration {
-			if db := MySQLConns[region].Client.AutoMigrate(nil); db.Error != nil {
-				return fmt.Errorf("mysql migrate error: %v", db.Error)
-			}
-		}
-	}
-
-	return nil
-}
+//func NewMySQLConns() error {
+//	for region, info := range config.Conf.Backend.MysqlConfig.Clusters {
+//		MySQLConns[region] = NewMysqlConn(info)
+//		if info.IsMigration {
+//			if db := MySQLConns[region].Client.AutoMigrate(nil); db.Error != nil {
+//				return fmt.Errorf("mysql migrate error: %v", db.Error)
+//			}
+//		}
+//	}
+//
+//	return nil
+//}
 
 func NewMysqlConn(conf *config.MysqlInfo) *MySQLConn {
 	var (

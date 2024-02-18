@@ -3,10 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"goOrigin/config"
-	"goOrigin/internal/dao/elastic"
-	"goOrigin/internal/dao/mysql"
-	"goOrigin/pkg/k8s"
-	"goOrigin/pkg/storage"
+	"goOrigin/internal/model/dao"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -17,12 +14,12 @@ func paramsStr(v string, err error) string {
 }
 
 var compInit = map[string]func() error{
-	"mongo": storage.InitMongo,
-	"zk":    storage.InitZk,
-	"k8s":   k8s.InitK8s,
-	"redis": storage.InitRedis,
-	"mysql": mysql.NewMySQLConns,
-	"es":    elastic.InitEs,
+	//"mongo": storage.InitMongo,
+	//"zk":    storage.InitZk,
+	//"k8s":   k8s.InitK8s,
+	//"redis": storage.InitRedis,
+	"mysql": dao.DBMigrate,
+	//"es":    elastic.InitEs,
 }
 
 func migrate() error {
@@ -44,11 +41,12 @@ var RootCmd = &cobra.Command{
 		}
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
-		if v, err := cmd.Flags().GetString("init"); err != nil {
-			utils.NoError(mysql.DBMigrate(v))
-			return
+		init, err := cmd.Flags().GetBool("init")
+		utils.NoError(err)
+		if !init {
+			DebugServer()
 		}
-		DebugServer()
+
 	},
 }
 
@@ -56,6 +54,6 @@ func init() {
 	RootCmd.Flags().StringP("config", "c", "", "config")
 	RootCmd.Flags().BoolP("pass", "p", false, "pass")
 	RootCmd.Flags().Bool("debug", false, "debug")
-	RootCmd.Flags().String("init", "", "init db 啥的，要现保证各个依赖项，安装部署成功")
+	RootCmd.Flags().Bool("init", false, "init db 啥的，要现保证各个依赖项，安装部署成功")
 
 }
