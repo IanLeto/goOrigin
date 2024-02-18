@@ -2,6 +2,11 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"goOrigin/config"
+	"goOrigin/internal/dao/elastic"
+	"goOrigin/internal/dao/mysql"
+	"goOrigin/pkg/k8s"
+	"goOrigin/pkg/storage"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -9,6 +14,25 @@ import (
 func paramsStr(v string, err error) string {
 	utils.NoError(err)
 	return v
+}
+
+var compInit = map[string]func() error{
+	"mongo": storage.InitMongo,
+	"zk":    storage.InitZk,
+	"k8s":   k8s.InitK8s,
+	"redis": storage.InitRedis,
+	"mysql": mysql.NewMySQLConns,
+	"es":    elastic.InitEs,
+}
+
+func migrate() error {
+	for _, i := range config.Conf.Components {
+		if v, ok := compInit[i]; ok {
+			utils.NoError(v())
+		}
+
+	}
+	return nil
 }
 
 var RootCmd = &cobra.Command{
@@ -20,12 +44,10 @@ var RootCmd = &cobra.Command{
 		}
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
-		//v, err := cmd.Flags().GetString("init")
-		//utils.NoError(err)
-		//if v != "" {
-		//	utils.NoError(mysql.DBMigrate(v))
-		//	return
-		//}
+		if v, err := cmd.Flags().GetString("init"); err != nil {
+			utils.NoError(mysql.DBMigrate(v))
+			return
+		}
 		DebugServer()
 	},
 }
