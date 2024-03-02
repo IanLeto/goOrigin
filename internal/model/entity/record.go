@@ -19,12 +19,4 @@ type Record struct {
 	Content    string              `json:"content" bson:"content"`
 	Region     string              `json:"region" bson:"region"`
 	Retire     int                 `json:"retire" bson:"retire"`
-	//Core       int                 `json:"core" bson:"core"`
-	//Runner     int                 `json:"runner" bson:"runner"`
-	//Support    int                 `json:"support" bson:"support"`
-	//Squat      int                 `json:"squat" bson:"squat"`
-	//EasyBurpee int                 `json:"easy_burpee" bson:"easyBurpee"`
-	//Chair      int                 `json:"chair" bson:"chair"`
-	//Stretch    int                 `json:"stretch" bson:"stretch"`
-
 }

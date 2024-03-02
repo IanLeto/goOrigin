@@ -87,6 +87,11 @@ type BatchCreateIanRecordResponse struct {
 }
 
 type CreateIanRecordRequest struct {
+	*CreateIanRecordRequestInfo
+	Region string `json:"region"`
+}
+
+type CreateIanRecordRequestInfo struct {
 	Name    string  `json:"name"`
 	Weight  float32 `json:"weight"`
 	IsFuck  bool    `json:"is_fuck"`
@@ -95,7 +100,6 @@ type CreateIanRecordRequest struct {
 	Vol3    string  `json:"vol3"`
 	Vol4    string  `json:"vol4"`
 	Content string  `json:"content"`
-	Region  string  `json:"region"`
 	Cost    int     `json:"cost"`
 	Retire  int     `json:"retire"`
 }

@@ -3,6 +3,7 @@ package logic
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"goOrigin/API/V1"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
@@ -32,12 +33,23 @@ import (
 //	"time"
 //
 // )
-func CreateRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (id uint, err error) {
 	var (
-		tRecord = &dao.TRecord{}
+		tRecord      = &dao.TRecord{}
+		recordEntity = &entity.Record{}
 	)
-	tRecord = repository.ToRecordDAO(record)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+
+	recordEntity.Name = info.Name
+	recordEntity.Weight = info.Weight
+	recordEntity.Vol1 = info.Vol1
+	recordEntity.Vol2 = info.Vol2
+	recordEntity.Vol3 = info.Vol3
+	recordEntity.Vol4 = info.Vol4
+	recordEntity.Content = info.Content
+	recordEntity.Retire = info.Retire
+	recordEntity.Cost = info.Cost
+	tRecord = repository.ToRecordDAO(recordEntity)
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, res)

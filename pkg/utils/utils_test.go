@@ -27,8 +27,9 @@ func (s *UtilsSuite) TestConvBson() {
 
 // TestMarshal :
 func (s *UtilsSuite) TestJson() {
-	res, _ := json.MarshalIndent(V1.CreateIanRecordRequest{}, "", "  ")
+	res, _ := json.MarshalIndent(V1.CreateIanRecordRequest{CreateIanRecordRequestInfo: &V1.CreateIanRecordRequestInfo{}}, "", "  ")
 	fmt.Println(string(res))
+
 }
 
 // TestHttpClient :

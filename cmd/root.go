@@ -43,6 +43,9 @@ var RootCmd = &cobra.Command{
 		PreRun(configPath)
 		init, err := cmd.Flags().GetBool("init")
 		utils.NoError(err)
+		if init {
+			utils.NoError(migrate())
+		}
 		if !init {
 			DebugServer()
 		}
