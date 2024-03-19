@@ -21,7 +21,7 @@ func (s *RedisSuite) SetupTest() {
 		Port:    "",
 		RunMode: "",
 		Backend: &config.BackendConfig{
-			MySqlBackendConfig: nil,
+			MySqlConfig: nil,
 			RedisConfig: &config.RedisConfig{
 				DB:         0,
 				Addr:       "124.222.48.125:6379",

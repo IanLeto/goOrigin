@@ -14,8 +14,8 @@ type MySQLConn struct {
 
 func InitMySQConn() *MySQLConn {
 	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
-		config.Conf.Backend.MySqlBackendConfig.User, config.Conf.Backend.MySqlBackendConfig.Password,
-		config.Conf.Backend.MySqlBackendConfig.Address, config.Conf.Backend.MySqlBackendConfig.Name, "Asia%2FShanghai"))
+		config.Conf.Backend.MySqlConfig.User, config.Conf.Backend.MySqlConfig.Password,
+		config.Conf.Backend.MySqlConfig.Address, config.Conf.Backend.MySqlConfig.Name, "Asia%2FShanghai"))
 	if err != nil {
 		logrus.Errorf("init db conn fail %s", err)
 	}

@@ -18,7 +18,7 @@ type ComponentConfig interface {
 }
 
 type BackendConfig struct {
-	*MySqlBackendConfig
+	*MySqlConfig
 	*MongoBackendConfig
 	*ZKConfig
 	*RedisConfig
@@ -55,8 +55,8 @@ func NewHttpClientConfig() *HttpClientConfig {
 	}
 }
 
-// MySqlBackendConfig mysql backend config
-type MySqlBackendConfig struct {
+// MySqlConfig mysql backend config
+type MySqlConfig struct {
 	Address  string
 	Port     string
 	Password string
@@ -64,8 +64,8 @@ type MySqlBackendConfig struct {
 	Name     string
 }
 
-func NewMySqlBackendConfig() *MySqlBackendConfig {
-	return &MySqlBackendConfig{
+func NewMySqlBackendConfig() *MySqlConfig {
+	return &MySqlConfig{
 		Address:  viper.GetString("backend.MySql.address"),
 		Port:     viper.GetString("backend.MySql.port"),
 		User:     viper.GetString("backend.MySql.user"),

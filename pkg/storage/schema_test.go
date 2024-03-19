@@ -21,7 +21,7 @@ func (s *MongoSuite) SetupTest() {
 		Port:    "",
 		RunMode: "",
 		Backend: &config.BackendConfig{
-			MySqlBackendConfig: nil,
+			MySqlConfig: nil,
 			MongoBackendConfig: &config.MongoBackendConfig{
 				Address:  "localhost:27017",
 				Port:     "",
