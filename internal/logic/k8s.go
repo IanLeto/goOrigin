@@ -306,6 +306,8 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 			fmt.Printf("Error parsing from date: %v\n", err)
 			return nil, err
 		}
+		res.FromDate = fromTime.Format(time.RFC3339Nano)
+		res.FromDate = toTimest.Format(time.RFC3339Nano)
 	}
 	count := 0
 	// 定义一个函数类型，用于处理不同的条件
