@@ -31,7 +31,7 @@ func GetCurrentLogs(c *gin.Context) {
 	req.LimitByte, _ = conv.Int(c.Query("limit_byte"))
 	req.LimitLine, _ = conv.Int(c.Query("limit_line"))
 
-	res, err = logic.GetCurrentLogs(c, req)
+	res, err = logic.GetCurrentLogs(c, req.Cluster, req.GetLogsReqInfo)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR

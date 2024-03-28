@@ -240,79 +240,80 @@ func GetPods(c *gin.Context, req *V1.GetPodRequest) (*V1.GetPodResponse, error) 
 	return res, nil
 }
 
-func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) {
+func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V1.GetLogsRes, error) {
 	var (
-		err       error
-		conn      = k8s.Conn
-		byteLimit = int64(req.LimitByte)
-		lineLimit = int64(req.LimitLine)
-		//sinceTime = int64(100 * time.Second)
-		res = &V1.GetLogsRes{Contents: nil}
+		byteLimit = int64(info.LimitByte)
+		byteLine  = int64(info.LimitLine)
+		res       = &V1.GetLogsRes{}
 	)
+
 	logOptions := &v1.PodLogOptions{
-		Container:                    req.Container,
+		Container:                    info.Container,
 		Timestamps:                   true,       // 是否附带时间戳
-		TailLines:                    &lineLimit, // 最大行数限制
+		TailLines:                    &byteLine,  // 最大行数限制
 		LimitBytes:                   &byteLimit, // 最大字节数限制
 		InsecureSkipTLSVerifyBackend: false,
 	}
-
-	reader, err := conn.ClientSet.CoreV1().RESTClient().Get().Namespace(req.Ns).Name(req.PodID).Resource(
-		"pods").SubResource("log").VersionedParams(logOptions, scheme.ParameterCodec).Stream(c)
+	config := &rest.Config{
+		Host: "https://",
+	}
+	client, _ := kubernetes.NewForConfig(config)
+	reader, err := client.CoreV1().RESTClient().Get().Namespace(info.Ns).Name(info.PodID).Resource("pods").
+		SubResource("log").VersionedParams(logOptions, scheme.ParameterCodec).Stream(c)
 	if err != nil {
-		panic(err)
+		logrus.Errorf("get logs error: %s", err)
+		return nil, err
 	}
 	content, err := ioutil.ReadAll(reader) // 没有换行符号？？？
 	contents := strings.Split(string(content), "\n")
-	if req.Size == 0 {
-		req.Size = 100
+	if info.Size == 0 {
+		info.Size = 100
 	}
-	var isForward bool = req.FromDate != "" && req.ToDate != ""
+	var isForward bool = info.FromDate != "" && info.ToDate != ""
 
 	switch {
 	case len(contents) == 0: // 无数据 返回空
 		break
 	case isForward: // 按时间段查询，contents 返回5000行
 		break
-	case isForward && len(contents) <= req.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
-		contents = contents[0:req.Size]
-	case !isForward && req.Location == "begin": // 从头开始查询
-		contents = contents[0:req.Size]
-	case !isForward && len(contents) <= req.Size: // 没有翻页，且总日志量少于期望数量，直接返回所有日志
-		contents = contents[0:req.Size]
-	case !isForward && req.Location == "end": // 从尾部
-		contents = contents[len(contents)-1-req.Size : len(contents)-1]
-	case req.Location == "" && req.FromDate == "" && req.ToDate == "":
-		contents = contents[len(contents)-1-req.Size : len(contents)-1]
+	case isForward && len(contents) <= info.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
+		contents = contents[0:info.Size]
+	case !isForward && info.Location == "begin": // 从头开始查询
+		contents = contents[0:info.Size]
+	case !isForward && len(contents) <= info.Size: // 没有翻页，且总日志量少于期望数量，直接返回所有日志
+		contents = contents[0:info.Size]
+	case !isForward && info.Location == "end": // 从尾部
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
+	case info.Location == "" && info.FromDate == "" && info.ToDate == "":
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
 	default:
-		contents = contents[len(contents)-1-req.Size : len(contents)-1]
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
 	}
 
 	lines := contents
 	entries := make([]Entry, 0)
 	var fromTimestamp, toTimestamp int64
-	if req.FromDate != "" {
-		fromTime, err := time.Parse(time.RFC3339Nano, req.FromDate)
+	if info.FromDate != "" {
+		fromTime, err := time.Parse(time.RFC3339Nano, info.FromDate)
 		fromTimestamp = fromTime.UnixNano()
 		if err != nil {
 			fmt.Printf("Error parsing from date: %v\n", err)
 			return nil, err
 		}
-		toTimest, err := time.Parse(time.RFC3339Nano, req.ToDate)
+		toTimest, err := time.Parse(time.RFC3339Nano, info.ToDate)
 		toTimestamp = toTimest.UnixNano()
 		if err != nil {
 			fmt.Printf("Error parsing from date: %v\n", err)
 			return nil, err
 		}
 	}
-	fmt.Println(fromTimestamp)
 	count := 0
 	// 定义一个函数类型，用于处理不同的条件
 	type entryHandler func(timestamp int64, entry Entry) bool
 	// 根据条件选择合适的处理方式
 	var handleEntry entryHandler
 	// 如果向后翻页，
-	if isForward && req.Step >= 0 {
+	if isForward && info.Step >= 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
 			// 如果当前数据的时间戳大于等于前端传入的时间片段的最大值,也就是todata
 			if timestamp > toTimestamp {
@@ -321,7 +322,7 @@ func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) 
 			}
 			return false
 		}
-	} else if isForward && req.Step < 0 {
+	} else if isForward && info.Step < 0 {
 		handleEntry = func(timestamp int64, entry Entry) bool {
 			// 因为是向前翻页，所以需要反转数组
 			// 如果当前数据的时间戳小于等于结束时间，就返回
@@ -338,7 +339,7 @@ func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) 
 		}
 	}
 	// 向前翻页，需要反转数组
-	if isForward && req.Step < 0 {
+	if isForward && info.Step < 0 {
 		reverseArray(lines)
 	}
 
@@ -365,7 +366,7 @@ func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) 
 
 			if handleEntry(timestamp.UnixNano(), entry) {
 				count++
-				if count >= req.Size {
+				if count >= info.Size {
 					break
 				}
 			}
@@ -379,7 +380,7 @@ func GetCurrentLogs(c *gin.Context, req *V1.GetLogsReq) (*V1.GetLogsRes, error) 
 			arr[i], arr[j] = arr[j], arr[i]
 		}
 	}
-	if req.Step < 0 {
+	if info.Step < 0 {
 		fn(entries)
 	}
 	for _, entry := range entries {

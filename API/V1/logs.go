@@ -1,6 +1,9 @@
 package V1
 
 type GetLogsReq struct {
+	*GetLogsReqInfo
+}
+type GetLogsReqInfo struct {
 	Container string `json:"container"`
 	PodID     string `json:"pod_id"`
 	Ns        string `json:"ns"`
