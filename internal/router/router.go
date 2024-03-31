@@ -74,7 +74,7 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
-	//g.Use(Jaeger())
+	g.Use(Jaeger())
 	pprof.Register(g, "debug/pprof")
 
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

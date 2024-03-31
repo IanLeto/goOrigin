@@ -21,7 +21,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -199,7 +198,7 @@ ERR:
 type Entry struct {
 	Timestamp int64  `json:"timestamp"`
 	Date      string `json:"date"`
-	Content   int    `json:"content"`
+	Content   string `json:"content"`
 }
 
 func reverseArray(arr []string) {
@@ -279,9 +278,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 	case isForward && len(contents) <= info.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
 		contents = contents[0:info.Size]
 	case !isForward && info.Location == "begin": // 从头开始查询
-		contents = contents[0:info.Size]
 	case !isForward && len(contents) <= info.Size: // 没有翻页，且总日志量少于期望数量，直接返回所有日志
-		contents = contents[0:info.Size]
 	case !isForward && info.Location == "end": // 从尾部
 		contents = contents[len(contents)-1-info.Size : len(contents)-1]
 	case info.Location == "" && info.FromDate == "" && info.ToDate == "":
@@ -310,6 +307,12 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 		res.FromDate = toTimest.Format(time.RFC3339Nano)
 	}
 	count := 0
+	if len(entries) == 0 {
+		res.Items[0] = Entry{
+			Content: "No logs available.",
+		}
+		return res, nil
+	}
 	// 定义一个函数类型，用于处理不同的条件
 	type entryHandler func(timestamp int64, entry Entry) bool
 	// 根据条件选择合适的处理方式
@@ -350,11 +353,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 		// 正常的数据格式为：时间戳 内容
 		if len(parts) >= 2 {
 			date := parts[0]
-			content, err := strconv.Atoi(parts[1])
-			if err != nil {
-				fmt.Printf("Error converting content to integer: %v\n", err)
-				continue
-			}
+			content := parts[1]
 			timestamp, err := time.Parse(time.RFC3339Nano, date)
 			if err != nil {
 				fmt.Printf("Error parsing date: %v\n", err)
@@ -374,9 +373,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 			}
 		}
 	}
-	if len(entries) == 0 {
-		return res, nil
-	}
+
 	var fn = func(arr []Entry) {
 		for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 			arr[i], arr[j] = arr[j], arr[i]
@@ -387,7 +384,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 	}
 	for _, entry := range entries {
 		var epl Entry = entry
-		res.Contents = append(res.Contents, epl)
+		res.Items = append(res.Items, epl)
 	}
 	res.FromDate = string(entries[0].Date) //
 	res.ToDate = string(entries[len(entries)-1].Date)

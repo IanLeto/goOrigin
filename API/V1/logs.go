@@ -19,7 +19,7 @@ type GetLogsReqInfo struct {
 }
 
 type GetLogsRes struct {
-	Contents []interface{}
+	Items    []interface{}
 	FromDate string
 	ToDate   string
 }
