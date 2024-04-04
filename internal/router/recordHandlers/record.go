@@ -2,6 +2,7 @@ package recordHandlers
 
 import (
 	"fmt"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
@@ -34,14 +35,20 @@ ERR:
 }
 func QueryRecord(c *gin.Context) {
 	var (
-		res = &V1.SelectIanRecordResponse{}
-		err error
+		res    = &V1.QueryIanRecordsResponse{}
+		result []*entity.Record
+		err    error
 	)
-	//startTime, _ := conv.Int64(c.Query("start_time"))
-	//endTime, _ := conv.Int64(c.Query("modify_time"))
-	//res, err = logic.QueryIanRecordsV2(c, region, name, startTime, endTime, 0)
+	startTime, _ := conv.Int64(c.Query("start_time"))
+	endTime, _ := conv.Int64(c.Query("modify_time"))
+	region, _ := conv.String(c.Query("region"))
+	name, _ := conv.String(c.Query("name"))
+	result, err = logic.QueryRecords(c, region, name, startTime, endTime)
 	if err != nil {
 		goto ERR
+	}
+	for _, record := range result {
+		res.Items = append(res.Items, record)
 	}
 
 	V1.BuildResponse(c, V1.BuildInfo(res))

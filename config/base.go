@@ -55,7 +55,7 @@ func NewConfig() *Config {
 	})
 	return &Config{
 		Name:       viper.GetString("name"),
-		Port:       viper.GetString("addr"),
+		Port:       viper.GetString("port"),
 		RunMode:    viper.GetString("run_mode"),
 		Components: viper.GetStringSlice("components"),
 		SSH:        NewSSHConfig(),

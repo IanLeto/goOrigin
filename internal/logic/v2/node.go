@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
@@ -14,6 +13,7 @@ import (
 	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
+	"gorm.io/gorm"
 )
 
 func CreateNode(c *gin.Context, region string, entity *entity.NodeEntity) (id uint, err error) {

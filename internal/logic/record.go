@@ -38,7 +38,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.Record{}
 	)
-
 	recordEntity.Name = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
@@ -92,6 +91,35 @@ func DeleteRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) 
 	return tRecord.ID, err
 ERR:
 	return 0, err
+
+}
+
+func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64) ([]*entity.Record, error) {
+	var (
+		recordEntities = make([]*entity.Record, 0)
+		err            error
+	)
+
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+	sql := db.Client.Table("t_records")
+	if name == "" {
+		sql = sql.Where("name = ?", name)
+	}
+	if startTime != 0 {
+		sql = sql.Where("created_at > ?", startTime)
+	}
+	if endTime != 0 {
+		sql = sql.Where("created_at < ?", endTime)
+	}
+	res := sql.Find(&recordEntities)
+	if res.Error != nil {
+		logrus.Errorf("create record failed %s: %s", err, res.Error)
+		goto ERR
+	}
+
+	return recordEntities, err
+ERR:
+	return nil, err
 
 }
 

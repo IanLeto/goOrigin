@@ -1,10 +1,5 @@
 package dao
 
-import (
-	"goOrigin/config"
-	"goOrigin/internal/dao/mysql"
-)
-
 type Meta struct {
 	ID         uint  `swaggerignore:"true" gorm:"primary_key" json:"id" binding:"-" `
 	CreateTime int64 `swaggerignore:"true" gorm:"autoCreateTime;" json:"created_time" binding:"-"`
@@ -20,14 +15,12 @@ var migrate = map[string]interface{}{
 }
 
 func DBMigrate() error {
-	for region, _ := range config.Conf.Backend.MysqlConfig.Clusters {
-		for _, table := range migrate {
-			err := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error
-			if err != nil {
-				return err
-			}
-		}
-	}
+	//for region, _ := range config.Conf.Backend.MysqlConfig.Clusters {
+	//	for _, table := range migrate {
+	//		//fmt.Println(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client.AutoMigrate(table).Error())
+	//
+	//	}
+	//}
 
 	return nil
 }
