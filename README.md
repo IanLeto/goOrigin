@@ -24,6 +24,7 @@
     cd /Users/ian/go/src/goOrigin/agent
     godepgraph -s ../agent | dot -Tpng -o godepgraph.png
     open .
+    ./ori --init --config /home/ian/workdir/cc/goOrigin/conn/config.yaml
 #### ci/cd 
     GOOS=linux GOARCH=amd64 go build -o ori main.go && \
     docker build -t ianleto/goorigin:$(git rev-parse --short HEAD) -f Dockerfile2 .&&\
