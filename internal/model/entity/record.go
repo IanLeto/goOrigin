@@ -12,4 +12,8 @@ type Record struct {
 	Content string  `json:"content" bson:"content"`
 	Region  string  `json:"region" bson:"region"`
 	Retire  int     `json:"retire" bson:"retire"`
+	Dev     string  `json:"dev"`
+	Coding  string  `json:"coding"`
+	Reading string  `json:"reading"`
+	Social  string  `json:"social"`
 }

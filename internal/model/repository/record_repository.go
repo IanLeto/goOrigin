@@ -17,6 +17,7 @@ func ToRecordDAO(record *entity.Record) *dao.TRecord {
 		Region:  record.Region,
 		IsFuck:  record.IsFuck,
 		Cost:    record.Cost,
+		Dev:     record.Dev,
 	}
 }
 
