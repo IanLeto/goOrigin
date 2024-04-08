@@ -27,7 +27,7 @@ func DBMigrate() error {
 				return err
 			}
 		}
+		
 	}
-
 	return nil
 }
