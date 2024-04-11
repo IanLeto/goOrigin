@@ -3,7 +3,6 @@ package router
 import (
 	"context"
 	"github.com/DeanThompson/ginpprof"
-	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
