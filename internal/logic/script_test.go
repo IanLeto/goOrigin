@@ -1,8 +1,19 @@
 package logic
 
 import (
+	"context"
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"goOrigin/API/V1"
+	"io/ioutil"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/tools/clientcmd"
 	"reflect"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	"goOrigin/config"
@@ -41,9 +52,194 @@ func updateNodeWithReflection(a1, a2 *NodeEntity) {
 func (s *ScriptAPISuite) SetupTest() {
 	// Setup logic if needed
 }
+func CurrentLogs(cluster string, info *V1.GetLogsReqInfo) (*V1.GetLogsRes, error) {
+	var (
+		byteLimit = int64(info.LimitByte)
+		byteLine  = int64(info.LimitLine)
+		res       = &V1.GetLogsRes{}
+		count     = 0
+	)
 
+	logOptions := &v1.PodLogOptions{
+		Container:                    info.Container,
+		Timestamps:                   true,       // 是否附带时间戳
+		TailLines:                    &byteLine,  // 最大行数限制
+		LimitBytes:                   &byteLimit, // 最大字节数限制
+		InsecureSkipTLSVerifyBackend: false,
+	}
+
+	config, err := clientcmd.BuildConfigFromFlags("", "/home/ian/.kube/config")
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		logrus.Errorf("get client error: %s", err)
+		return nil, err
+
+	}
+	reader, err := client.CoreV1().RESTClient().Get().Namespace(info.Ns).Name(info.PodID).Resource("pods").
+		SubResource("log").VersionedParams(logOptions, scheme.ParameterCodec).Stream(context.Background())
+	if err != nil {
+		logrus.Errorf("get logs error: %s", err)
+		return nil, err
+	}
+	content, err := ioutil.ReadAll(reader)
+	contents := strings.Split(string(content), "\n")
+	if info.Size == 0 {
+		info.Size = 100
+	}
+	// 是否需要翻页
+	var isForward bool = info.FromDate != "" && info.ToDate != ""
+
+	switch {
+	case len(contents) == 0: // 无数据 返回空
+		break
+	case isForward: // 按时间段查询，contents 返回5000行
+		break
+	case len(contents) <= info.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
+		contents = contents[0:info.Size]
+	case !isForward && info.Location == "begin": // 从头开始查询
+	case !isForward && info.Location == "end": // 从尾部
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
+	case info.Location == "" && info.FromDate == "" && info.ToDate == "":
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
+	default:
+		contents = contents[len(contents)-1-info.Size : len(contents)-1]
+	}
+
+	lines := contents
+	entries := make([]Entry, 0)
+	var fromTimestamp, toTimestamp int64
+	// 如果有时间段，需要解析时间段
+	if info.FromDate != "" {
+		fromTime, err := time.Parse(time.RFC3339Nano, info.FromDate)
+		fromTimestamp = fromTime.UnixNano()
+		if err != nil {
+			fmt.Printf("Error parsing from date: %v\n", err)
+			return nil, err
+		}
+		toTimest, err := time.Parse(time.RFC3339Nano, info.ToDate)
+		toTimestamp = toTimest.UnixNano()
+		if err != nil {
+			fmt.Printf("Error parsing from date: %v\n", err)
+			return nil, err
+		}
+		res.FromDate = fromTime.Format(time.RFC3339Nano)
+		res.FromDate = toTimest.Format(time.RFC3339Nano)
+	}
+
+	// 定义一个函数类型，用于处理不同的条件
+	type entryHandler func(timestamp int64, entry Entry) bool
+	// 根据条件选择合适的处理方式
+	var handleEntry entryHandler
+	// 如果向后翻页，
+	if isForward && info.Step >= 0 {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			// 如果当前数据的时间戳大于等于前端传入的时间片段的最大值,也就是todata
+			if timestamp > toTimestamp {
+				entries = append(entries, entry)
+				return true
+			}
+			return false
+		}
+	} else if isForward && info.Step < 0 {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			// 因为是向前翻页，所以需要反转数组
+			// 如果当前数据的时间戳小于等于结束时间，就返回
+			if timestamp < fromTimestamp {
+				entries = append(entries, entry)
+				return true
+			}
+			return false
+		}
+	} else {
+		handleEntry = func(timestamp int64, entry Entry) bool {
+			entries = append(entries, entry)
+			return true
+		}
+	}
+	// 向前翻页，需要反转数组
+	if isForward && info.Step < 0 {
+		reverseArray(lines)
+	}
+
+	for _, line := range lines {
+		parts := strings.SplitN(line, " ", 2)
+		// 正常的数据格式为：时间戳 内容
+		if len(parts) >= 2 {
+			date := parts[0]
+			content := parts[1]
+			timestamp, err := time.Parse(time.RFC3339Nano, date)
+			if err != nil {
+				fmt.Printf("Error parsing date: %v\n", err)
+				continue
+			}
+			entry := Entry{
+				Timestamp: timestamp.UnixNano(),
+				Date:      date,
+				Content:   content,
+			}
+
+			if handleEntry(timestamp.UnixNano(), entry) {
+				count++
+				if count >= info.Size {
+					break
+				}
+			}
+		}
+	}
+
+	var fn = func(arr []Entry) {
+		for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	if info.Step < 0 {
+		fn(entries)
+	}
+	for _, entry := range entries {
+		var epl Entry = entry
+		res.Items = append(res.Items, epl)
+	}
+	res.FromDate = string(entries[0].Date) //
+	res.ToDate = string(entries[len(entries)-1].Date)
+
+	return res, err
+
+}
 func (s *ScriptAPISuite) TestConfig() {
-	// Test configuration if needed
+	res, err := CurrentLogs("cluster", &V1.GetLogsReqInfo{
+		Container: "tool-filebeat",
+		PodID:     "tool-bc48db55f-bdd5x",
+		Ns:        "default",
+		Size:      10,
+		LimitByte: 1000000,
+		LimitLine: 10000,
+	})
+	s.NoError(err)
+	s.NotNil(res)
+	for i, item := range res.Items {
+		fmt.Println(i, item)
+	}
+	fmt.Println(res.FromDate, res.ToDate)
+}
+func (s *ScriptAPISuite) TestForward() {
+	res, err := CurrentLogs("cluster", &V1.GetLogsReqInfo{
+		Container: "tool-filebeat",
+		PodID:     "tool-bc48db55f-bdd5x",
+		Ns:        "default",
+		Size:      30,
+		LimitByte: 1000000,
+		LimitLine: 10000,
+		//Step:      -1,
+		Location: "end",
+		//FromDate: "2024-04-13T15:34:48.964686598Z",
+		//ToDate:   "2024-04-13T15:34:52.964823124Z",
+	})
+	s.NoError(err)
+	s.NotNil(res)
+	for i, item := range res.Items {
+		fmt.Println(i, item)
+	}
+	fmt.Println(res.FromDate, res.ToDate)
 }
 
 // Add performance tests here.
