@@ -206,11 +206,6 @@ func reverseArray(arr []string) {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
 }
-func reverseArray2(arr []interface{}) {
-	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
-		arr[i], arr[j] = arr[j], arr[i]
-	}
-}
 
 func GetPods(c *gin.Context, req *V1.GetPodRequest) (*V1.GetPodResponse, error) {
 	var (
@@ -244,6 +239,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 		byteLimit = int64(info.LimitByte)
 		byteLine  = int64(info.LimitLine)
 		res       = &V1.GetLogsRes{}
+		count     = 0
 	)
 
 	logOptions := &v1.PodLogOptions{
@@ -256,18 +252,24 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 	config := &rest.Config{
 		Host: "https://",
 	}
-	client, _ := kubernetes.NewForConfig(config)
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		logrus.Errorf("get client error: %s", err)
+		return nil, err
+
+	}
 	reader, err := client.CoreV1().RESTClient().Get().Namespace(info.Ns).Name(info.PodID).Resource("pods").
 		SubResource("log").VersionedParams(logOptions, scheme.ParameterCodec).Stream(c)
 	if err != nil {
 		logrus.Errorf("get logs error: %s", err)
 		return nil, err
 	}
-	content, err := ioutil.ReadAll(reader) // 没有换行符号？？？
+	content, err := ioutil.ReadAll(reader)
 	contents := strings.Split(string(content), "\n")
 	if info.Size == 0 {
 		info.Size = 100
 	}
+	// 是否需要翻页
 	var isForward bool = info.FromDate != "" && info.ToDate != ""
 
 	switch {
@@ -275,10 +277,9 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 		break
 	case isForward: // 按时间段查询，contents 返回5000行
 		break
-	case isForward && len(contents) <= info.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
+	case len(contents) <= info.Size: // 日志少于期望查询数量，无论怎样都会返回所有日志
 		contents = contents[0:info.Size]
 	case !isForward && info.Location == "begin": // 从头开始查询
-	case !isForward && len(contents) <= info.Size: // 没有翻页，且总日志量少于期望数量，直接返回所有日志
 	case !isForward && info.Location == "end": // 从尾部
 		contents = contents[len(contents)-1-info.Size : len(contents)-1]
 	case info.Location == "" && info.FromDate == "" && info.ToDate == "":
@@ -290,6 +291,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 	lines := contents
 	entries := make([]Entry, 0)
 	var fromTimestamp, toTimestamp int64
+	// 如果有时间段，需要解析时间段
 	if info.FromDate != "" {
 		fromTime, err := time.Parse(time.RFC3339Nano, info.FromDate)
 		fromTimestamp = fromTime.UnixNano()
@@ -306,13 +308,7 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 		res.FromDate = fromTime.Format(time.RFC3339Nano)
 		res.FromDate = toTimest.Format(time.RFC3339Nano)
 	}
-	count := 0
-	if len(entries) == 0 {
-		res.Items[0] = Entry{
-			Content: "No logs available.",
-		}
-		return res, nil
-	}
+
 	// 定义一个函数类型，用于处理不同的条件
 	type entryHandler func(timestamp int64, entry Entry) bool
 	// 根据条件选择合适的处理方式
