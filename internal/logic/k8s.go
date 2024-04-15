@@ -159,6 +159,7 @@ func DeleteDeploymentDynamic(c *gin.Context, name, namespace string) error {
 	err = k8s.Conn.DynamicClient.Resource(deploymentRes).Namespace(namespace).Delete(c, name, metav1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
+
 	logrus.Errorf("delete deploy error: %s", err)
 	return err
 }
