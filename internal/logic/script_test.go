@@ -224,10 +224,10 @@ func (s *ScriptAPISuite) TestConfig() {
 func (s *ScriptAPISuite) TestForward() {
 	res, err := CurrentLogs("cluster", &V1.GetLogsReqInfo{
 		Container: "tool-filebeat",
-		PodID:     "tool-bc48db55f-bdd5x",
+		PodID:     "tool-6656fdb57c-grgp8",
 		Ns:        "default",
-		Size:      30,
-		LimitByte: 1000000,
+		Size:      10,
+		LimitByte: 10000,
 		LimitLine: 10000,
 		//Step:      -1,
 		Location: "end",
