@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
 	"goOrigin/pkg"
@@ -51,6 +53,7 @@ var initComponents = func() error {
 	//if pass := os.Getenv("PASS"); pass != "true" {
 	//	return nil
 	//}
+	fmt.Println("初始化组件")
 	for _, component := range config.Conf.Components {
 		if fn, ok := compInit[component]; ok {
 			utils.NoError(fn())
@@ -98,6 +101,13 @@ func PreRun(configPath string) string {
 		utils.NoError(f())
 	}
 	event.Bus.Publish("run_mode", "debug")
+	viper.SetConfigFile(configPath)
+	viper.ReadInConfig()
+	viper.WatchConfig()
+	viper.OnConfigChange(func(in fsnotify.Event) {
+		config.InitConf()
+		initComponents()
+	})
 	return mode
 }
 
