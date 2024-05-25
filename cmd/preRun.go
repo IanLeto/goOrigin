@@ -17,7 +17,6 @@ var preCheck []func() error
 var mode string
 
 // 初始化组件
-
 var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
 	"logger": cron.RegLoggerCron,
@@ -49,11 +48,6 @@ var initLogger = func() error {
 
 // step 4 初始化组件
 var initComponents = func() error {
-	// 如果pass ,初始化不执行组件检查
-	//if pass := os.Getenv("PASS"); pass != "true" {
-	//	return nil
-	//}
-	fmt.Println("初始化组件")
 	for _, component := range config.Conf.Components {
 		if fn, ok := compInit[component]; ok {
 			utils.NoError(fn())
@@ -102,7 +96,7 @@ func PreRun(configPath string) string {
 	}
 	event.Bus.Publish("run_mode", "debug")
 	viper.SetConfigFile(configPath)
-	viper.ReadInConfig()
+	utils.NoError(viper.ReadInConfig())
 	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {
 		config.InitConf()
