@@ -16,7 +16,7 @@ func Ping(c *gin.Context) {
 	//}
 	//defer pprof.StopCPUProfile()
 
-	baseHandlers.RenderData(c, config.Conf, nil)
+	baseHandlers.RenderData(c, config.ConfV2, nil)
 }
 
 func ConfigInfo(c *gin.Context) {

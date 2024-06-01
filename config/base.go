@@ -88,7 +88,10 @@ func NewV2Config() *V2Config {
 	//viper.SetConfigFile(filepath.Join(path, "config.yaml"))
 	viper.SetConfigFile(path)
 	utils.NoError(viper.ReadInConfig())
-	return &V2Config{}
+	return &V2Config{
+		Base: NewBaseConfig(),
+		Env:  NewConnConfig(),
+	}
 }
 
 func (c *Config) watchConfig() {

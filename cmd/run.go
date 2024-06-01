@@ -13,7 +13,7 @@ import (
 func DebugServer() {
 	g := gin.New()
 	router.Load(g, nil)
-	utils.NoError(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", config.Conf.Port), g))
+	utils.NoError(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", config.ConfV2.Base.Port), g))
 }
 
 var runCmd = &cobra.Command{

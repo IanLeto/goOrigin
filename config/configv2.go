@@ -1,21 +1,32 @@
 package config
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/spf13/viper"
+)
 
 type Component interface {
 	ToJSON() string
 }
 
 type V2Config struct {
-	Base   BaseConfig   `yaml:"base" json:"base"`
-	Logger LoggerConfig `yaml:"logger" json:"logger"`
-	Env    EnvConfig    `yaml:"env" json:"env"`
+	Base   BaseConfig             `yaml:"base" json:"base"`
+	Logger LoggerConfig           `yaml:"logger" json:"logger"`
+	Env    map[string]interface{} `yaml:"env" json:"env"`
 }
 
 type BaseConfig struct {
 	Name string `yaml:"name" json:"name"`
 	Port int    `yaml:"port" json:"port"`
 	Mode string `yaml:"mode" json:"mode"`
+}
+
+func NewBaseConfig() BaseConfig {
+	return BaseConfig{
+		Name: viper.Get("base.name").(string),
+		Port: viper.Get("base.port").(int),
+		Mode: viper.Get("base.mode").(string),
+	}
 }
 
 type LoggerConfig struct {
@@ -34,6 +45,16 @@ type EnvConfig struct {
 	Prod   EnvProdConfig   `yaml:"prod" json:"prod"`
 }
 
+type ConnConfig struct {
+	Env map[string]interface{} `yaml:"env" json:"env"`
+}
+type Conn interface {
+}
+
+func NewConnConfig() map[string]interface{} {
+	return viper.Get("env").(map[string]interface{})
+}
+
 type EnvWindowConfig struct {
 	MySQL EnvWindowMySQLConfig `yaml:"mysql" json:"mysql"`
 	ES    EnvWindowESConfig    `yaml:"es" json:"es"`
@@ -41,6 +62,14 @@ type EnvWindowConfig struct {
 
 type EnvWindowMySQLConfig struct {
 	Local EnvWindowMySQLLocalConfig `yaml:"local" json:"local"`
+}
+
+func NewEnvWindowMySQLConfig() EnvWindowMySQLConfig {
+	return EnvWindowMySQLConfig{
+		Local: EnvWindowMySQLLocalConfig{
+			Address: viper.Get("env.window.mysql.local.address").(string),
+		},
+	}
 }
 
 type EnvWindowMySQLLocalConfig struct {
