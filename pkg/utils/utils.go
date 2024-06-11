@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
@@ -68,4 +69,12 @@ func QueryInt(c *gin.Context, key string, defaultVal ...int) int {
 	}
 
 	return defaultVal[0]
+}
+
+func ToJson(v interface{}) string {
+	data, err := json.MarshalIndent(v, "", "  ")
+	NoError(err)
+
+	return string(data)
+
 }

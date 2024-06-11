@@ -2,13 +2,17 @@ package clients
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"goOrigin/internal/model/entity"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
@@ -16,8 +20,65 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-// setupOTelSDK bootstraps the OpenTelemetry pipeline.
-// If it does not return an error, make sure to call shutdown for proper cleanup.
+type customExporter struct {
+	mu     sync.Mutex
+	traces []entity.TraceEntity
+}
+
+func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	for _, span := range spans {
+		traceID := span.SpanContext().TraceID().String()
+		spanID := span.SpanContext().SpanID().String()
+		//operation := span.Name()
+		startTime := span.StartTime().String()
+		//endTime := span.EndTime().String()
+		duration := span.EndTime().Sub(span.StartTime()).Milliseconds()
+		attributes := span.Attributes()
+
+		traceEntity := entity.TraceEntity{
+			TraceId:   traceID,
+			SpanId:    spanID,
+			SpanKind:  string(span.SpanKind()), // you might need to convert this appropriately
+			Timestamp: startTime,
+			Cost:      fmt.Sprintf("%d", duration),
+			// Add other fields as needed, extracting from attributes or setting default values
+		}
+
+		for _, attr := range attributes {
+			switch attr.Key {
+			case "db.system":
+				traceEntity.SystemName = attr.Value.AsString()
+			case "http.method":
+				traceEntity.ReqMethod = attr.Value.AsString()
+			case "http.url":
+				traceEntity.ReqUrl = attr.Value.AsString()
+			case "net.peer.name":
+				traceEntity.RemoteHost = attr.Value.AsString()
+			case "net.peer.port":
+				traceEntity.RemotePort = attr.Value.AsString()
+				// Add other cases to map attributes to TraceEntity fields
+			}
+			e.traces = append(e.traces, traceEntity)
+
+		}
+	}
+
+	return nil
+}
+
+func (e *customExporter) Shutdown(ctx context.Context) error {
+	return nil
+}
+
+func (e *customExporter) GetTraces() []entity.TraceEntity {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.traces
+}
+
 func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
 
@@ -27,7 +88,7 @@ func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	shutdown = func(ctx context.Context) error {
 		var err error
 		for _, fn := range shutdownFuncs {
-			err = errors.Join(err, fn(ctx))
+			fn(ctx)
 		}
 		shutdownFuncs = nil
 		return err
@@ -35,7 +96,7 @@ func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 
 	// handleErr calls shutdown for cleanup and makes sure that all errors are returned.
 	handleErr := func(inErr error) {
-		err = errors.Join(inErr, shutdown(ctx))
+		shutdown(ctx)
 	}
 
 	// Set up propagator.
@@ -80,16 +141,23 @@ func newPropagator() propagation.TextMapPropagator {
 }
 
 func newTraceProvider() (*trace.TracerProvider, error) {
-	traceExporter, err := stdouttrace.New(
-		stdouttrace.WithPrettyPrint())
-	if err != nil {
-		return nil, err
-	}
+	//traceExporter, err := stdouttrace.New(
+	//	stdouttrace.WithPrettyPrint())
+	//if err != nil {
+	//	return nil, err
+	//}
+	customExporter := &customExporter{}
 
 	traceProvider := trace.NewTracerProvider(
-		trace.WithBatcher(traceExporter,
-			// Default is 5s. Set to 1s for demonstrative purposes.
+		//trace.WithBatcher(traceExporter,
+		//	trace.WithBatchTimeout(time.Second)),
+		trace.WithBatcher(customExporter,
 			trace.WithBatchTimeout(time.Second)),
+
+		trace.WithResource(resource.NewWithAttributes(semconv.SchemaURL,
+			semconv.ServiceNameKey.String("ian"),
+			attribute.String("test", "xxx"),
+		)),
 	)
 	return traceProvider, nil
 }
@@ -103,7 +171,7 @@ func newMeterProvider() (*metric.MeterProvider, error) {
 	meterProvider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(metricExporter,
 			// Default is 1m. Set to 3s for demonstrative purposes.
-			metric.WithInterval(3*time.Second))),
+			metric.WithInterval(100*time.Second))),
 	)
 	return meterProvider, nil
 }

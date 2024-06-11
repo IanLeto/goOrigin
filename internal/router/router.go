@@ -12,6 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	jaeger "github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"goOrigin/config"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
@@ -21,8 +22,12 @@ import (
 	"goOrigin/internal/router/recordHandlers"
 	"goOrigin/internal/router/scriptHandlers"
 	"goOrigin/internal/router/topoHandlers"
+	"goOrigin/pkg/clients"
 	_ "goOrigin/pkg/collector"
+	"goOrigin/pkg/utils"
 	"io"
+	"os"
+	"os/signal"
 )
 
 func Jaeger() gin.HandlerFunc {
@@ -70,12 +75,31 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 	return tracer, closer
 }
 
+func ContextMiddleware(ctx context.Context) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Attach the base context to the request context
+		reqCtx := context.WithValue(c.Request.Context(), "baseCtx", ctx)
+		c.Request = c.Request.WithContext(reqCtx)
+		c.Next()
+	}
+}
+
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
+	ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
+	otelShutdown, err := clients.SetupOTelSDK(ctx)
+	utils.NoError(err)
+	// Handle shutdown properly so nothing leaks.
+	defer func() {
+		if err != nil {
+			_ = otelShutdown(ctx)
+		}
+	}()
+
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
-	g.Use(Jaeger())
+	//g.Use(Jaeger())
 	pprof.Register(g, "debug/pprof")
-
+	g.Use(otelgin.Middleware("my-service"))
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	indexGroup := g.Group("/")
 	{
