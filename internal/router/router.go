@@ -28,7 +28,7 @@ import (
 func Jaeger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var parentSpan opentracing.Span
-		tracer, closer := newTracer("goOrigin", "test")
+		tracer, closer := newTracer("go1Origin", "test")
 		defer func() { _ = closer.Close() }()
 		//
 		spanCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request.Header))
