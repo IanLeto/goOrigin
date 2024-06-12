@@ -28,6 +28,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"reflect"
 )
 
 func Jaeger() gin.HandlerFunc {
@@ -86,7 +87,17 @@ func ContextMiddleware(ctx context.Context) gin.HandlerFunc {
 
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
-	otelShutdown, err := clients.SetupOTelSDK(ctx)
+
+	otelShutdown, err := clients.SetupOTelSDK(ctx, func() map[string]string {
+		traceInfo := map[string]string{}
+		t := reflect.TypeOf(config.ConfV2.Trace)
+		v := reflect.ValueOf(config.ConfV2.Trace)
+
+		for i := 0; i < t.NumField(); i++ {
+			traceInfo[t.Field(i).Tag.Get("json")] = v.Field(i).String()
+		}
+		return traceInfo
+	}())
 	utils.NoError(err)
 	// Handle shutdown properly so nothing leaks.
 	defer func() {

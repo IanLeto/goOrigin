@@ -83,7 +83,7 @@ func (e *customExporter) GetTraces() []entity.TraceEntity {
 	return e.traces
 }
 
-func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, err error) {
+func SetupOTelSDK(ctx context.Context, traceInfo map[string]string) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
 
 	// shutdown calls cleanup functions registered via shutdownFuncs.
@@ -108,7 +108,7 @@ func SetupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	otel.SetTextMapPropagator(prop)
 
 	// Set up trace provider.
-	tracerProvider, err := newTraceProvider()
+	tracerProvider, err := newTraceProvider(traceInfo)
 	if err != nil {
 		handleErr(err)
 		return
@@ -144,24 +144,27 @@ func newPropagator() propagation.TextMapPropagator {
 	)
 }
 
-func newTraceProvider() (*trace.TracerProvider, error) {
-	//traceExporter, err := stdouttrace.New(
-	//	stdouttrace.WithPrettyPrint())
-	//if err != nil {
-	//	return nil, err
-	//}
+func newTraceProvider(traceInfo map[string]string) (*trace.TracerProvider, error) {
+	var (
+		resourceAttributes []attribute.KeyValue
+	)
 	customExporter := &customExporter{}
 
+	for k, v := range traceInfo {
+		var key, value string
+		key = k
+		value = v
+		resourceAttributes = append(resourceAttributes, attribute.String(key, value))
+	}
 	traceProvider := trace.NewTracerProvider(
 		//trace.WithBatcher(traceExporter,
 		//	trace.WithBatchTimeout(time.Second)),
-		trace.WithBatcher(customExporter,
-			trace.WithBatchTimeout(time.Second)),
-
-		trace.WithResource(resource.NewWithAttributes(semconv.SchemaURL,
-			semconv.ServiceNameKey.String("ian"),
-			attribute.String("test", "xxx"),
-		)),
+		trace.WithBatcher(customExporter, trace.WithBatchTimeout(time.Second)),
+		trace.WithResource(
+			resource.NewWithAttributes(
+				semconv.SchemaURL,
+				resourceAttributes..., // Add other resource attributes as needed
+			)),
 	)
 	return traceProvider, nil
 }

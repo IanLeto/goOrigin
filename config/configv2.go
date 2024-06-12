@@ -13,6 +13,7 @@ type V2Config struct {
 	Base   BaseConfig             `yaml:"base" json:"base"`
 	Logger LoggerConfig           `yaml:"logger" json:"logger"`
 	Env    map[string]interface{} `yaml:"env" json:"env"`
+	Trace  TraceConfig            `yaml:"trace" json:"trace"`
 }
 
 type BaseConfig struct {
@@ -43,6 +44,31 @@ type EnvConfig struct {
 	Window EnvWindowConfig `yaml:"window" json:"window"`
 	Mac    EnvMacConfig    `yaml:"mac" json:"mac"`
 	Prod   EnvProdConfig   `yaml:"prod" json:"prod"`
+}
+type TraceConfig struct {
+	Az       string `yaml:"az" json:"az"`
+	App      string `yaml:"app" json:"app"`
+	Biz      string `yaml:"biz" json:"biz"`
+	System   string `yaml:"system" json:"system"`
+	Project  string `yaml:"project" json:"project"`
+	Author   string `yaml:"author" json:"author"`
+	Endpoint string `yaml:"endpoint" json:"endpoint"`
+	Interval string `yaml:"interval" json:"interval"`
+	SvcName  string `yaml:"svcname" json:"svcname"`
+}
+
+func NewTraceConfig() TraceConfig {
+	return TraceConfig{
+		Az:       viper.GetString("trace.az"),
+		App:      viper.GetString("trace.app"),
+		Biz:      viper.GetString("trace.biz"),
+		System:   viper.GetString("trace.system"),
+		Project:  viper.GetString("trace.project"),
+		Author:   viper.GetString("trace.author"),
+		Endpoint: viper.GetString("trace.endpoint"),
+		Interval: viper.GetString("trace.interval"),
+		SvcName:  viper.GetString("trace.svcname"),
+	}
 }
 
 type ConnConfig struct {
