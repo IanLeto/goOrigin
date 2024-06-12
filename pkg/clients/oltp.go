@@ -7,6 +7,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"goOrigin/internal/model/entity"
+	"goOrigin/pkg/utils"
 	"sync"
 	"time"
 
@@ -37,7 +38,9 @@ func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnly
 		//endTime := span.EndTime().String()
 		duration := span.EndTime().Sub(span.StartTime()).Milliseconds()
 		attributes := span.Attributes()
-
+		r, err := span.SpanContext().MarshalJSON()
+		utils.NoError(err)
+		fmt.Println(string(r))
 		traceEntity := entity.TraceEntity{
 			TraceId:   traceID,
 			SpanId:    spanID,
@@ -46,7 +49,7 @@ func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnly
 			Cost:      fmt.Sprintf("%d", duration),
 			// Add other fields as needed, extracting from attributes or setting default values
 		}
-
+		fmt.Println(utils.ToJson(attributes))
 		for _, attr := range attributes {
 			switch attr.Key {
 			case "db.system":
@@ -59,10 +62,11 @@ func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnly
 				traceEntity.RemoteHost = attr.Value.AsString()
 			case "net.peer.port":
 				traceEntity.RemotePort = attr.Value.AsString()
+			case "http.status_code":
+				traceEntity.ResultCode = attr.Value.AsString()
 				// Add other cases to map attributes to TraceEntity fields
 			}
 			e.traces = append(e.traces, traceEntity)
-
 		}
 	}
 
