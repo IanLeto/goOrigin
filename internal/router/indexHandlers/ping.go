@@ -3,6 +3,8 @@ package indexHandlers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"goOrigin/config"
 	"goOrigin/internal/router/baseHandlers"
 	"net/http"
@@ -23,6 +25,29 @@ func ConfigInfo(c *gin.Context) {
 	var (
 		result = make(map[string]interface{})
 	)
+
+	//roll := 1 + rand.Intn(6)
+	//
+	//var msg string
+	//if player := r.PathValue("player"); player != "" {
+	//	msg = fmt.Sprintf("%s is rolling the dice", player)
+	//} else {
+	//	msg = "Anonymous player is rolling the dice"
+	//}
+	//logger.InfoContext(ctx, msg, "result", roll)
+	//
+	//rollValueAttr := attribute.Int("roll.value", roll)
+	//span.SetAttributes(rollValueAttr)
+	//rollCnt.Add(ctx, 1, metric.WithAttributes(rollValueAttr))
+	//
+	//resp := strconv.Itoa(roll) + "\n"
+	//if _, err := io.WriteString(w, resp); err != nil {
+	//	log.Printf("Write failed: %v\n", err)
+	//}
+	span := trace.SpanFromContext(c.Request.Context())
+
+	span.SetAttributes(attribute.String("x", "xxxx"))
+	defer span.End()
 	v, err := json.Marshal(config.Conf)
 	if err != nil {
 		baseHandlers.RenderData(c, nil, err)

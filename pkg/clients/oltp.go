@@ -3,7 +3,9 @@ package clients
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"goOrigin/internal/model/entity"
@@ -11,84 +13,16 @@ import (
 	"sync"
 	"time"
 
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
-	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-type customExporter struct {
-	mu     sync.Mutex
-	traces []entity.TraceEntity
-}
-
-func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	for _, span := range spans {
-		traceID := span.SpanContext().TraceID().String()
-		spanID := span.SpanContext().SpanID().String()
-		//operation := span.Name()
-		startTime := span.StartTime().String()
-		//endTime := span.EndTime().String()
-		duration := span.EndTime().Sub(span.StartTime()).Milliseconds()
-		attributes := span.Attributes()
-		r, err := span.SpanContext().MarshalJSON()
-		utils.NoError(err)
-		fmt.Println(string(r))
-		traceEntity := entity.TraceEntity{
-			TraceId:   traceID,
-			SpanId:    spanID,
-			SpanKind:  string(span.SpanKind()), // you might need to convert this appropriately
-			Timestamp: startTime,
-			Cost:      fmt.Sprintf("%d", duration),
-			// Add other fields as needed, extracting from attributes or setting default values
-		}
-		fmt.Println(utils.ToJson(attributes))
-		for _, attr := range attributes {
-			switch attr.Key {
-			case "db.system":
-				traceEntity.SystemName = attr.Value.AsString()
-			case "http.method":
-				traceEntity.ReqMethod = attr.Value.AsString()
-			case "http.url":
-				traceEntity.ReqUrl = attr.Value.AsString()
-			case "net.peer.name":
-				traceEntity.RemoteHost = attr.Value.AsString()
-			case "net.peer.port":
-				traceEntity.RemotePort = attr.Value.AsString()
-			case "http.status_code":
-				traceEntity.ResultCode = attr.Value.AsString()
-				// Add other cases to map attributes to TraceEntity fields
-			}
-			e.traces = append(e.traces, traceEntity)
-		}
-	}
-
-	return nil
-}
-
-func (e *customExporter) Shutdown(ctx context.Context) error {
-	return nil
-}
-
-func (e *customExporter) GetTraces() []entity.TraceEntity {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	return e.traces
-}
-
 func SetupOTelSDK(ctx context.Context, traceInfo map[string]string) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
-
-	// shutdown calls cleanup functions registered via shutdownFuncs.
-	// The errors from the calls are joined.
-	// Each registered cleanup will be invoked once.
 	shutdown = func(ctx context.Context) error {
 		var err error
 		for _, fn := range shutdownFuncs {
@@ -117,13 +51,13 @@ func SetupOTelSDK(ctx context.Context, traceInfo map[string]string) (shutdown fu
 	otel.SetTracerProvider(tracerProvider)
 
 	// Set up meter provider.
-	meterProvider, err := newMeterProvider()
-	if err != nil {
-		handleErr(err)
-		return
-	}
-	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
-	otel.SetMeterProvider(meterProvider)
+	//meterProvider, err := newMeterProvider()
+	//if err != nil {
+	//	handleErr(err)
+	//	return
+	//}
+	//shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
+	//otel.SetMeterProvider(meterProvider)
 
 	// Set up logger provider.
 	loggerProvider, err := newLoggerProvider()
@@ -135,6 +69,74 @@ func SetupOTelSDK(ctx context.Context, traceInfo map[string]string) (shutdown fu
 	global.SetLoggerProvider(loggerProvider)
 
 	return
+}
+
+type customExporter struct {
+	mu     sync.Mutex
+	traces []entity.TraceEntity
+}
+
+func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	for _, span := range spans {
+		traceID := span.SpanContext().TraceID().String()
+		spanID := span.SpanContext().SpanID().String()
+		startTime := span.StartTime().String()
+		duration := span.EndTime().Sub(span.StartTime()).Milliseconds()
+		resources := span.Resource()
+		r, err := span.SpanContext().MarshalJSON()
+		utils.NoError(err)
+		fmt.Println(string(r))
+		fmt.Println(utils.ToJson(resources.Attributes()))
+		fmt.Println(utils.ToJson(span.Attributes()))
+		traceEntity := entity.TraceEntity{
+			TraceId:   traceID,
+			SpanId:    spanID,
+			SpanKind:  string(span.SpanKind()), // you might need to convert this appropriately
+			Timestamp: startTime,
+			Cost:      fmt.Sprintf("%d", duration),
+			// Add other fields as needed, extracting from attributes or setting default values
+		}
+		for _, attr := range resources.Attributes() {
+			switch attr.Key {
+			case "gid":
+				traceEntity.Gid = attr.Value.AsString()
+			case "cid:":
+				traceEntity.Cid = attr.Value.AsString()
+			case "pid":
+				traceEntity.Pid = attr.Value.AsString()
+			case "az":
+				traceEntity.InstanceZone = attr.Value.AsString()
+			case "app":
+				traceEntity.LocalApp = attr.Value.AsString()
+			case "biz":
+				traceEntity.BusinessId = attr.Value.AsString()
+			case "system":
+				traceEntity.SystemName = attr.Value.AsString()
+			case "sys.baggage":
+				traceEntity.SysBaggage = attr.Value.AsString()
+			case "biz.baggage:":
+				traceEntity.BizBaggage = attr.Value.AsString()
+			}
+		}
+		e.traces = append(e.traces, traceEntity)
+		fmt.Println(utils.ToJson(traceEntity))
+
+	}
+
+	return nil
+}
+
+func (e *customExporter) Shutdown(ctx context.Context) error {
+	return nil
+}
+
+func (e *customExporter) GetTraces() []entity.TraceEntity {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.traces
 }
 
 func newPropagator() propagation.TextMapPropagator {
@@ -156,6 +158,7 @@ func newTraceProvider(traceInfo map[string]string) (*trace.TracerProvider, error
 		value = v
 		resourceAttributes = append(resourceAttributes, attribute.String(key, value))
 	}
+	resourceAttributes = append(resourceAttributes, attribute.String("code", "codd"))
 	traceProvider := trace.NewTracerProvider(
 		//trace.WithBatcher(traceExporter,
 		//	trace.WithBatchTimeout(time.Second)),
