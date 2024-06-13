@@ -49,16 +49,6 @@ func SetupOTelSDK(ctx context.Context, traceInfo map[string]string) (shutdown fu
 	}
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
-
-	// Set up meter provider.
-	//meterProvider, err := newMeterProvider()
-	//if err != nil {
-	//	handleErr(err)
-	//	return
-	//}
-	//shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
-	//otel.SetMeterProvider(meterProvider)
-
 	// Set up logger provider.
 	loggerProvider, err := newLoggerProvider()
 	if err != nil {
