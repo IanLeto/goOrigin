@@ -75,16 +75,6 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 	opentracing.SetGlobalTracer(tracer)
 	return tracer, closer
 }
-
-func ContextMiddleware(ctx context.Context) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// Attach the base context to the request context
-		reqCtx := context.WithValue(c.Request.Context(), "baseCtx", ctx)
-		c.Request = c.Request.WithContext(reqCtx)
-		c.Next()
-	}
-}
-
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
 
@@ -92,7 +82,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		traceInfo := map[string]string{}
 		t := reflect.TypeOf(config.ConfV2.Trace)
 		v := reflect.ValueOf(config.ConfV2.Trace)
-
 		for i := 0; i < t.NumField(); i++ {
 			traceInfo[t.Field(i).Tag.Get("json")] = v.Field(i).String()
 		}

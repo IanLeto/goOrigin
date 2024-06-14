@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
 	"goOrigin/pkg"
@@ -94,14 +92,14 @@ func PreRun(configPath string) string {
 	for _, f := range preCheck {
 		utils.NoError(f())
 	}
-	event.Bus.Publish("run_mode", "debug")
-	viper.SetConfigFile(configPath)
-	utils.NoError(viper.ReadInConfig())
-	viper.WatchConfig()
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		config.InitConf()
-		initComponents()
-	})
+	//event.Bus.Publish("run_mode", "debug")
+	//viper.SetConfigFile(configPath)
+	//utils.NoError(viper.ReadInConfig())
+	//viper.WatchConfig()
+	//viper.OnConfigChange(func(in fsnotify.Event) {
+	//	config.InitConf()
+	//	initComponents()
+	//})
 	return mode
 }
 

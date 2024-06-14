@@ -10,10 +10,11 @@ type Component interface {
 }
 
 type V2Config struct {
-	Base   BaseConfig             `yaml:"base" json:"base"`
-	Logger LoggerConfig           `yaml:"logger" json:"logger"`
-	Env    map[string]interface{} `yaml:"env" json:"env"`
-	Trace  TraceConfig            `yaml:"trace" json:"trace"`
+	Base      BaseConfig                 `yaml:"base" json:"base"`
+	Logger    LoggerConfig               `yaml:"logger" json:"logger"`
+	Trace     TraceConfig                `yaml:"trace" json:"trace"`
+	Component []string                   `yaml:"component" json:"component"`
+	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
 }
 
 type BaseConfig struct {
@@ -40,11 +41,6 @@ type LoggerConfig struct {
 	MaxAge  int    `yaml:"max_age" json:"max_age"`
 }
 
-type EnvConfig struct {
-	Window EnvWindowConfig `yaml:"window" json:"window"`
-	Mac    EnvMacConfig    `yaml:"mac" json:"mac"`
-	Prod   EnvProdConfig   `yaml:"prod" json:"prod"`
-}
 type TraceConfig struct {
 	Az       string `yaml:"az" json:"az"`
 	App      string `yaml:"app" json:"app"`
@@ -77,7 +73,37 @@ type ConnConfig struct {
 type Conn interface {
 }
 
+func NewComponentConfig() map[string]ComponentConfig {
+	var (
+		res = make(map[string]ComponentConfig)
+	)
+	for env, componentInfo := range viper.GetStringMap("env") {
+		component := componentInfo.(map[string]interface{})
+		res[env] = ComponentConfig{
+			MysqlSQLConfig: MySQLConfig{
+				DBName:   component["mysql"].(map[string]interface{})["dbname"].(string),
+				User:     component["mysql"].(map[string]interface{})["user"].(string),
+				Password: component["mysql"].(map[string]interface{})["password"].(string),
+				Address:  component["mysql"].(map[string]interface{})["address"].(string),
+			},
+		}
+	}
+	return res
+}
+
+type EnvConfig struct {
+	Env map[string]ComponentConfig `yaml:"env" json:"env"`
+}
+
+type ComponentConfig struct {
+	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
+}
+
 func NewConnConfig() map[string]interface{} {
+	//var (
+	//	conns = make(map[string]interface{})
+	//)
+
 	return viper.Get("env").(map[string]interface{})
 }
 
@@ -96,6 +122,13 @@ func NewEnvWindowMySQLConfig() EnvWindowMySQLConfig {
 			Address: viper.Get("env.window.mysql.local.address").(string),
 		},
 	}
+}
+
+type MySQLConfig struct {
+	DBName   string `yaml:"dbname" json:"dbname"`
+	User     string `yaml:"user" json:"user"`
+	Password string `yaml:"password" json:"password"`
+	Address  string `yaml:"address" json:"address"`
 }
 
 type EnvWindowMySQLLocalConfig struct {
@@ -163,11 +196,6 @@ func (c *BaseConfig) ToJSON() string {
 }
 
 func (c *LoggerConfig) ToJSON() string {
-	jsonData, _ := json.MarshalIndent(c, "", "  ")
-	return string(jsonData)
-}
-
-func (c *EnvConfig) ToJSON() string {
 	jsonData, _ := json.MarshalIndent(c, "", "  ")
 	return string(jsonData)
 }

@@ -10,6 +10,7 @@ var GlobalRedisCon *RedisConn
 type Conn interface {
 	Close() error
 	InitData(mode string) error
+	Init() error
 }
 
 func InitMongo() error {

@@ -12,6 +12,16 @@ type MySQLConn struct {
 	*gorm.DB
 }
 
+func (m *MySQLConn) InitData(mode string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MySQLConn) Init() error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func InitMySQConn() *MySQLConn {
 	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		config.Conf.Backend.MySqlConfig.User, config.Conf.Backend.MySqlConfig.Password,

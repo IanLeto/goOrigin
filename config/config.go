@@ -13,10 +13,6 @@ type Checker interface {
 	Check()
 }
 
-type ComponentConfig interface {
-	NewComponent() ComponentConfig
-}
-
 type BackendConfig struct {
 	*MySqlConfig
 	*MongoBackendConfig
