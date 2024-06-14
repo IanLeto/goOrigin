@@ -12,6 +12,42 @@ func NewLogger() *zap.Logger {
 	return Logger
 }
 
+// InitZap 初始化 zap 日志记录器
+func InitZap() (*zap.Logger, error) {
+	// 创建一个配置对象
+	config := zap.Config{
+		Level:       zap.NewAtomicLevelAt(zap.DebugLevel),
+		Development: true,
+		Encoding:    "json", // 可以是 "json" 或 "console"
+		EncoderConfig: zapcore.EncoderConfig{
+			TimeKey:        "time",
+			LevelKey:       "level",
+			NameKey:        "logger",
+			CallerKey:      "caller",
+			MessageKey:     "msg",
+			StacktraceKey:  "stacktrace",
+			LineEnding:     zapcore.DefaultLineEnding,
+			EncodeLevel:    zapcore.CapitalLevelEncoder,
+			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeDuration: zapcore.StringDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
+		},
+		OutputPaths:      []string{"stdout"},
+		ErrorOutputPaths: []string{"stderr"},
+	}
+
+	// 创建日志记录器
+	logger, err := config.Build()
+	if err != nil {
+		return nil, err
+	}
+
+	// 替换全局的 zap 日志记录器
+	zap.ReplaceGlobals(logger)
+
+	return logger, nil
+}
+
 func InitLogger() {
 	// 定义一些需要的变量
 	var (
