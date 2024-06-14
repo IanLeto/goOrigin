@@ -8,7 +8,9 @@ import (
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"go.uber.org/zap"
 	"goOrigin/internal/model/entity"
+	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
 	"sync"
 	"time"
@@ -69,7 +71,10 @@ type customExporter struct {
 func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-
+	var (
+		logger, err = logger2.InitZap()
+	)
+	utils.NoError(err)
 	for _, span := range spans {
 		traceID := span.SpanContext().TraceID().String()
 		spanID := span.SpanContext().SpanID().String()
@@ -78,9 +83,7 @@ func (e *customExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnly
 		resources := span.Resource()
 		r, err := span.SpanContext().MarshalJSON()
 		utils.NoError(err)
-		fmt.Println(string(r))
-		fmt.Println(utils.ToJson(resources.Attributes()))
-		fmt.Println(utils.ToJson(span.Attributes()))
+		logger.Info(string(r), zap.String("traceID", traceID), zap.String("spanID", spanID), zap.String("startTime", startTime), zap.Int64("duration", duration))
 		traceEntity := entity.TraceEntity{
 			TraceId:   traceID,
 			SpanId:    spanID,
