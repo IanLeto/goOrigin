@@ -46,7 +46,7 @@ var initLogger = func() error {
 
 // step 4 初始化组件
 var initComponents = func() error {
-	for _, component := range config.Conf.Components {
+	for _, component := range config.ConfV2.Component {
 		if fn, ok := compInit[component]; ok {
 			utils.NoError(fn())
 		}
