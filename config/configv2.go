@@ -99,31 +99,6 @@ type ComponentConfig struct {
 	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
 }
 
-func NewConnConfig() map[string]interface{} {
-	//var (
-	//	conns = make(map[string]interface{})
-	//)
-
-	return viper.Get("env").(map[string]interface{})
-}
-
-type EnvWindowConfig struct {
-	MySQL EnvWindowMySQLConfig `yaml:"mysql" json:"mysql"`
-	ES    EnvWindowESConfig    `yaml:"es" json:"es"`
-}
-
-type EnvWindowMySQLConfig struct {
-	Local EnvWindowMySQLLocalConfig `yaml:"local" json:"local"`
-}
-
-func NewEnvWindowMySQLConfig() EnvWindowMySQLConfig {
-	return EnvWindowMySQLConfig{
-		Local: EnvWindowMySQLLocalConfig{
-			Address: viper.Get("env.window.mysql.local.address").(string),
-		},
-	}
-}
-
 type MySQLConfig struct {
 	DBName   string `yaml:"dbname" json:"dbname"`
 	User     string `yaml:"user" json:"user"`
