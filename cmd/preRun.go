@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"goOrigin/cmd/event"
 	"goOrigin/config"
+	"goOrigin/internal/dao"
 	"goOrigin/pkg"
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/utils"
@@ -84,6 +85,13 @@ var initCronTask = func() error {
 	return nil
 }
 
+func migrate() error {
+	for _, conn := range dao.Conns {
+		utils.NoError(conn.Migrate())
+	}
+	return nil
+}
+
 func PreRun(configPath string) string {
 	if configPath != "" {
 		utils.NoError(os.Setenv("configPath", configPath))
@@ -105,6 +113,6 @@ func PreRun(configPath string) string {
 
 func init() {
 	preCheck = append(preCheck, initEvent, envCheck,
-		initConfig, initComponents, initLogger, initMode, initData, initCronTask)
+		initConfig, initComponents, initLogger, initMode, initData, initCronTask, migrate)
 
 }

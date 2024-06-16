@@ -48,7 +48,8 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Retire = info.Retire
 	recordEntity.Cost = info.Cost
 	tRecord = repository.ToRecordDAO(recordEntity)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+	db := mysql.MySQLConns[region]
+	//db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, res)

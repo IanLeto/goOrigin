@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
@@ -77,4 +78,13 @@ func ToJson(v interface{}) string {
 
 	return string(data)
 
+}
+
+func SafeFunction(fn func()) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Recovered from panic: %v", r)
+		}
+	}()
+	fn()
 }

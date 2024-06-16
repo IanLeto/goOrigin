@@ -99,20 +99,20 @@ ERR:
 // @param res body params.BaseResponseInfo true "1"
 // @Router /v1/record [POST]
 func GetJobDetail(c *gin.Context) {
-	var (
-		//id  = utils.QueryInt(c, "id", 0)
-		id  = cast.ToInt(c.Param("id"))
-		err error
-		res = &V1.GetJobResponse{}
-	)
-	res, err = logic.GetJobDetail(c, id)
-	if err != nil {
-		goto ERR
-	}
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	//	var (
+	//		//id  = utils.QueryInt(c, "id", 0)
+	//		id  = cast.ToInt(c.Param("id"))
+	//		err error
+	//		res = &V1.GetJobResponse{}
+	//	)
+	//	res, err = logic.GetJobDetail(c, id)
+	//	if err != nil {
+	//		goto ERR
+	//	}
+	//	V1.BuildResponse(c, V1.BuildInfo(res))
+	//	return
+	//ERR:
+	//	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 
 }
 

@@ -31,16 +31,6 @@ var migrateInit = map[string]func() error{
 	//"es":    elastic.InitEs,
 }
 
-func migrate() error {
-	for _, i := range config.Conf.Components {
-		if v, ok := compInit[i]; ok {
-			utils.NoError(v())
-		}
-
-	}
-	return nil
-}
-
 var RootCmd = &cobra.Command{
 	Use:   "tool", // 这个是命令的名字,跟使用没啥关系
 	Short: "",
@@ -54,14 +44,15 @@ var RootCmd = &cobra.Command{
 
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
-		init, err := cmd.Flags().GetBool("init")
-		utils.NoError(err)
-		if init {
-			utils.NoError(migrate())
-		}
-		if !init {
-			DebugServer()
-		}
+		DebugServer()
+		//init, err := cmd.Flags().GetBool("init")
+		//utils.NoError(err)
+		//if init {
+		//	utils.NoError(migrate())
+		//}
+		//if !init {
+
+		//}
 
 	},
 }

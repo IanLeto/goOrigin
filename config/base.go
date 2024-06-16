@@ -76,9 +76,10 @@ func NewV2Config() *V2Config {
 	utils.NoError(viper.ReadInConfig())
 
 	return &V2Config{
-		Base:  NewBaseConfig(),
-		Env:   NewComponentConfig(),
-		Trace: NewTraceConfig(),
+		Base:      NewBaseConfig(),
+		Env:       NewComponentConfig(),
+		Trace:     NewTraceConfig(),
+		Component: viper.GetStringSlice("component"),
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"goOrigin/config"
+	"goOrigin/internal/model/dao"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -18,7 +19,15 @@ var MySQLConns = map[string]*MySQLConn{}
 func NewMySQLConns() error {
 	conf := config.ConfV2
 	for region, info := range conf.Env {
+
 		MySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
+		if MySQLConns[region].IsMigrate {
+			err := MySQLConns[region].Migrate()
+			if err != nil {
+				logrus.Errorf("mysql migrate error: %v", err)
+			}
+		}
+
 	}
 	return nil
 }
@@ -28,9 +37,14 @@ type MySQLConn struct {
 	IsMigrate bool
 }
 
+func (m *MySQLConn) Migrate() error {
+	return m.Client.AutoMigrate(dao.TRecord{})
+}
+
 func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
 	var (
-		err error
+		err    error
+		client *gorm.DB
 	)
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer（日志输出到标准输出）
@@ -41,7 +55,7 @@ func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
 		},
 	)
 
-	client, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
+	client, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		conf.User, conf.Password, conf.Address, conf.DBName, "Asia%2FShanghai")), &gorm.Config{
 		Logger: newLogger,
 	})
@@ -51,7 +65,8 @@ func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
 	}
 	// 新建GORM配置对象，设置日志级别为Info
 	return &MySQLConn{
-		Client: client,
+		Client:    client,
+		IsMigrate: conf.IsMigration,
 	}
 }
 

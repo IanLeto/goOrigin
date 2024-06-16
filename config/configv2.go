@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -77,14 +78,57 @@ func NewComponentConfig() map[string]ComponentConfig {
 	var (
 		res = make(map[string]ComponentConfig)
 	)
-	for env, componentInfo := range viper.GetStringMap("env") {
-		component := componentInfo.(map[string]interface{})
+	envMap := viper.GetStringMap("env")
+	for env, componentInfo := range envMap {
+		component, ok := componentInfo.(map[string]interface{})
+		if !ok {
+			fmt.Printf("Invalid componentInfo format for environment %s", env)
+			continue
+		}
+
+		mysql, ok := component["mysql"].(map[string]interface{})
+		if !ok {
+			fmt.Printf("Invalid mysql format for environment %s", env)
+			continue
+		}
+
+		dbName, ok := mysql["dbname"].(string)
+		if !ok {
+			fmt.Printf("Invalid dbname format for environment %s", env)
+			continue
+		}
+
+		user, ok := mysql["user"].(string)
+		if !ok {
+			fmt.Printf("Invalid user format for environment %s", env)
+			continue
+		}
+
+		password, ok := mysql["password"].(string)
+		if !ok {
+			fmt.Printf("Invalid password format for environment %s", env)
+			continue
+		}
+
+		address, ok := mysql["address"].(string)
+		if !ok {
+			fmt.Printf("Invalid address format for environment %s", env)
+			continue
+		}
+
+		isMigration, ok := mysql["is_migration"].(bool)
+		if !ok {
+			fmt.Printf("Invalid is_migration format for environment %s", env)
+			continue
+		}
+
 		res[env] = ComponentConfig{
 			MysqlSQLConfig: MySQLConfig{
-				DBName:   component["mysql"].(map[string]interface{})["dbname"].(string),
-				User:     component["mysql"].(map[string]interface{})["user"].(string),
-				Password: component["mysql"].(map[string]interface{})["password"].(string),
-				Address:  component["mysql"].(map[string]interface{})["address"].(string),
+				DBName:      dbName,
+				User:        user,
+				Password:    password,
+				Address:     address,
+				IsMigration: isMigration,
 			},
 		}
 	}
@@ -100,10 +144,11 @@ type ComponentConfig struct {
 }
 
 type MySQLConfig struct {
-	DBName   string `yaml:"dbname" json:"dbname"`
-	User     string `yaml:"user" json:"user"`
-	Password string `yaml:"password" json:"password"`
-	Address  string `yaml:"address" json:"address"`
+	DBName      string `yaml:"dbname" json:"dbname"`
+	User        string `yaml:"user" json:"user"`
+	Password    string `yaml:"password" json:"password"`
+	Address     string `yaml:"address" json:"address"`
+	IsMigration bool   `yaml:"is_migration" json:"is_migration"`
 }
 
 type EnvWindowMySQLLocalConfig struct {
