@@ -24,6 +24,7 @@ import (
 	"goOrigin/internal/router/topoHandlers"
 	_ "goOrigin/pkg/collector"
 	"io"
+	"net/http"
 )
 
 func Jaeger() gin.HandlerFunc {
@@ -70,6 +71,21 @@ func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 	opentracing.SetGlobalTracer(tracer)
 	return tracer, closer
 }
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, Accept, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		c.Next()
+	}
+}
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	//ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
 	//
@@ -89,6 +105,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	//		_ = otelShutdown(ctx)
 	//	}
 	//}()
+	g.Use(CORSMiddleware())
 
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)

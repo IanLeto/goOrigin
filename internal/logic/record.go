@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
@@ -9,6 +10,7 @@ import (
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/internal/model/repository"
+	"goOrigin/pkg/logger"
 )
 
 // import (
@@ -33,10 +35,11 @@ import (
 //	"time"
 //
 // )
-func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (id uint, err error) {
+func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.Record{}
+		logger2, err = logger.InitZap()
 	)
 	recordEntity.Name = info.Name
 	recordEntity.Weight = info.Weight
@@ -52,7 +55,7 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	//db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
-		logrus.Errorf("create record failed %s: %s", err, res)
+		logger2.Error(fmt.Sprintf("create record failed %s: %s", err, res))
 		goto ERR
 	}
 	return tRecord.ID, err
@@ -101,9 +104,9 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 		err            error
 	)
 
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+	db := mysql.MySQLConns[region]
 	sql := db.Client.Table("t_records")
-	if name == "" {
+	if name != "" {
 		sql = sql.Where("name = ?", name)
 	}
 	if startTime != 0 {
