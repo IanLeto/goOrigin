@@ -3,7 +3,6 @@ package indexHandlers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"goOrigin/config"
 	"goOrigin/internal/router/baseHandlers"
@@ -27,7 +26,6 @@ func ConfigInfo(c *gin.Context) {
 	)
 	span := trace.SpanFromContext(c.Request.Context())
 
-	span.SetAttributes(attribute.String("x", "xxxx"))
 	defer span.End()
 	v, err := json.Marshal(config.ConfV2)
 	if err != nil {
