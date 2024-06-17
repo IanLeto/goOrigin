@@ -71,8 +71,6 @@ func NewTraceConfig() TraceConfig {
 type ConnConfig struct {
 	Env map[string]interface{} `yaml:"env" json:"env"`
 }
-type Conn interface {
-}
 
 func NewComponentConfig() map[string]ComponentConfig {
 	var (
