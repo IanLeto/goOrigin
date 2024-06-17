@@ -5,11 +5,3 @@ type Meta struct {
 	CreateTime int64 `swaggerignore:"true" gorm:"autoCreateTime;" json:"created_time" binding:"-"`
 	ModifyTime int64 `swaggerignore:"true" gorm:"autoUpdateTime;" json:"modify_time" binding:"-"`
 }
-
-type Table interface {
-	GetID() uint
-}
-
-var migrate = map[string]interface{}{
-	"t_records": &TRecord{},
-}
