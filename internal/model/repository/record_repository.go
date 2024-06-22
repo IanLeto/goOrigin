@@ -23,14 +23,15 @@ func ToRecordDAO(record *entity.Record) *dao.TRecord {
 
 func ToRecordEntity(tRecord *dao.TRecord) *entity.Record {
 	return &entity.Record{
-		Name:    tRecord.Name,
-		Weight:  tRecord.Weight,
-		Content: tRecord.Content,
-		Retire:  tRecord.Retire,
-		Cost:    tRecord.Cost,
-		Vol1:    tRecord.Vol1,
-		Vol2:    tRecord.Vol2,
-		Vol3:    tRecord.Vol3,
-		Vol4:    tRecord.Vol4,
+		Name:       tRecord.Name,
+		Weight:     tRecord.Weight,
+		Content:    tRecord.Content,
+		Retire:     tRecord.Retire,
+		Cost:       tRecord.Cost,
+		Vol1:       tRecord.Vol1,
+		Vol2:       tRecord.Vol2,
+		Vol3:       tRecord.Vol3,
+		Vol4:       tRecord.Vol4,
+		CreateTime: tRecord.CreateTime,
 	}
 }
