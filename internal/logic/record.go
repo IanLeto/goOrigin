@@ -13,28 +13,6 @@ import (
 	"goOrigin/pkg/logger"
 )
 
-// import (
-//
-//	"context"
-//	"encoding/json"
-//	"fmt"
-//	"github.com/gin-gonic/gin"
-//	"github.com/olivere/elastic/v7"
-//	"github.com/prometheus/client_golang/prometheus"
-//	"github.com/prometheus/client_golang/prometheus/push"
-//	"github.com/sirupsen/logrus"
-//	"github.com/spf13/cast"
-//	"go.mongodb.org/mongo-driver/bson"
-//	"goOrigin/API/V1"
-//	"goOrigin/config"
-//	"goOrigin/internal/dao/mysql"
-//
-//	"goOrigin/pkg/clients"
-//	logger2 "goOrigin/pkg/logger"
-//	"goOrigin/pkg/storage"
-//	"time"
-//
-// )
 func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
