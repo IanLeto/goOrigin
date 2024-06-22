@@ -94,8 +94,9 @@ ERR:
 
 func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64) ([]*entity.Record, error) {
 	var (
-		recordEntities = make([]*entity.Record, 0)
+		recordEntities = make([]*dao.TRecord, 0)
 		err            error
+		res            = make([]*entity.Record, 0)
 	)
 
 	db := mysql.MySQLConns[region]
@@ -104,18 +105,21 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 		sql = sql.Where("name = ?", name)
 	}
 	if startTime != 0 {
-		sql = sql.Where("created_at > ?", startTime)
+		sql = sql.Where(" > ?", startTime)
 	}
 	if endTime != 0 {
 		sql = sql.Where("created_at < ?", endTime)
 	}
-	res := sql.Find(&recordEntities)
-	if res.Error != nil {
-		logrus.Errorf("create record failed %s: %s", err, res.Error)
+	tRecords := sql.Find(&recordEntities)
+	if tRecords.Error != nil {
+		logrus.Errorf("create record failed %s: %s", err, tRecords.Error)
 		goto ERR
 	}
+	for _, recordEntity := range recordEntities {
+		res = append(res, repository.ToRecordEntity(recordEntity))
+	}
 
-	return recordEntities, err
+	return res, err
 ERR:
 	return nil, err
 

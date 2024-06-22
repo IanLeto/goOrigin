@@ -18,6 +18,8 @@ func ToRecordDAO(record *entity.Record) *dao.TRecord {
 		IsFuck:  record.IsFuck,
 		Cost:    record.Cost,
 		Dev:     record.Dev,
+		Coding:  record.Coding,
+		Social:  record.Social,
 	}
 }
 
@@ -32,6 +34,11 @@ func ToRecordEntity(tRecord *dao.TRecord) *entity.Record {
 		Vol2:       tRecord.Vol2,
 		Vol3:       tRecord.Vol3,
 		Vol4:       tRecord.Vol4,
+		Dev:        tRecord.Dev,
+		Coding:     tRecord.Coding,
+		Social:     tRecord.Social,
+		IsFuck:     tRecord.IsFuck,
 		CreateTime: tRecord.CreateTime,
+		ModifyTime: tRecord.ModifyTime,
 	}
 }
