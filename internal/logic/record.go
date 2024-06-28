@@ -40,7 +40,15 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.Record{}
 		logger2, err = logger.InitZap()
+		//es           = elastic.EsConns[region]
 	)
+
+	//var (
+	//	query  = map[string]interface{}{}
+	//	match  []map[string]interface{}
+	//	filter []map[string]interface{}
+	//	boolq  = map[string]interface{}{}
+	//)
 	recordEntity.Name = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
@@ -50,14 +58,22 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Content = info.Content
 	recordEntity.Retire = info.Retire
 	recordEntity.Cost = info.Cost
+	recordEntity.Region = region
+	recordEntity.Dev = info.Dev
+	recordEntity.Coding = info.Coding
+	recordEntity.Reading = info.Reading
+	recordEntity.Social = info.Social
+	recordEntity.Countdown = info.Countdown
+
 	tRecord = repository.ToRecordDAO(recordEntity)
 	db := mysql.MySQLConns[region]
-	//db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
 		logger2.Error(fmt.Sprintf("create record failed %s: %s", err, res))
 		goto ERR
 	}
+	//_, err = es.Create("ian", tRecord)
+
 	return tRecord.ID, err
 ERR:
 	return 0, err

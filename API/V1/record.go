@@ -92,16 +92,21 @@ type CreateIanRecordRequest struct {
 }
 
 type CreateIanRecordRequestInfo struct {
-	Name    string  `json:"name"`
-	Weight  float32 `json:"weight"`
-	IsFuck  bool    `json:"is_fuck"`
-	Vol1    string  `json:"vol1"`
-	Vol2    string  `json:"vol2"`
-	Vol3    string  `json:"vol3"`
-	Vol4    string  `json:"vol4"`
-	Content string  `json:"content"`
-	Cost    int     `json:"cost"`
-	Retire  int     `json:"retire"`
+	Name      string  `json:"name"`
+	Weight    float32 `json:"weight"`
+	IsFuck    bool    `json:"is_fuck"`
+	Vol1      string  `json:"vol1"`
+	Vol2      string  `json:"vol2"`
+	Vol3      string  `json:"vol3"`
+	Vol4      string  `json:"vol4"`
+	Content   string  `json:"content"`
+	Cost      int     `json:"cost"`
+	Retire    int     `json:"retire"`
+	Dev       string  `json:"dev"`
+	Coding    string  `json:"coding"`
+	Reading   string  `json:"reading"`
+	Social    string  `json:"social"`
+	Countdown string  `json:"countdown"`
 }
 
 type CreateIanRecordResponse struct {

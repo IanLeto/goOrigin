@@ -11,9 +11,11 @@ type CreateNodeInfo struct {
 	Done       bool     `json:"done"`
 	Tags       []string `json:"tags"`
 	Note       string   `json:"note"`
+	Status     string   `json:"status"`
 }
 
 type CreateNodeRequest struct {
+	Region string `json:"region"`
 	*CreateNodeInfo
 }
 
