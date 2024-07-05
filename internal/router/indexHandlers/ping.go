@@ -2,10 +2,13 @@ package indexHandlers
 
 import (
 	"encoding/json"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/trace"
 	"goOrigin/config"
+	"goOrigin/internal/model/entity"
 	"goOrigin/internal/router/baseHandlers"
+	"goOrigin/pkg/utils"
 	"net/http"
 )
 
@@ -46,6 +49,36 @@ func ConfigCheck(c *gin.Context) {
 	}
 
 	baseHandlers.RenderData(c, "ok", err)
+}
+
+func GetUser(c *gin.Context) {
+	var (
+		token    string
+		loginUrl string
+		err      error
+		user     entity.User
+	)
+	token = c.GetHeader("token")
+	if token == "" {
+		baseHandlers.RenderData(c, "no token", nil)
+		return
+	}
+	loginUrl, err = conv.String(c.Value("loginUrl"))
+	utils.NoError(err)
+	userStr := entity.UserStr(token)
+	user = &userStr
+	u, ok := user.ToUserEntity(token, loginUrl).(*entity.UserEntity)
+	if !ok {
+		baseHandlers.RenderData(c, "error", nil)
+		return
+	}
+
+	if err != nil {
+		baseHandlers.RenderData(c, nil, err)
+		return
+	}
+
+	baseHandlers.RenderData(c, u, err)
 }
 
 func Prom(handler http.Handler) gin.HandlerFunc {
