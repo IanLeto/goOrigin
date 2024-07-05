@@ -88,3 +88,8 @@ func SafeFunction(fn func()) {
 	}()
 	fn()
 }
+
+// GetLoginUrlOrigin 将url的origin部分提取出来，然后给重定向用
+func GetLoginUrlOrigin(url string) string {
+	return ""
+}

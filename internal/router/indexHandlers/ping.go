@@ -10,6 +10,8 @@ import (
 	"goOrigin/internal/router/baseHandlers"
 	"goOrigin/pkg/utils"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 )
 
 func Ping(c *gin.Context) {
@@ -51,6 +53,22 @@ func ConfigCheck(c *gin.Context) {
 	baseHandlers.RenderData(c, "ok", err)
 }
 
+func HttpProxy(c *gin.Context) {
+	var (
+		loginUrl  string
+		targetURL *url.URL
+	)
+	r := c.Request
+	loginUrl, _ = conv.String(c.Value("loginUrl"))
+	targetURL, _ = url.Parse(utils.GetLoginUrlOrigin(loginUrl))
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	r.Host = targetURL.Host
+	r.URL.Host = targetURL.Host
+	r.URL.Scheme = targetURL.Scheme
+	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
+	proxy.ServeHTTP(c.Writer, r)
+}
+
 func GetUser(c *gin.Context) {
 	var (
 		token    string
@@ -67,7 +85,7 @@ func GetUser(c *gin.Context) {
 	utils.NoError(err)
 	userStr := entity.UserStr(token)
 	user = &userStr
-	u, ok := user.ToUserEntity(token, loginUrl).(*entity.UserEntity)
+	u, ok := user.ToUserEntity(token, loginUrl).(*entity.CpaasEntity)
 	if !ok {
 		baseHandlers.RenderData(c, "error", nil)
 		return

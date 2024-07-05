@@ -119,6 +119,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("config", indexHandlers.ConfigInfo)
 		indexGroup.GET("configCheck", indexHandlers.ConfigCheck)
 		indexGroup.GET("userInfo", indexHandlers.GetUser)
+		indexGroup.GET("proxy", indexHandlers.HttpProxy)
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
 
 	}
@@ -138,7 +139,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	ginpprof.WrapGroup(recordGroup)
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{
-
 		k8sGroup.POST("", k8sHandlers.CreateDeploy)
 		k8sGroup.GET("", k8sHandlers.ListDeploy)
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
