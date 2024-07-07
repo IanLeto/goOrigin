@@ -39,9 +39,8 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Region = region
 	recordEntity.Dev = info.Dev
 	recordEntity.Coding = info.Coding
-	recordEntity.Reading = info.Reading
+
 	recordEntity.Social = info.Social
-	recordEntity.Countdown = info.Countdown
 
 	tRecord = repository.ToRecordDAO(recordEntity)
 	db := mysql.MySQLConns[region]

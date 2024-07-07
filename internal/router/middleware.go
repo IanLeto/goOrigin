@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"goOrigin/internal/model/entity"
-	logger2 "goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
 )
 
@@ -15,26 +14,21 @@ func AuthMiddleware() gin.HandlerFunc {
 	//user = &entity.UserRedis{}
 	return func(c *gin.Context) {
 		var (
-			err      error
-			logger   = logger2.Logger
-			client   *redis.ClusterClient
+			err error
+			//logger   = logger2.Logger
+			//client   *redis.ClusterClient
 			allow    bool
 			token    string
 			loginUrl string
 			user     entity.User
 		)
 
-		token = c.GetHeader("token")
+		token = c.GetHeader("Authorization")
 		if token == "" {
 			goto noAuth
 		}
 		loginUrl, err = conv.String(c.Value("loginUrl"))
 		utils.NoError(err)
-		client = redis.NewClusterClient(&redis.ClusterOptions{
-			Addrs: []string{},
-		})
-		_, err = client.HGetAll(token).Result()
-		logger.Info(err.Error())
 		switch err {
 		case redis.Nil:
 			userStr := entity.UserStr(token)

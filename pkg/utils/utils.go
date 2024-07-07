@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -87,6 +88,17 @@ func SafeFunction(fn func()) {
 		}
 	}()
 	fn()
+}
+
+func GetDomain(urlStr string) (string, error) {
+	// 解析 URL
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return "", err
+	}
+
+	// 返回域名
+	return u.Hostname(), nil
 }
 
 // GetLoginUrlOrigin 将url的origin部分提取出来，然后给重定向用
