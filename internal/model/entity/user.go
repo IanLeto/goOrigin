@@ -137,15 +137,6 @@ type CpaasUserEntity struct {
 
 func (u *CpaasUserEntity) SubjectReview() v1.SelfSubjectAccessReview {
 	panic(111)
-	//var (
-	//	review v1.SelfSubjectAccessReview
-	//	domain string
-	//	url    string
-	//)
-	//domain, _ = utils.GetDomain(u.LoginUrl)
-	//url = domain + "/apis/authorization.k8s.io/v1/selfsubjectaccessreviews"
-	//u.ParseToken(u.Token)
-
 }
 
 func (u *CpaasUserEntity) ToUserEntity(token, url string) VersionUserEntity {
