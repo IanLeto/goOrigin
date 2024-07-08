@@ -1,11 +1,14 @@
 package config
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"goOrigin/pkg/utils"
 	"log"
 	"os"
+	"strings"
 )
 
 const k8sConfigMap = "/root/config/config.yaml"
@@ -48,8 +51,11 @@ func NewConfig() *Config {
 	if os.Getenv("configPath") != "" {
 		path = os.Getenv("configPath")
 	}
-	//viper.SetConfigFile(filepath.Join(path, "config.yaml"))
-	viper.SetConfigFile(path)
+	paths := strings.Split(path, ",")
+	for _, p := range paths {
+		viper.SetConfigFile(p)
+		utils.NoError(viper.MergeInConfig())
+	}
 	utils.NoError(viper.ReadInConfig())
 	return &Config{
 		Name:       viper.GetString("name"),
@@ -62,6 +68,7 @@ func NewConfig() *Config {
 		Client:     NewHttpClientConfig(),
 		Cron:       viper.GetStringSlice("cron"),
 	}
+
 }
 
 func NewV2Config() *V2Config {
@@ -72,14 +79,35 @@ func NewV2Config() *V2Config {
 	if os.Getenv("configPath") != "" {
 		path = os.Getenv("configPath")
 	}
-	viper.SetConfigFile(path)
-	utils.NoError(viper.ReadInConfig())
+	paths := strings.Split(path, ",")
+	for _, p := range paths {
+		viper.SetConfigFile(p)
+
+		// 创建一个临时 Viper 实例来读取当前配置文件
+		tempV := viper.New()
+		tempV.SetConfigFile(p)
+		if err := tempV.ReadInConfig(); err != nil {
+			log.Fatalf("读取配置文件 %s 时出错: %v", p, err)
+		}
+
+		// 将当前配置文件的内容合并到主配置中
+		configMap := tempV.AllSettings()
+		if err := viper.MergeConfigMap(configMap); err != nil {
+			log.Fatalf("合并配置文件 %s 时出错: %v", p, err)
+		}
+	}
+	configJSON, err := json.MarshalIndent(viper.AllSettings(), "", "  ")
+	utils.NoError(err)
+	fmt.Println(string(configJSON))
+	//utils.NoError(v.ReadInConfig())
 
 	return &V2Config{
-		Base:      NewBaseConfig(),
-		Env:       NewComponentConfig(),
-		Trace:     NewTraceConfig(),
-		Component: viper.GetStringSlice("component"),
+		Base:                  NewBaseConfig(),
+		Env:                   NewComponentConfig(),
+		Trace:                 NewTraceConfig(),
+		Component:             viper.GetStringSlice("component"),
+		ElasticsearchPassword: viper.GetString("elasticsearch_password"),
+		ElasticsearchUser:     viper.GetString("elasticsearch_user"),
 	}
 }
 
@@ -89,3 +117,10 @@ func (c *Config) watchConfig() {
 		log.Printf("config file changed")
 	})
 }
+
+//func NewElasticSearchSecretConfig() {
+//	viper.SetConfigFile("secret.yaml")
+//	utils.NoError(viper.ReadInConfig())
+//	user := viper.GetString("elasticsearch.user")
+//	password := viper.GetString("elasticsearch.password")
+//}

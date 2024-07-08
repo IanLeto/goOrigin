@@ -11,11 +11,13 @@ type Component interface {
 }
 
 type V2Config struct {
-	Base      BaseConfig                 `yaml:"base" json:"base"`
-	Logger    LoggerConfig               `yaml:"logger" json:"logger"`
-	Trace     TraceConfig                `yaml:"trace" json:"trace"`
-	Component []string                   `yaml:"component" json:"component"`
-	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
+	Base                  BaseConfig                 `yaml:"base" json:"base"`
+	Logger                LoggerConfig               `yaml:"logger" json:"logger"`
+	Trace                 TraceConfig                `yaml:"trace" json:"trace"`
+	Component             []string                   `yaml:"component" json:"component"`
+	Env                   map[string]ComponentConfig `yaml:"env" json:"env"`
+	ElasticsearchUser     string                     `yaml:"elasticsearch_user" json:"elasticsearch_user"`
+	ElasticsearchPassword string                     `yaml:"elasticsearch_password" json:"elasticsearch_password"`
 }
 
 type BaseConfig struct {
