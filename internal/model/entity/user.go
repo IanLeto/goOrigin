@@ -11,7 +11,28 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 )
+
+var (
+	httpClient *http.Client
+	once       sync.Once
+)
+
+func getHTTPClient() *http.Client {
+	once.Do(func() {
+		httpClient = &http.Client{
+			Timeout: 30 * time.Second,
+			Transport: &http.Transport{
+				MaxIdleConns:        100,
+				MaxIdleConnsPerHost: 100,
+				IdleConnTimeout:     90 * time.Second,
+			},
+		}
+	})
+	return httpClient
+}
 
 type User interface {
 	ToUserEntity(token, url string) VersionUserEntity
@@ -53,13 +74,13 @@ func (u *UserStr) Auth(token, url string) (bool, error) {
 		userEntity VersionUserEntity
 	)
 	userEntity = u.ToUserEntity(token, url)
-	review := userEntity.SubjectReview()
+	review := userEntity.SubjectReview("", "", "")
 	return review.Status.Allowed, nil
 
 }
 
 type VersionUserEntity interface {
-	SubjectReview() v1.SelfSubjectAccessReview
+	SubjectReview(token, project, url string) v1.SelfSubjectAccessReview
 }
 
 type UserEntity struct {
@@ -89,7 +110,7 @@ func (u *UserEntity) ParseToken(token string) {
 	}
 }
 
-func (u *UserEntity) Auth(token, url, project string) (bool, error) {
+func (u *UserEntity) Auth(token, url, project string) (v1.SelfSubjectAccessReview, error) {
 	var (
 		err error
 	)
@@ -118,18 +139,17 @@ func (u *UserEntity) Auth(token, url, project string) (bool, error) {
 
 	// 设置请求的 Content-Type 为 application/json
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("token", "application/json")
 
 	// 创建 HTTP 客户端
-	client := &http.Client{
-		Transport: &http.Transport{},
-	}
+	client := getHTTPClient()
 
 	// 发送请求
 	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// 读取响应体
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -137,15 +157,30 @@ func (u *UserEntity) Auth(token, url, project string) (bool, error) {
 	// 打印响应状态码和响应体
 	fmt.Println("Response status:", resp.Status)
 	fmt.Println("Response body:", string(body))
-	return false, nil
+
+	return v1.SelfSubjectAccessReview{
+		TypeMeta:   metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       v1.SelfSubjectAccessReviewSpec{},
+		Status: v1.SubjectAccessReviewStatus{
+			Allowed:         true,
+			Denied:          false,
+			Reason:          "",
+			EvaluationError: "",
+		},
+	}, err
 }
 
 type CpaasUserEntity struct {
 	*UserEntity
 }
 
-func (u *CpaasUserEntity) SubjectReview() v1.SelfSubjectAccessReview {
-	panic(111)
+func (u *CpaasUserEntity) SubjectReview(token, project, url string) v1.SelfSubjectAccessReview {
+	res, err := u.UserEntity.Auth(token, url, project)
+	if err != nil {
+		return v1.SelfSubjectAccessReview{}
+	}
+	return res
 }
 
 func (u *CpaasUserEntity) ToUserEntity(token, url string) VersionUserEntity {
@@ -154,13 +189,13 @@ func (u *CpaasUserEntity) ToUserEntity(token, url string) VersionUserEntity {
 }
 
 func (u *CpaasUserEntity) Auth(token, url string) (bool, error) {
-	//TODO implement me
-	panic("implement me")
+	res, err := u.UserEntity.Auth(token, url, "")
+	return res.Status.Allowed, err
 }
 
 type CebpaasUserEntity struct{}
 
-func (u *CebpaasUserEntity) SubjectReview() v1.SelfSubjectAccessReview {
+func (u *CebpaasUserEntity) SubjectReview(token, project, url string) v1.SelfSubjectAccessReview {
 	//TODO implement me
 	return v1.SelfSubjectAccessReview{
 		TypeMeta:   metav1.TypeMeta{},

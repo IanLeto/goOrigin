@@ -10,13 +10,9 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-
-	//user = &entity.UserRedis{}
 	return func(c *gin.Context) {
 		var (
-			err error
-			//logger   = logger2.Logger
-			//client   *redis.ClusterClient
+			err      error
 			allow    bool
 			token    string
 			loginUrl string
