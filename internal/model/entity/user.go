@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"goOrigin/pkg/utils"
 	v1 "k8s.io/api/authorization/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strings"
 )
 
@@ -153,7 +154,17 @@ type CebpaasUserEntity struct{}
 
 func (u *CebpaasUserEntity) SubjectReview() v1.SelfSubjectAccessReview {
 	//TODO implement me
-	panic("implement me")
+	return v1.SelfSubjectAccessReview{
+		TypeMeta:   metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       v1.SelfSubjectAccessReviewSpec{},
+		Status: v1.SubjectAccessReviewStatus{
+			Allowed:         false,
+			Denied:          false,
+			Reason:          "",
+			EvaluationError: "",
+		},
+	}
 }
 
 func (u *CebpaasUserEntity) ToUserEntity(token, url string) VersionUserEntity {

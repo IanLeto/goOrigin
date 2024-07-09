@@ -106,7 +106,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	//	}
 	//}()
 	g.Use(CORSMiddleware())
-	//g.Use(AuthMiddleware())
+	g.Use(AuthMiddleware())
 	g.Use(gin.Recovery()) // 防止panic
 	g.NoRoute(indexHandlers.NoRouterHandler)
 	//g.Use(Jaeger())
