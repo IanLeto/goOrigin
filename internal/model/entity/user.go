@@ -1,11 +1,15 @@
 package entity
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"goOrigin/pkg/utils"
+	"io/ioutil"
 	v1 "k8s.io/api/authorization/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net/http"
 	"strings"
 )
 
@@ -85,51 +89,55 @@ func (u *UserEntity) ParseToken(token string) {
 	}
 }
 
-func (u *UserEntity) Auth() {
+func (u *UserEntity) Auth(token, url, project string) (bool, error) {
+	var (
+		err error
+	)
 
-	panic(111)
-	// 定义请求的 JSON 参数
-	//	requestBody := map[string]interface{}{
-	//		"kind":       "SubjectAccessReview",
-	//		"apiVersion": "authorization.k8s.io/v1",
-	//		"spec": map[string]interface{}{
-	//			"user": "tool-readonly-user",
-	//			"resourceAttributes": map[string]string{
-	//				"namespace": "default",
-	//				"verb":      "delete",
-	//				"resource":  "pods",
-	//			},
-	//		},
-	//	}
-	//
-	//	// 将 JSON 参数编码为字节数组
-	//	requestBodyBytes, _ := json.Marshal(requestBody)
-	//
-	//	// 创建 POST 请求
-	//	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBodyBytes))
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//
-	//	// 设置请求的 Content-Type 为 application/json
-	//	req.Header.Set("Content-Type", "application/json")
-	//
-	//	// 创建 HTTP 客户端
-	//	client := &http.Client{}
-	//
-	//	// 发送请求
-	//	resp, err := client.Do(req)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	defer resp.Body.Close()
-	//
-	//	// 读取响应体
-	//	body, _ := ioutil.ReadAll(resp.Body)
-	//
-	//	// 打印响应状态码和响应体
-	//	fmt.Println("Response status:", resp.Status)
-	//	fmt.Println("Response body:", string(body))
+	requestBody := map[string]interface{}{
+		"kind":       "SubjectAccessReview",
+		"apiVersion": "authorization.k8s.io/v1",
+		"spec": map[string]interface{}{
+			"user": u.Name,
+			"resourceAttributes": map[string]string{
+				"verb":      "delete",
+				"resource":  "projects",
+				"namespace": project,
+			},
+		},
+	}
+
+	// 将 JSON 参数编码为字节数组
+	requestBodyBytes, _ := json.Marshal(requestBody)
+
+	// 创建 POST 请求
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBodyBytes))
+	if err != nil {
+		panic(err)
+	}
+
+	// 设置请求的 Content-Type 为 application/json
+	req.Header.Set("Content-Type", "application/json")
+
+	// 创建 HTTP 客户端
+	client := &http.Client{
+		Transport: &http.Transport{},
+	}
+
+	// 发送请求
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// 读取响应体
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	// 打印响应状态码和响应体
+	fmt.Println("Response status:", resp.Status)
+	fmt.Println("Response body:", string(body))
+	return false, nil
 }
 
 type CpaasUserEntity struct {
