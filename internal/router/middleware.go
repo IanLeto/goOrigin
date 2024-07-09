@@ -43,11 +43,13 @@ func AuthMiddleware() gin.HandlerFunc {
 			utils.NoError(err)
 			//user = &entity.UserStr(token)
 		}
+		fmt.Println(c.Request.URL.String())
 		if !allow {
 			goto noAuth
 		} else {
 			c.Set("user", user)
 			c.Next()
+			return
 		}
 
 	noAuth:

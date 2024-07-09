@@ -120,6 +120,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("configCheck", indexHandlers.ConfigCheck)
 		indexGroup.GET("userInfo", indexHandlers.GetUser)
 		indexGroup.GET("proxy", indexHandlers.HttpProxy)
+		//indexGroup.GET("proxy", indexHandlers.HttpProxy)
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
 
 	}

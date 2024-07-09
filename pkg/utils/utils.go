@@ -103,5 +103,5 @@ func GetDomain(urlStr string) (string, error) {
 
 // GetLoginUrlOrigin 将url的origin部分提取出来，然后给重定向用
 func GetLoginUrlOrigin(url string) string {
-	return ""
+	return url
 }

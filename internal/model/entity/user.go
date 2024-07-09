@@ -40,7 +40,7 @@ func (u *UserStr) ToUserEntity(token, url string) VersionUserEntity {
 	case "cebp":
 		return &CebpaasUserEntity{}
 	default:
-		return nil
+		return &CebpaasUserEntity{}
 	}
 }
 
@@ -159,7 +159,7 @@ func (u *CebpaasUserEntity) SubjectReview() v1.SelfSubjectAccessReview {
 		ObjectMeta: metav1.ObjectMeta{},
 		Spec:       v1.SelfSubjectAccessReviewSpec{},
 		Status: v1.SubjectAccessReviewStatus{
-			Allowed:         false,
+			Allowed:         true,
 			Denied:          false,
 			Reason:          "",
 			EvaluationError: "",

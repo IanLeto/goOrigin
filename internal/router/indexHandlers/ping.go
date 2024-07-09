@@ -59,12 +59,15 @@ func HttpProxy(c *gin.Context) {
 		targetURL *url.URL
 	)
 	r := c.Request
-	loginUrl, _ = conv.String(c.Value("loginUrl"))
+	loginUrl, _ = conv.String(c.GetHeader("loginUrl"))
 	targetURL, _ = url.Parse(utils.GetLoginUrlOrigin(loginUrl))
-	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-	r.Host = targetURL.Host
+
+	// 保留请求路径，只修改目标 URL 的主机和协议部分
 	r.URL.Host = targetURL.Host
 	r.URL.Scheme = targetURL.Scheme
+
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	r.Host = targetURL.Host
 	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
 	proxy.ServeHTTP(c.Writer, r)
 }
