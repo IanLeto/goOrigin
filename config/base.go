@@ -99,7 +99,6 @@ func NewV2Config() *V2Config {
 	configJSON, err := json.MarshalIndent(viper.AllSettings(), "", "  ")
 	utils.NoError(err)
 	fmt.Println(string(configJSON))
-	//utils.NoError(v.ReadInConfig())
 
 	return &V2Config{
 		Base:                  NewBaseConfig(),
