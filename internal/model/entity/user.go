@@ -169,6 +169,7 @@ func (u *UserEntity) Auth(token, url, project string) (v1.SelfSubjectAccessRevie
 			EvaluationError: "",
 		},
 	}, err
+
 }
 
 type CpaasUserEntity struct {
