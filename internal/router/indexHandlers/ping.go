@@ -86,7 +86,7 @@ func GetUser(c *gin.Context) {
 	}
 	loginUrl, err = conv.String(c.Value("loginUrl"))
 	utils.NoError(err)
-	userStr := entity.UserStr(token)
+	userStr := entity.UserFromToken(token)
 	user = &userStr
 	u, ok := user.ToUserEntity(token, loginUrl).(*entity.CpaasUserEntity)
 	if !ok {

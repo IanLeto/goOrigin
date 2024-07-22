@@ -34,27 +34,43 @@ func getHTTPClient() *http.Client {
 }
 
 type User interface {
-	ToUserEntity(token, url string) VersionUserEntity
-	Auth(token, url string) (bool, error)
+	ToUserEntity(token, url, region string) EnvironmentUserEntity
+	Auth(token, url, project, verb string) (bool, error)
 }
 
-type UserStr string
+type UserFromToken string
 
-func (u *UserStr) ToUserEntity(token, url string) VersionUserEntity {
-	var x User
-	switch x.(type) {
-
+func (u *UserFromToken) ToUserEntity(token, url, region string) EnvironmentUserEntity {
+	var (
+		environment EnvironmentUserEntity
+	)
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return nil
 	}
-	panic(1)
-
+	jsonInfo, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return nil
+	}
+	ephEntity := DetermineDomainType(url)
+	switch entity := ephEntity.(type) {
+	case *WinUserEntity:
+		json.Unmarshal(jsonInfo, entity)
+		environment = entity
+	default:
+		json.Unmarshal(jsonInfo, entity)
+		environment = entity
+	}
+	return environment
 }
 
-func (u *UserStr) Auth(token, url string) (bool, error) {
-	return false, nil
+func (u *UserFromToken) Auth(token, url, project, verb string) (bool, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
-type VersionUserEntity interface {
-	SubjectReview(req outter.SubjectAccessViewReq) outter.SubjectAccessReviewRes
+type EnvironmentUserEntity interface {
+	SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error)
 }
 
 type UserEntity struct {
@@ -142,7 +158,24 @@ func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) outter.
 
 }
 
-func (u *CpaasUserEntity) ToUserEntity(token, url string) VersionUserEntity {
+func (u *CpaasUserEntity) ToUserEntity(token, url string) EnvironmentUserEntity {
 	//TODO implement me
 	panic("implement me")
+}
+
+type WinUserEntity struct {
+	*UserEntity
+}
+
+func (w *WinUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func DetermineDomainType(domain string) EnvironmentUserEntity {
+	host, _ := utils.GetDomain(domain)
+	if host != "" {
+		return &WinUserEntity{}
+	}
+	return nil
 }
