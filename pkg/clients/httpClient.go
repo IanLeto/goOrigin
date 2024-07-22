@@ -1,13 +1,21 @@
 package clients
 
-import "gopkg.in/resty.v1"
+import (
+	"github.com/go-resty/resty/v2"
+	//"gopkg.in/resty.v1"
+
+	"sync"
+)
 
 type Common struct {
 	Token string
 }
-type OriginHttpClient struct {
-}
 
-func NewHttpClient() {
-	resty.New()
+var once = &sync.Once{}
+
+func GetHttpClient() *resty.Client {
+	once.Do(func() {
+		resty.New()
+	})
+	return resty.New()
 }
