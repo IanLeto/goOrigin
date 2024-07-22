@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goOrigin/API/outter"
+	"goOrigin/pkg/clients"
 	"goOrigin/pkg/utils"
 	"io/ioutil"
 	"net/http"
@@ -35,7 +36,7 @@ func getHTTPClient() *http.Client {
 
 type User interface {
 	ToUserEntity(token, url, region string) EnvironmentUserEntity
-	Auth(token, url, project, verb string) (bool, error)
+	Auth(token, url, project, verb string) (bool, int, error)
 }
 
 type UserFromToken string
@@ -52,6 +53,7 @@ func (u *UserFromToken) ToUserEntity(token, url, region string) EnvironmentUserE
 	if err != nil {
 		return nil
 	}
+	// 通过url 解析出来我们要用哪个环境的用户实体
 	ephEntity := DetermineDomainType(url)
 	switch entity := ephEntity.(type) {
 	case *WinUserEntity:
@@ -64,9 +66,20 @@ func (u *UserFromToken) ToUserEntity(token, url, region string) EnvironmentUserE
 	return environment
 }
 
-func (u *UserFromToken) Auth(token, url, project, verb string) (bool, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *UserFromToken) Auth(token, url, project, verb string) (bool, int, error) {
+	var (
+		allow bool
+		err   error
+	)
+	userEntity := u.ToUserEntity(token, url, project)
+	res, code, err := userEntity.SubjectReview(outter.SubjectAccessViewReq{
+		Url:          url,
+		Verb:         verb,
+		Resource:     project,
+		ResourceName: "",
+	})
+	allow = res.Status.Allowed
+	return allow, code, err
 }
 
 type EnvironmentUserEntity interface {
@@ -168,8 +181,40 @@ type WinUserEntity struct {
 }
 
 func (w *WinUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error) {
-	//TODO implement me
-	panic("implement me")
+	var (
+		err error
+		//reqUrl string
+		//token  string
+		//group  string
+		result outter.SubjectAccessReviewRes
+	)
+	hostName, _ := utils.GetDomain(req.Url)
+	resquestBody := map[string]interface{}{
+		"kind":       "SubjectAccessReview",
+		"apiVersion": "authorization.k8s.io/v1",
+		"spec": map[string]interface{}{
+			"user": w.Name,
+			"resourceAttributes": map[string]string{
+				"verb":     req.Verb,
+				"resource": req.Resource,
+			},
+		},
+	}
+	resp, err := clients.GetHttpClient().R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("token", w.Token).
+		SetBody(resquestBody).
+		SetResult(&result).
+		Post(fmt.Sprintf("http://%s:8080/apis/authorization.k8s.io/v1/selfsubjectaccessreviews", hostName))
+	if err != nil {
+		return nil, 0, err
+	}
+	if resp.StatusCode() != 200 {
+		return nil, resp.StatusCode(), err
+
+	}
+	return &result, resp.StatusCode(), nil
+
 }
 
 func DetermineDomainType(domain string) EnvironmentUserEntity {
