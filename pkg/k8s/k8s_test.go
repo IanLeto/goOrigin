@@ -112,7 +112,7 @@ func (s *k8sClientSuite) TestConfig() {
 		return true, watchRes, nil
 	})
 
-	s.Clientset.AddProxyReactor("*", func(action clienttesting.Action) (handled bool, ret rest.ResponseWrapper, err error) {
+	s.Clientset.AddReactor("*", func(action clienttesting.Action) (handled bool, ret rest.ResponseWrapper, err error) {
 		fmt.Println(1)
 		return false, nil, err
 	})
