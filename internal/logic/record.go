@@ -18,15 +18,8 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.Record{}
 		logger2, err = logger.InitZap()
-		//es           = elastic.EsConns[region]
 	)
 
-	//var (
-	//	query  = map[string]interface{}{}
-	//	match  []map[string]interface{}
-	//	filter []map[string]interface{}
-	//	boolq  = map[string]interface{}{}
-	//)
 	recordEntity.Name = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
