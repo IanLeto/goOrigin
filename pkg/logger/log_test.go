@@ -2,6 +2,7 @@ package logger_test
 
 import (
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/zap"
 	"goOrigin/config"
 	"goOrigin/pkg/logger"
 	"testing"
@@ -10,17 +11,17 @@ import (
 type LoggerSuite struct {
 	suite.Suite
 	conf *config.Config
+	log  *zap.Logger
 }
 
 func (s *LoggerSuite) SetupTest() {
-	logger.InitLogger()
-
+	s.log, _ = logger.InitZap()
 }
 
-// TestMarshal :
+// TestMarshal : 基础输出
 func (s *LoggerSuite) TestConfig() {
-	//logger.Logger.Info("test")
-	// https://darjun.github.io/2020/04/23/godailylib/zap/
+	suger := s.log.Sugar()
+	suger.Info("基础用法")
 }
 
 // TestHttpClient :
