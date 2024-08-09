@@ -54,10 +54,14 @@ func (s *LoggerSuite) TestStack() {
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
 	}
+
 	s.log, err = conf.Build()
 	s.NoError(err)
 	s.log.Sugar().Info("不会打印")
 	s.log.Sugar().Error("会打印")
+}
+func (s *LoggerSuite) TestWriteFile() {
+
 }
 
 // TestHttpClient :
