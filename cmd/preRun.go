@@ -10,6 +10,7 @@ import (
 	"goOrigin/pkg/cron"
 	"goOrigin/pkg/utils"
 	"os"
+	"time"
 )
 
 var preCheck []func() error
@@ -64,8 +65,21 @@ var initMode = func() error {
 	return nil
 }
 
-// step 7 初始化factory 初始数据
+// step 7 初始化factory 初始数据 和 常量
 var initData = func() error {
+	var err error
+	go func() {
+		for {
+			time.Sleep(15 * time.Second)
+			utils.SelfPodInfo, err = utils.GetPodInfo(nil)
+			if err != nil {
+				fmt.Println("get pod info error: ", err)
+			} else {
+				break
+			}
+		}
+	}()
+
 	return nil
 }
 

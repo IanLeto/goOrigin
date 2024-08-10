@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var SelfPodInfo *PodInfo
+
 type PodInfo struct {
 	PodName         string            // Pod名称
 	PodNamespace    string            // Pod所在的命名空间
