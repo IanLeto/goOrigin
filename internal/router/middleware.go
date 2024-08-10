@@ -29,13 +29,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		case redis.Nil:
 			userStr := entity.UserFromToken(token)
 			user = &userStr
-			allow, err = user.Auth(token, loginUrl)
+			allow, _, err = user.Auth(token, "", "", loginUrl)
 			utils.NoError(err)
 		default:
 			fmt.Println("实验性代码")
 			userStr := entity.UserFromToken(token)
 			user = &userStr
-			allow, err = user.Auth(token, loginUrl)
+			allow, _, err = user.Auth(token, "", "", loginUrl)
 			utils.NoError(err)
 			//user = &entity.UserFromToken(token)
 		}

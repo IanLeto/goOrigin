@@ -117,7 +117,7 @@ type CpaasUserEntity struct {
 	*UserEntity
 }
 
-func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) outter.SubjectAccessReviewRes {
+func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error) {
 	var (
 		err    error
 		result outter.SubjectAccessReviewRes
@@ -167,7 +167,7 @@ func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) outter.
 	fmt.Println("Response body:", string(body))
 	err = json.Unmarshal(body, &result)
 	utils.NoError(err)
-	return result
+	return &result, resp.StatusCode, nil
 
 }
 

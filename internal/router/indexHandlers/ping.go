@@ -88,7 +88,7 @@ func GetUser(c *gin.Context) {
 	utils.NoError(err)
 	userStr := entity.UserFromToken(token)
 	user = &userStr
-	u, ok := user.ToUserEntity(token, "", loginUrl).(*entity.CpaasUserEntity)
+	u, ok := user.ToUserEntity(token, "", loginUrl, "").(*entity.CpaasUserEntity)
 	if !ok {
 		baseHandlers.RenderData(c, "error", nil)
 		return
