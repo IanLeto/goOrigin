@@ -58,3 +58,6 @@ _test
 
 tmp/
 main
+
+go.mod
+go.sum
