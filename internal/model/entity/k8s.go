@@ -181,7 +181,6 @@ func NewDeployParamsDetail(req *V1.CreateDeploymentReq) (*Deploy, error) {
 				Overhead:                      nil,
 				TopologySpreadConstraints:     nil,
 				SetHostnameAsFQDN:             nil,
-				OS:                            nil,
 			},
 		}, // 定义容器模板，dep 会以此来生成相关的容器
 		Strategy:                appsv1.DeploymentStrategy{}, // 升级策略

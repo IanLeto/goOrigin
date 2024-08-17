@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel/trace"
+	//"go.opentelemetry.io/otel/trace"
 	"goOrigin/config"
 	"goOrigin/internal/model/entity"
 	"goOrigin/internal/router/baseHandlers"
@@ -29,9 +29,9 @@ func ConfigInfo(c *gin.Context) {
 	var (
 		result = make(map[string]interface{})
 	)
-	span := trace.SpanFromContext(c.Request.Context())
-
-	defer span.End()
+	//span := trace.SpanFromContext(c.Request.Context())
+	//
+	//defer span.End()
 	v, err := json.Marshal(config.ConfV2)
 	if err != nil {
 		baseHandlers.RenderData(c, nil, err)
@@ -51,6 +51,11 @@ func ConfigCheck(c *gin.Context) {
 	}
 
 	baseHandlers.RenderData(c, "ok", err)
+}
+
+func PodInfoCheck(c *gin.Context) {
+
+	baseHandlers.RenderData(c, utils.SelfPodInfo, nil)
 }
 
 func HttpProxy(c *gin.Context) {

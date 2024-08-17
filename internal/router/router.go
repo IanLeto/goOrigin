@@ -12,7 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	jaeger "github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	//"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"goOrigin/config"
 	"goOrigin/internal/router/cmdHandlers"
 	"goOrigin/internal/router/indexHandlers"
@@ -111,13 +111,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.NoRoute(indexHandlers.NoRouterHandler)
 	//g.Use(Jaeger())
 	pprof.Register(g, "debug/pprof")
-	g.Use(otelgin.Middleware("my-service"))
+	//g.Use(otelgin.Middleware("my-service"))
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	indexGroup := g.Group("/")
 	{
 		indexGroup.GET("ping", indexHandlers.Ping)
 		indexGroup.GET("config", indexHandlers.ConfigInfo)
 		indexGroup.GET("configCheck", indexHandlers.ConfigCheck)
+		indexGroup.GET("podInfo", indexHandlers.ConfigCheck)
 		indexGroup.GET("userInfo", indexHandlers.GetUser)
 		indexGroup.GET("", indexHandlers.HttpProxy)
 		//indexGroup.GET("proxy", indexHandlers.HttpProxy)
