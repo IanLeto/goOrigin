@@ -70,7 +70,7 @@ var initData = func() error {
 	var err error
 	go func() {
 		for {
-			time.Sleep(15 * time.Second)
+			time.Sleep(120 * time.Second)
 			utils.SelfPodInfo, err = utils.GetPodInfo(nil)
 			if err != nil {
 				fmt.Println("get pod info error: ", err)
