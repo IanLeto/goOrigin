@@ -20,6 +20,8 @@ var mode string
 var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
 	"logger": cron.RegLoggerCron,
+	//
+	"podinfo": cron.RegPodInfoCronFactory,
 }
 
 // step 1 本地环境变量检查
@@ -86,8 +88,9 @@ var initData = func() error {
 // step 8 初始化定时任务
 var initCronTask = func() error {
 	var taskRootCtx = context.Background()
-	for _, t := range config.Conf.Cron {
-		if err := cronTask[t](); err != nil {
+	for cronName, _ := range config.ConfV2.Cron {
+		// 对每个任务进行初始化， 任务自己去读配置文件
+		if err := cronTask[cronName](); err != nil {
 			return err
 		}
 	}

@@ -18,6 +18,7 @@ type V2Config struct {
 	Env                   map[string]ComponentConfig `yaml:"env" json:"env"`
 	ElasticsearchUser     string                     `yaml:"elasticsearch_user" json:"elasticsearch_user"`
 	ElasticsearchPassword string                     `yaml:"elasticsearch_password" json:"elasticsearch_password"`
+	Cron                  map[string]interface{}     `yaml:"cron" json:"cron"`
 }
 
 type BaseConfig struct {
@@ -137,6 +138,17 @@ func NewComponentConfig() map[string]ComponentConfig {
 
 type EnvConfig struct {
 	Env map[string]ComponentConfig `yaml:"env" json:"env"`
+}
+
+func NewJobConfig() map[string]interface{} {
+	var (
+		res = make(map[string]interface{})
+	)
+	cronMap := viper.GetStringMap("cron")
+	for cron, cronInfo := range cronMap {
+		res[cron] = cronInfo
+	}
+	return res
 }
 
 type ComponentConfig struct {
