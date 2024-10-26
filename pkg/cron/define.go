@@ -8,6 +8,114 @@ import (
 	"time"
 )
 
+// Job 接口，所有任务必须实现 Run 方法
+type Job interface {
+	Run() error
+	Name() string
+}
+
+// GlobalCronTaskManager 管理任务的结构体
+type GlobalCronTaskManager struct {
+	jobChan       chan Job
+	taskStatus    map[string]string
+	statusMutex   sync.RWMutex
+	tokenBucket   chan struct{}
+	maxConcurrent int
+	wg            sync.WaitGroup
+	quit          chan struct{}
+}
+
+// 新建 GlobalCronTaskManager，初始化通道和令牌桶
+func NewGlobalCronTaskManager(maxConcurrent int) *GlobalCronTaskManager {
+	tm := &GlobalCronTaskManager{
+		jobChan:       make(chan Job),
+		taskStatus:    make(map[string]string),
+		tokenBucket:   make(chan struct{}, maxConcurrent),
+		maxConcurrent: maxConcurrent,
+		quit:          make(chan struct{}),
+	}
+	// 初始化令牌桶
+	for i := 0; i < maxConcurrent; i++ {
+		tm.tokenBucket <- struct{}{}
+	}
+	return tm
+}
+
+// 启动任务管理器，监听 jobChan 并执行任务
+func (tm *GlobalCronTaskManager) Start() {
+	go func() {
+		for {
+			select {
+			case job := <-tm.jobChan:
+				tm.wg.Add(1)
+				<-tm.tokenBucket // 获取令牌，控制并发
+
+				// 更新任务状态为 "running"
+				tm.setStatus(job.Name(), "running")
+
+				// 使用 goroutine 执行任务
+				go func(job Job) {
+					defer tm.wg.Done()
+					defer func() { tm.tokenBucket <- struct{}{} }() // 任务完成后归还令牌
+
+					// 执行任务
+					err := job.Run()
+					if err != nil {
+						tm.setStatus(job.Name(), "failed")
+					} else {
+						tm.setStatus(job.Name(), "completed")
+					}
+				}(job)
+
+			case <-tm.quit:
+				tm.wg.Wait() // 等待所有任务完成
+				close(tm.jobChan)
+				return
+			}
+		}
+	}()
+}
+
+// 添加任务到任务管理器
+func (tm *GlobalCronTaskManager) AddJob(job Job) {
+	tm.setStatus(job.Name(), "waiting")
+	tm.jobChan <- job
+}
+
+// 停止任务管理器
+func (tm *GlobalCronTaskManager) Stop() {
+	close(tm.quit)
+}
+
+// 设置任务状态
+func (tm *GlobalCronTaskManager) setStatus(jobName string, status string) {
+	tm.statusMutex.Lock()
+	defer tm.statusMutex.Unlock()
+	tm.taskStatus[jobName] = status
+}
+
+// 获取任务状态
+func (tm *GlobalCronTaskManager) GetStatus(jobName string) string {
+	tm.statusMutex.RLock()
+	defer tm.statusMutex.RUnlock()
+	if status, ok := tm.taskStatus[jobName]; ok {
+		return status
+	}
+	return "not found"
+}
+
+// 获取所有任务的状态
+func (tm *GlobalCronTaskManager) GetAllStatus() map[string]string {
+	tm.statusMutex.RLock()
+	defer tm.statusMutex.RUnlock()
+	// 返回任务状态的副本
+	statusCopy := make(map[string]string)
+	for k, v := range tm.taskStatus {
+		statusCopy[k] = v
+	}
+	return statusCopy
+}
+
 type CallBackFuncType func(t pkg.Job)
 
 type TaskManager struct {
