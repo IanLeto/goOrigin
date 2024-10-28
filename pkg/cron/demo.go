@@ -11,7 +11,7 @@ type Demo struct {
 }
 
 // 实现 Job 接口中的 Run 方法
-func (p *Demo) Run() error {
+func (p *Demo) Exec() error {
 	for {
 		fmt.Println("Attempting to fetch Pod information...")
 

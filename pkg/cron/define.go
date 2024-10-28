@@ -8,9 +8,11 @@ import (
 	"time"
 )
 
+var GTM *GlobalCronTaskManager
+
 // Job 接口，所有任务必须实现 Run 方法
 type Job interface {
-	Run() error
+	Exec() error
 	Name() string
 }
 
@@ -59,7 +61,7 @@ func (tm *GlobalCronTaskManager) Start() {
 					defer func() { tm.tokenBucket <- struct{}{} }() // 任务完成后归还令牌
 
 					// 执行任务
-					err := job.Run()
+					err := job.Exec()
 					if err != nil {
 						tm.setStatus(job.Name(), "failed")
 					} else {
