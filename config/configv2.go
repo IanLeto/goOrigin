@@ -76,7 +76,7 @@ type ConnConfig struct {
 	Env map[string]interface{} `yaml:"env" json:"env"`
 }
 
-func NewComponentConfigv2() map[string]ComponentConfig {
+func NewComponentConfig() map[string]ComponentConfig {
 	var (
 		res = make(map[string]ComponentConfig)
 	)
@@ -88,7 +88,6 @@ func NewComponentConfigv2() map[string]ComponentConfig {
 			continue
 		}
 		var eph = ComponentConfig{}
-
 		mysqlInfo, ok := component["mysql"].(map[string]interface{})
 		if ok {
 			mysqlConfInfo := initMysqlConfig(mysqlInfo)
@@ -97,15 +96,14 @@ func NewComponentConfigv2() map[string]ComponentConfig {
 		esInfo, ok := component["es"].(map[string]interface{})
 		if ok {
 			esConfInfo := initEsConfig(esInfo)
-			res[env] = ComponentConfig{
-				MysqlSQLConfig: *mysqlConfInfo,
-			}
+			eph.EsConfig = *esConfInfo
 		}
-
+		res[env] = eph
 	}
 	return res
 }
-func NewComponentConfig() map[string]ComponentConfig {
+
+func NewComponentConfigv2() map[string]ComponentConfig {
 	var (
 		res = make(map[string]ComponentConfig)
 	)
@@ -194,15 +192,46 @@ type MySQLConfig struct {
 	IsMigration bool   `yaml:"is_migration" json:"is_migration"`
 }
 
-func initMysqlConfig(input map[string]interface{}) *MySQLConfig {
-	return nil
+func initMysqlConfig(mysql map[string]interface{}) *MySQLConfig {
+	dbName, ok := mysql["dbname"].(string)
+	if !ok {
+		return nil
+	}
+	user, ok := mysql["user"].(string)
+	if !ok {
+		return nil
+	}
+	password, ok := mysql["password"].(string)
+	if !ok {
+		return nil
+	}
+	address, ok := mysql["address"].(string)
+	if !ok {
+		return nil
+	}
+	isMigration, ok := mysql["is_migration"].(bool)
+	if !ok {
+		return nil
+	}
+	return &MySQLConfig{
+		DBName:      dbName,
+		User:        user,
+		Password:    password,
+		Address:     address,
+		IsMigration: isMigration,
+	}
 }
 
 type ESConfigV2 struct {
+	Address string `yaml:"address" json:"address"`
 }
 
-func initEsConfig(input map[string]interface{}) *ESConfigV2 {
-	return nil
+func initEsConfig(es map[string]interface{}) *ESConfigV2 {
+	address, ok := es["address"].(string)
+	if !ok {
+		return nil
+	}
+	return &ESConfigV2{Address: address}
 }
 
 type EnvWindowMySQLLocalConfig struct {
