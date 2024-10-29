@@ -181,7 +181,7 @@ func NewJobConfig() map[string]interface{} {
 
 type ComponentConfig struct {
 	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
-	EsConfig       ESConfigV2  `yaml:"esConfig" json:"esConfig"`
+	EsConfig       ESConfigV2  `yaml:"es" json:"es"`
 }
 
 type MySQLConfig struct {
