@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
 )
@@ -286,19 +285,4 @@ type EnvProdESConfig struct {
 
 type EnvProdESConnConfig struct {
 	Address string `yaml:"address" json:"address"`
-}
-
-func (c *Config) ToJSON() string {
-	jsonData, _ := json.MarshalIndent(c, "", "  ")
-	return string(jsonData)
-}
-
-func (c *BaseConfig) ToJSON() string {
-	jsonData, _ := json.MarshalIndent(c, "", "  ")
-	return string(jsonData)
-}
-
-func (c *LoggerConfig) ToJSON() string {
-	jsonData, _ := json.MarshalIndent(c, "", "  ")
-	return string(jsonData)
 }
