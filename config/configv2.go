@@ -8,6 +8,7 @@ import (
 
 type Component interface {
 	ToJSON() string
+	InitSelf() Component
 }
 
 type V2Config struct {
@@ -75,6 +76,35 @@ type ConnConfig struct {
 	Env map[string]interface{} `yaml:"env" json:"env"`
 }
 
+func NewComponentConfigv2() map[string]ComponentConfig {
+	var (
+		res = make(map[string]ComponentConfig)
+	)
+	envMap := viper.GetStringMap("env")
+	for env, componentInfo := range envMap {
+		component, ok := componentInfo.(map[string]interface{})
+		if !ok {
+			fmt.Printf("Invalid componentInfo format for environment %s", env)
+			continue
+		}
+		var eph = ComponentConfig{}
+
+		mysqlInfo, ok := component["mysql"].(map[string]interface{})
+		if ok {
+			mysqlConfInfo := initMysqlConfig(mysqlInfo)
+			eph.MysqlSQLConfig = *mysqlConfInfo
+		}
+		esInfo, ok := component["es"].(map[string]interface{})
+		if ok {
+			esConfInfo := initEsConfig(esInfo)
+			res[env] = ComponentConfig{
+				MysqlSQLConfig: *mysqlConfInfo,
+			}
+		}
+
+	}
+	return res
+}
 func NewComponentConfig() map[string]ComponentConfig {
 	var (
 		res = make(map[string]ComponentConfig)
@@ -153,6 +183,7 @@ func NewJobConfig() map[string]interface{} {
 
 type ComponentConfig struct {
 	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
+	EsConfig       ESConfigV2  `yaml:"esConfig" json:"esConfig"`
 }
 
 type MySQLConfig struct {
@@ -161,6 +192,17 @@ type MySQLConfig struct {
 	Password    string `yaml:"password" json:"password"`
 	Address     string `yaml:"address" json:"address"`
 	IsMigration bool   `yaml:"is_migration" json:"is_migration"`
+}
+
+func initMysqlConfig(input map[string]interface{}) *MySQLConfig {
+	return nil
+}
+
+type ESConfigV2 struct {
+}
+
+func initEsConfig(input map[string]interface{}) *ESConfigV2 {
+	return nil
 }
 
 type EnvWindowMySQLLocalConfig struct {
