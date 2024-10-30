@@ -19,10 +19,9 @@ var mode string
 // 初始化组件
 var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
-	"logger": cron.RegLoggerCron,
-	//
+	"logger":  cron.RegLoggerCron,
 	"podinfo": cron.RegPodInfoCronFactory,
-	//"demo":    cron.DemoCronFactory,
+	"demo":    cron.DemoCronFactory,
 }
 
 // step 1 本地环境变量检查

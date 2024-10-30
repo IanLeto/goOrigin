@@ -36,7 +36,7 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Social = info.Social
 
 	tRecord = repository.ToRecordDAO(recordEntity)
-	db := mysql.MySQLConns[region]
+	db := mysql.GlobalMySQLConns[region]
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
 		logger2.Error(fmt.Sprintf("create record failed %s: %s", err, res))
@@ -91,7 +91,7 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 		res            = make([]*entity.Record, 0)
 	)
 
-	db := mysql.MySQLConns[region]
+	db := mysql.GlobalMySQLConns[region]
 	sql := db.Client.Table("t_records")
 	if name != "" {
 		sql = sql.Where("name = ?", name)

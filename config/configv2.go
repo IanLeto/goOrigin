@@ -11,20 +11,21 @@ type Component interface {
 }
 
 type V2Config struct {
-	Base                  BaseConfig                 `yaml:"base" json:"base"`
-	Logger                LoggerConfig               `yaml:"logger" json:"logger"`
-	Trace                 TraceConfig                `yaml:"trace" json:"trace"`
-	Component             []string                   `yaml:"component" json:"component"`
-	Env                   map[string]ComponentConfig `yaml:"env" json:"env"`
-	ElasticsearchUser     string                     `yaml:"elasticsearch_user" json:"elasticsearch_user"`
-	ElasticsearchPassword string                     `yaml:"elasticsearch_password" json:"elasticsearch_password"`
-	Cron                  map[string]interface{}     `yaml:"cron" json:"cron"`
+	Base      BaseConfig                 `yaml:"base" json:"base"`
+	Logger    LoggerConfig               `yaml:"logger" json:"logger"`
+	Trace     TraceConfig                `yaml:"trace" json:"trace"`
+	Component []string                   `yaml:"component" json:"component"`
+	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
+	//ElasticsearchUser     string                     `yaml:"elasticsearch_user" json:"elasticsearch_user"`
+	//ElasticsearchPassword string                     `yaml:"elasticsearch_password" json:"elasticsearch_password"`
+	Cron map[string]interface{} `yaml:"cron" json:"cron"`
 }
 
 type BaseConfig struct {
-	Name string `yaml:"name" json:"name"`
-	Port int    `yaml:"port" json:"port"`
-	Mode string `yaml:"mode" json:"mode"`
+	Name   string `yaml:"name" json:"name"`
+	Port   int    `yaml:"port" json:"port"`
+	Mode   string `yaml:"mode" json:"mode"`
+	Region string `yaml:"region" json:"region"`
 }
 
 func NewBaseConfig() BaseConfig {

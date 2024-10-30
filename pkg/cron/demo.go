@@ -44,3 +44,7 @@ func getPodInfo() (string, error) {
 	// 模拟获取失败的情况
 	return "", fmt.Errorf("unable to fetch Pod information")
 }
+func DemoCronFactory() error {
+	GTM.AddJob(&Demo{name: "ian"})
+	return nil
+}

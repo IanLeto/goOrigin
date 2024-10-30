@@ -213,9 +213,9 @@ func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err 
 		queries map[string]interface{}
 	)
 	if region == "" {
-		conn = elastic2.EsConns[DefaultRegion]
+		conn = elastic2.GlobalEsConns[DefaultRegion]
 	} else {
-		conn = elastic2.EsConns[region]
+		conn = elastic2.GlobalEsConns[region]
 	}
 	queries = map[string]interface{}{
 		"query": map[string]interface{}{

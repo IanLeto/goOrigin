@@ -101,13 +101,13 @@ func NewV2Config() *V2Config {
 	fmt.Println(string(configJSON))
 
 	return &V2Config{
-		Base:                  NewBaseConfig(),
-		Env:                   NewComponentConfig(),
-		Trace:                 NewTraceConfig(),
-		Component:             viper.GetStringSlice("component"),
-		ElasticsearchPassword: viper.GetString("elasticsearch_password"),
-		ElasticsearchUser:     viper.GetString("elasticsearch_user"),
-		Cron:                  NewJobConfig(),
+		Base:      NewBaseConfig(),
+		Env:       NewComponentConfig(),
+		Trace:     NewTraceConfig(),
+		Component: viper.GetStringSlice("component"),
+		//ElasticsearchPassword: viper.GetString("elasticsearch_password"),
+		//ElasticsearchUser:     viper.GetString("elasticsearch_user"),
+		Cron: NewJobConfig(),
 	}
 }
 

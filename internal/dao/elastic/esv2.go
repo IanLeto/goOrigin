@@ -10,7 +10,7 @@ import (
 	"io"
 )
 
-var EsConns = map[string]*EsV2Conn{}
+var GlobalEsConns = map[string]*EsV2Conn{}
 
 type EsV2Conn struct {
 	Client *elasticsearch7.Client
@@ -133,7 +133,7 @@ type InsertResultInfo struct {
 func InitEs() error {
 	for r, info := range config.Conf.Backend.EsConfig.ElasticSearchRegion {
 		var ephemeral = info
-		EsConns[r] = NewEsV2Conn(&ephemeral)
+		GlobalEsConns[r] = NewEsV2Conn(&ephemeral)
 	}
 	return nil
 }

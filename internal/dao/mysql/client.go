@@ -13,16 +13,16 @@ import (
 	"time"
 )
 
-// MySQLConns 涉及到多集群的, 无须全局长连接
-var MySQLConns = map[string]*MySQLConn{}
+// GlobalMySQLConns 涉及到多集群的, 无须全局长连接
+var GlobalMySQLConns = map[string]*MySQLConn{}
 
 func NewMySQLConns() error {
 	conf := config.ConfV2
 	for region, info := range conf.Env {
 
-		MySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
-		if MySQLConns[region].IsMigrate {
-			err := MySQLConns[region].Migrate()
+		GlobalMySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
+		if GlobalMySQLConns[region].IsMigrate {
+			err := GlobalMySQLConns[region].Migrate()
 			if err != nil {
 				logrus.Errorf("mysql migrate error: %v", err)
 			}
