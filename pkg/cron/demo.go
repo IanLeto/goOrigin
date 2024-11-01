@@ -15,7 +15,6 @@ type Demo struct {
 func (p *Demo) Exec(ctx context.Context) error {
 	for {
 		fmt.Println("Attempting to fetch Pod information...")
-
 		// 模拟获取 Pod 信息
 		podInfo, err := getPodInfo()
 		if err != nil {

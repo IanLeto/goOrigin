@@ -22,7 +22,7 @@ var cronTask = map[string]func() error{
 	"logger":  cron.RegLoggerCron,
 	"podinfo": cron.RegPodInfoCronFactory,
 	"demo":    cron.DemoCronFactory,
-	"sync":    cron.NewSyncDataGlobalJob,
+	//"sync":    cron.NewSyncDataGlobalJob,
 }
 
 // step 1 本地环境变量检查

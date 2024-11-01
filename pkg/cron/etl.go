@@ -25,7 +25,6 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 	var (
 		err    error
 		ticker *time.Ticker = time.NewTicker(60 * time.Second)
-		//esClient              = elastic.GlobalEsConns[config.ConfV2.Base.Mode]
 	)
 	for {
 		select {
@@ -53,19 +52,33 @@ func (p *SyncDataJob) GetIanInfo(req byte) (string, error) {
 	return "", nil
 }
 
-// NewSyncDataGlobalJob  模拟获取 Pod 信息的函数；初始化任务本身
+// NewSyncDataGlobalJob
+// 1. 初始化任务
+// 2. 本质是个独立的goroutinue，和ticker 添加到任务队列
 func NewSyncDataGlobalJob() error {
-	var (
-		dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
-		esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
-	)
 
-	GlobalSyncDataJob = &SyncDataJob{
-		name:     "SyncDataJob",
-		interval: config.ConfV2.Cron["SyncDataJob"].(time.Time),
-		dbCli:    *dbCli,
-		esCli:    *esCli,
-	}
-	GTM.AddJob(GlobalSyncDataJob)
+	go func() {
+		var (
+			dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
+			esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+			interval,err = time.ParseDuration(config.ConfV2.Cron["SyncDataJob"].)
+		)
+		for  {
+			select {
+			case <-time.NewTimer(60 * time.Second).C:
+			default:
+				return
+
+			}
+		}
+		GlobalSyncDataJob = &SyncDataJob{
+			name:     "SyncDataJob",
+			interval: config.ConfV2.Cron["SyncDataJob"].(time.Time),
+			dbCli:    *dbCli,
+			esCli:    *esCli,
+		}
+		GTM.AddJob(GlobalSyncDataJob)
+	}()
+
 	return nil
 }
