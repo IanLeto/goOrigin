@@ -16,9 +16,7 @@ type V2Config struct {
 	Trace     TraceConfig                `yaml:"trace" json:"trace"`
 	Component []string                   `yaml:"component" json:"component"`
 	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
-	//ElasticsearchUser     string                     `yaml:"elasticsearch_user" json:"elasticsearch_user"`
-	//ElasticsearchPassword string                     `yaml:"elasticsearch_password" json:"elasticsearch_password"`
-	Cron map[string]interface{} `yaml:"cron" json:"cron"`
+	Cron      map[string]interface{}     `yaml:"cron" json:"cron"`
 }
 
 type BaseConfig struct {
