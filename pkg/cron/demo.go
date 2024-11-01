@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -10,8 +11,8 @@ type Demo struct {
 	name string
 }
 
-// 实现 Job 接口中的 Run 方法
-func (p *Demo) Exec() error {
+// Exec 实现 Job 接口中的 Run 方法
+func (p *Demo) Exec(ctx context.Context) error {
 	for {
 		fmt.Println("Attempting to fetch Pod information...")
 
@@ -29,7 +30,7 @@ func (p *Demo) Exec() error {
 	return nil
 }
 
-// 实现 Job 接口中的 Name 方法
+// Name 实现 Job 接口中的 Name 方法
 func (p *Demo) Name() string {
 	return p.name
 }

@@ -12,7 +12,7 @@ var GTM *GlobalCronTaskManager
 
 // Job 接口，所有任务必须实现 Run 方法
 type Job interface {
-	Exec() error
+	Exec(ctx context.Context) error
 	Name() string
 }
 
@@ -25,10 +25,11 @@ type GlobalCronTaskManager struct {
 	maxConcurrent int
 	wg            sync.WaitGroup
 	quit          chan struct{}
+	ctx           context.Context
 }
 
-// 新建 GlobalCronTaskManager，初始化通道和令牌桶
-func NewGlobalCronTaskManager(maxConcurrent int) *GlobalCronTaskManager {
+// GlobalCronTaskManager，初始化通道和令牌桶
+func NewGlobalCronTaskManager(ctx context.Context, maxConcurrent int) *GlobalCronTaskManager {
 	tm := &GlobalCronTaskManager{
 		jobChan:       make(chan Job),
 		taskStatus:    make(map[string]string),
@@ -61,7 +62,7 @@ func (tm *GlobalCronTaskManager) Start() {
 					defer func() { tm.tokenBucket <- struct{}{} }() // 任务完成后归还令牌
 
 					// 执行任务
-					err := job.Exec()
+					err := job.Exec(context.TODO())
 					if err != nil {
 						tm.setStatus(job.Name(), "failed")
 					} else {
