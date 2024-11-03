@@ -33,9 +33,9 @@ type DemoJobConfig struct {
 }
 
 type TransferConfig struct {
-	Interval string `yaml:"interval"`
-	Timeout  string `yaml:"timeout"`
-	Retry    int    `yaml:"retry"`
+	Interval int `yaml:"interval"`
+	Timeout  int `yaml:"timeout"`
+	Retry    int `yaml:"retry"`
 	MySQL    struct {
 		DBName      string `yaml:"dbname"`
 		Address     string `yaml:"address"`

@@ -16,7 +16,8 @@ type V2Config struct {
 	Trace     TraceConfig                `yaml:"trace" json:"trace"`
 	Component []string                   `yaml:"component" json:"component"`
 	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
-	Cron      map[string]interface{}     `yaml:"cron" json:"cron"`
+	Cron      []string                   `yaml:"cron" json:"cron"`
+	//Cron      map[string]interface{}     `yaml:"cron" json:"cron"`
 }
 
 type BaseConfig struct {
@@ -28,9 +29,10 @@ type BaseConfig struct {
 
 func NewBaseConfig() BaseConfig {
 	return BaseConfig{
-		Name: viper.Get("base.name").(string),
-		Port: viper.Get("base.port").(int),
-		Mode: viper.Get("base.mode").(string),
+		Name:   viper.Get("base.name").(string),
+		Port:   viper.Get("base.port").(int),
+		Mode:   viper.Get("base.mode").(string),
+		Region: viper.Get("base.region").(string),
 	}
 }
 

@@ -19,10 +19,10 @@ var mode string
 // 初始化组件
 var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
-	"logger":  cron.RegLoggerCron,
-	"podinfo": cron.RegPodInfoCronFactory,
-	"demo":    cron.DemoCronFactory,
-	//"sync":    cron.NewSyncDataGlobalJob,
+	"logger":   cron.RegLoggerCron,
+	"podinfo":  cron.RegPodInfoCronFactory,
+	"demo":     cron.DemoCronFactory,
+	"transfer": cron.NewSyncDataGlobalJob,
 }
 
 // step 1 本地环境变量检查
@@ -91,11 +91,12 @@ var initCronTask = func() error {
 	var taskRootCtx = context.Background()
 	cron.GTM = cron.NewGlobalCronTaskManager(taskRootCtx, 10)
 	cron.GTM.Start()
-	for cronName, _ := range config.ConfV2.Cron {
+	for _, cronName := range config.ConfV2.Cron {
 		// 对每个任务进行初始化， 任务自己去读配置文件; 这里回初始化全局CronJob
 		if err := cronTask[cronName](); err != nil {
 			return err
 		}
+
 	}
 	for _, t := range cron.QueueCron {
 		go func(task pkg.Job) {

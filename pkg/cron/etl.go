@@ -2,6 +2,7 @@ package cron
 
 import (
 	"context"
+	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/logger"
@@ -55,29 +56,40 @@ func (p *SyncDataJob) GetIanInfo(req byte) (string, error) {
 // 1. 初始化任务
 // 2. 本质是个独立的goroutinue，和ticker 添加到任务队列,每隔一段时间，推送任务到任务队列
 func NewSyncDataGlobalJob() error {
+	log.Info("NewSyncDataGlobalJob 启动")
+	var (
+		interval int
+	)
+	interval = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig.Interval
+	go func() {
+		for {
+			select {
+			case <-time.NewTimer(time.Duration(interval) * time.Second).C:
+				log.Info("run it")
+			}
+		}
 
-	//go func() {
-	//	var (
-	//		dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
-	//		esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
-	//		interval,err = time.ParseDuration(config.ConfV2.Cron["SyncDataJob"].)
-	//	)
-	//	for  {
-	//		select {
-	//		case <-time.NewTimer(60 * time.Second).C:
-	//		default:
-	//			return
-	//
-	//		}
-	//	}
-	//	GlobalSyncDataJob = &SyncDataJob{
-	//		name:     "SyncDataJob",
-	//		interval: config.ConfV2.Cron["SyncDataJob"].(time.Time),
-	//		dbCli:    *dbCli,
-	//		esCli:    *esCli,
-	//	}
-	//	GTM.AddJob(GlobalSyncDataJob)
-	//}()
+		//var (
+		//	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
+		//	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+		//	interval,err = time.ParseDuration(config.ConfV2.Cron["SyncDataJob"].)
+		//)
+		//for  {
+		//	select {
+		//	case <-time.NewTimer(60 * time.Second).C:
+		//	default:
+		//		return
+		//
+		//	}
+		//}
+		//GlobalSyncDataJob = &SyncDataJob{
+		//	name:     "SyncDataJob",
+		//	interval: config.ConfV2.Cron["SyncDataJob"].(time.Time),
+		//	dbCli:    *dbCli,
+		//	esCli:    *esCli,
+		//}
+		//GTM.AddJob(GlobalSyncDataJob)
+	}()
 
 	return nil
 }
