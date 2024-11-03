@@ -34,6 +34,7 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 
 		case <-ticker.C:
 			// 获取 Pod 信息
+			log.Info("ping")
 		}
 	}
 
@@ -59,13 +60,18 @@ func NewSyncDataGlobalJob() error {
 	log.Info("NewSyncDataGlobalJob 启动")
 	var (
 		interval int
+		dbCli    *mysql.MySQLConn
+		esCli    *elastic.EsV2Conn
 	)
 	interval = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig.Interval
+	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
+	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+
 	go func() {
 		for {
 			select {
 			case <-time.NewTimer(time.Duration(interval) * time.Second).C:
-				log.Info("run it")
+				GTM.AddJob(&SyncDataJob{})
 			}
 		}
 
