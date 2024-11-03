@@ -96,6 +96,11 @@ func NewComponentConfig() map[string]ComponentConfig {
 			esConfInfo := initEsConfig(esInfo)
 			eph.EsConfig = *esConfInfo
 		}
+		cronInfo, ok := component["cronjob"].(map[string]interface{})
+		if ok {
+			cronjobConfig := initCronJobConfig(cronInfo)
+			eph.CronJobConfig = *cronjobConfig
+		}
 		res[env] = eph
 	}
 	return res
@@ -178,8 +183,9 @@ func NewJobConfig() map[string]interface{} {
 }
 
 type ComponentConfig struct {
-	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
-	EsConfig       ESConfigV2  `yaml:"es" json:"es"`
+	MysqlSQLConfig MySQLConfig   `yaml:"mysql" json:"mysql"`
+	EsConfig       ESConfigV2    `yaml:"es" json:"es"`
+	CronJobConfig  CronjobConfig `yaml:"cronJob" json:"cronJob"`
 }
 
 type MySQLConfig struct {

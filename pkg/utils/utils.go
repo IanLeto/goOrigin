@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 )
 
@@ -104,4 +105,31 @@ func GetDomain(urlStr string) (string, error) {
 // GetLoginUrlOrigin 将url的origin部分提取出来，然后给重定向用
 func GetLoginUrlOrigin(url string) string {
 	return url
+}
+
+func JsonToStruct(a interface{}, b interface{}) error {
+	// 检查b是否为指针类型
+	// 检查b是否为指针类型
+	if reflect.TypeOf(b).Kind() != reflect.Ptr {
+		return fmt.Errorf("b必须为指针类型")
+	}
+
+	// 检查b指向的值是否为结构体类型
+	if reflect.TypeOf(b).Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("b必须指向结构体类型")
+	}
+
+	// 将a转换为[]byte类型
+	data, err := json.Marshal(a)
+	if err != nil {
+		return err
+	}
+
+	// 将[]byte类型的data解析为b指向的结构体
+	err = json.Unmarshal(data, b)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

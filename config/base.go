@@ -107,7 +107,7 @@ func NewV2Config() *V2Config {
 		Component: viper.GetStringSlice("component"),
 		//ElasticsearchPassword: viper.GetString("elasticsearch_password"),
 		//ElasticsearchUser:     viper.GetString("elasticsearch_user"),
-		Cron: NewJobConfig(),
+		//Cron: NewJobConfig(),
 	}
 }
 
