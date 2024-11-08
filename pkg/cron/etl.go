@@ -2,6 +2,7 @@ package cron
 
 import (
 	"context"
+	"fmt"
 	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
@@ -18,6 +19,7 @@ type SyncDataJob struct {
 	interval time.Time
 	dbCli    mysql.MySQLConn
 	esCli    elastic.EsV2Conn
+	project  string
 }
 
 // Exec 实现 Job 接口中的 Run 方法
@@ -26,18 +28,7 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 		err    error
 		ticker *time.Ticker = time.NewTicker(60 * time.Second)
 	)
-	for {
-		select {
-		case <-ctx.Done():
-			ticker.Stop()
-			return err
-
-		case <-ticker.C:
-			// 获取 Pod 信息
-			log.Info("ping")
-		}
-	}
-
+	
 }
 
 // Name 实现 Job 接口中的 Name 方法
@@ -62,6 +53,7 @@ func NewSyncDataGlobalJob() error {
 		interval int
 		dbCli    *mysql.MySQLConn
 		esCli    *elastic.EsV2Conn
+		projects []string
 	)
 	interval = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig.Interval
 	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
@@ -71,7 +63,17 @@ func NewSyncDataGlobalJob() error {
 		for {
 			select {
 			case <-time.NewTimer(time.Duration(interval) * time.Second).C:
-				GTM.AddJob(&SyncDataJob{})
+				// 获取 Pod 信息
+				for _, p := range projects {
+					GTM.AddJob(&SyncDataJob{
+						name:     fmt.Sprintf("SyncDataJob-%s", config.ConfV2.Base.Region),
+						interval: time.Now(),
+						dbCli:    *dbCli,
+						esCli:    *esCli,
+						project:  p,
+					})
+				}
+
 			}
 		}
 

@@ -1,49 +1,82 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"goOrigin/API/V1"
-	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
-	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/logger"
+	"goOrigin/pkg/utils"
+	"strings"
 )
 
-func GetProject(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
+var log, _ = logger.InitZap()
+
+func AggProject(ctx *gin.Context, region string, project string) (*entity.ProjectAggDocEntity, error) {
 	var (
-		tRecord      = &dao.TRecord{}
-		recordEntity = &entity.Record{}
-		logger2, err = logger.InitZap()
+		tMessage         = &dao.ODAMetric{}
+		projectDocEntity = &entity.ProjectAggDocEntity{}
+		err              error
+		conn             = elastic.GlobalEsConns[region]
 	)
-
-	recordEntity.Name = info.Name
-	recordEntity.Weight = info.Weight
-	recordEntity.Vol1 = info.Vol1
-	recordEntity.Vol2 = info.Vol2
-	recordEntity.Vol3 = info.Vol3
-	recordEntity.Vol4 = info.Vol4
-	recordEntity.Content = info.Content
-	recordEntity.Retire = info.Retire
-	recordEntity.Cost = info.Cost
-	recordEntity.Region = region
-	recordEntity.Dev = info.Dev
-	recordEntity.Coding = info.Coding
-
-	recordEntity.Social = info.Social
-
-	tRecord = repository.ToRecordDAO(recordEntity)
-	db := mysql.GlobalMySQLConns[region]
-	res, _, err := mysql.Create(db.Client, tRecord)
+	var (
+		query = map[string]interface{}{}
+		alias = ""
+		agg   = map[string]interface{}{}
+	)
+	var (
+		start int
+		end   int
+	)
+	var (
+		sort = []map[string]interface{}{
+			{
+				"time": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		}
+		filter         []map[string]interface{}
+		filterCallback = func(filter *[]map[string]interface{}, key string, value []string) {
+			if len(value) > 0 {
+				*filter = append(*filter, map[string]interface{}{
+					"terms": map[string]interface{}{
+						fmt.Sprintf("%s.keyword", key): value,
+					},
+				})
+			}
+		}
+	)
+	if region != "" {
+		filterCallback(&filter, "region", strings.Split(region, ","))
+	}
+	query = map[string]interface{}{
+		"bool": map[string]interface{}{
+			"query":        query,
+			"aggregations": agg,
+			"sort":         sort,
+		},
+	}
+	value, err := conn.Search(alias, query)
 	if err != nil {
-		logger2.Error(fmt.Sprintf("create record failed %s: %s", err, res))
+		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+			s, _ := json.Marshal(query)
+			return string(s)
+		}))
 		goto ERR
 	}
-	//_, err = es.Create("ian", tRecord)
-
-	return tRecord.ID, err
+	err = utils.JsonToStruct(value, projectDocEntity)
+	if err != nil {
+		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+			s, _ := json.Marshal(query)
+			return string(s)
+		}))
+		goto ERR
+	}
+	return projectDocEntity, err
 ERR:
-	return 0, err
+	return nil, err
 
 }
