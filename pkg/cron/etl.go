@@ -24,11 +24,12 @@ type SyncDataJob struct {
 
 // Exec 实现 Job 接口中的 Run 方法
 func (p *SyncDataJob) Exec(ctx context.Context) error {
-	var (
-		err    error
-		ticker *time.Ticker = time.NewTicker(60 * time.Second)
-	)
-	
+	//var (
+	//	err    error
+	//	ticker *time.Ticker = time.NewTicker(60 * time.Second)
+	//)
+	panic("implement me")
+
 }
 
 // Name 实现 Job 接口中的 Name 方法
@@ -58,8 +59,16 @@ func NewSyncDataGlobalJob() error {
 	interval = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig.Interval
 	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
 	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+	// todo
+	projects = []string{"project1", "project2", "project3"}
+	interval = 10
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered from panic in goroutine:", r)
+			}
+		}()
 		for {
 			select {
 			case <-time.NewTimer(time.Duration(interval) * time.Second).C:
@@ -77,26 +86,35 @@ func NewSyncDataGlobalJob() error {
 			}
 		}
 
-		//var (
-		//	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
-		//	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
-		//	interval,err = time.ParseDuration(config.ConfV2.Cron["SyncDataJob"].)
-		//)
-		//for  {
-		//	select {
-		//	case <-time.NewTimer(60 * time.Second).C:
-		//	default:
-		//		return
-		//
-		//	}
-		//}
-		//GlobalSyncDataJob = &SyncDataJob{
-		//	name:     "SyncDataJob",
-		//	interval: config.ConfV2.Cron["SyncDataJob"].(time.Time),
-		//	dbCli:    *dbCli,
-		//	esCli:    *esCli,
-		//}
-		//GTM.AddJob(GlobalSyncDataJob)
+	}()
+
+	return nil
+}
+
+func RegTransfer(ctx context.Context) error {
+	// 创建一个 goroutine 来注册和管理任务
+	go func() {
+		// 使用 defer 捕获 goroutine 中的 panic
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered from panic in RegTransfer goroutine:", r)
+			}
+		}()
+
+		// 启动 NewSyncDataGlobalJob
+		err := NewSyncDataGlobalJob()
+		if err != nil {
+			fmt.Println("Error starting NewSyncDataGlobalJob:", err)
+			return
+		}
+
+		// 监听 context 的取消信号
+		select {
+		case <-ctx.Done():
+			fmt.Println("Context cancelled, stopping RegTransfer task")
+			// 当 context 被取消时，退出此 goroutine
+			return
+		}
 	}()
 
 	return nil

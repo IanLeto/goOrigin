@@ -123,6 +123,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("", indexHandlers.HttpProxy)
 		//indexGroup.GET("proxy", indexHandlers.HttpProxy)
 		indexGroup.GET("metrics", indexHandlers.Prom(promhttp.Handler()))
+		indexGroup.GET("jobInfo", indexHandlers.JobInfo)
 
 	}
 	execGroup := g.Group("/v1/exec")

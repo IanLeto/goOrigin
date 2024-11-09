@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"goOrigin/internal/dao/elastic"
-	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
@@ -16,7 +15,7 @@ var log, _ = logger.InitZap()
 
 func AggProject(ctx *gin.Context, region string, project string) (*entity.ProjectAggDocEntity, error) {
 	var (
-		tMessage         = &dao.ODAMetric{}
+		//tMessage         = &dao.ODAMetric{}
 		projectDocEntity = &entity.ProjectAggDocEntity{}
 		err              error
 		conn             = elastic.GlobalEsConns[region]
@@ -27,8 +26,8 @@ func AggProject(ctx *gin.Context, region string, project string) (*entity.Projec
 		agg   = map[string]interface{}{}
 	)
 	var (
-		start int
-		end   int
+	//start int
+	//end   int
 	)
 	var (
 		sort = []map[string]interface{}{

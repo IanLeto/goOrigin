@@ -28,7 +28,7 @@ type GlobalCronTaskManager struct {
 	ctx           context.Context
 }
 
-// GlobalCronTaskManager，初始化通道和令牌桶
+// NewGlobalCronTaskManager GlobalCronTaskManager，初始化通道和令牌桶
 func NewGlobalCronTaskManager(ctx context.Context, maxConcurrent int) *GlobalCronTaskManager {
 	tm := &GlobalCronTaskManager{
 		jobChan:       make(chan Job),
@@ -117,6 +117,11 @@ func (tm *GlobalCronTaskManager) GetAllStatus() map[string]string {
 		statusCopy[k] = v
 	}
 	return statusCopy
+}
+
+// 获取任务管理器的任务数量
+func (tm *GlobalCronTaskManager) GetToken() int {
+	return len(tm.tokenBucket)
 }
 
 type CallBackFuncType func(t pkg.Job)
