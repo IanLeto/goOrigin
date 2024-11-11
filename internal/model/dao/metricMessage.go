@@ -7,9 +7,14 @@ type ODAMetric struct {
 }
 
 type Dimension struct {
-	Cluster string `json:"cluster"`
-	Src     string `json:"src"`
-	Psrc    string `json:"psrc"`
+	Cluster       string `json:"cluster"`
+	Src           string `json:"src"`
+	Psrc          string `json:"psrc"`
+	TransType     string `json:"trans_type"`
+	TransTypeCode string `json:"trans_type_code"`
+	TransTypeDesc string `json:"trans_type_desc"`
+	TransChannel  string `json:"trans_channel"`
+	RetCode       string `json:"ret_code"`
 }
 
 type Indicator struct {
