@@ -282,6 +282,11 @@ func BenchmarkUpdateNodeWithReflection(b *testing.B) {
 		updateNodeWithReflection(a1, a2)
 	}
 }
+
+// 打印odametric 计算公式
+func (s *ScriptAPISuite) TestOdaMetric() {
+	OdaSuccessAndFailedRateMetric(nil, "region", &V1.SuccessRateReqInfo{})
+}
 func TestScriptConfiguration(t *testing.T) {
 	suite.Run(t, new(ScriptAPISuite))
 }

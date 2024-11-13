@@ -63,7 +63,7 @@ func AggProject(ctx *gin.Context, region string, project string) (*entity.Projec
 		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
-		}))
+		}()))
 		goto ERR
 	}
 	err = utils.JsonToStruct(value, projectDocEntity)
@@ -71,7 +71,7 @@ func AggProject(ctx *gin.Context, region string, project string) (*entity.Projec
 		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
-		}))
+		}()))
 		goto ERR
 	}
 	return projectDocEntity, err
