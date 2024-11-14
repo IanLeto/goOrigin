@@ -48,6 +48,10 @@ type TransferConfig struct {
 		Address string `yaml:"address"`
 		Alias   string `yaml:"alias"`
 	} `yaml:"es"`
+	Kafka struct {
+		Address string `yaml:"address"`
+		Topic   string `yaml:"topic"`
+	} `yaml:"kafka"`
 }
 
 func initCronJobConfig(input interface{}) *CronjobConfig {

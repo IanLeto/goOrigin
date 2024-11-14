@@ -28,7 +28,9 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 	//	err    error
 	//	ticker *time.Ticker = time.NewTicker(60 * time.Second)
 	//)
-	panic("implement me")
+	fmt.Println("执行中", time.Now())
+	time.Sleep(1 * time.Second)
+	return nil
 
 }
 
@@ -59,6 +61,7 @@ func NewSyncDataGlobalJob() error {
 	interval = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig.Interval
 	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
 	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+
 	// todo
 	//dbCli.Client.Select(&projects, "select project from project")
 	interval = 10
