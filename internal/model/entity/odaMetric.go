@@ -7,6 +7,8 @@ type SuccessRateEntity struct {
 
 type ODAMetricEntity struct {
 	Interval time.Duration `json:"interval"`
+	*Dimension
+	*Indicator
 }
 
 type Dimension struct {

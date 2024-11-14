@@ -4,6 +4,8 @@ import "time"
 
 type ODAMetricMessage struct {
 	Interval time.Duration `json:"interval"`
+	*Dimension
+	*Indicator
 }
 
 type Dimension struct {
