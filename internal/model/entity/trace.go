@@ -60,3 +60,6 @@ type SpanTransTypeInfoEntity struct {
 	TransChannel  string `json:"trans_channel"`
 	RetCode       string `json:"ret_code"`
 }
+
+type SpanInfoDocEntity struct {
+}

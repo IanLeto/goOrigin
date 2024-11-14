@@ -5,7 +5,14 @@ import (
 	"goOrigin/internal/model/entity"
 )
 
-func ToTraceEntity(tRecord *dao.TRecord) *entity.TraceEntity {
+func ToOdaMetricEntity(tRecord *dao.ODAMetricMessage) *entity.ODAMetricEntity {
+	return &entity.ODAMetricEntity{
+		Interval: tRecord.Interval,
+	}
+}
 
-	return nil
+func ToOdaMetricMessage(tRecord *entity.ODAMetricEntity) *dao.ODAMetricMessage {
+	return &dao.ODAMetricMessage{
+		Interval: tRecord.Interval,
+	}
 }

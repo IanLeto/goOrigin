@@ -55,7 +55,7 @@ type ProjectStats struct {
 	// 添加其他聚合度量的字段
 }
 
-type Project struct {
+type ProjectEntity struct {
 	ID        uint          `json:"id"`
 	Project   string        `json:"project"`
 	ProjectCN string        `json:"project_cn"`
@@ -63,6 +63,7 @@ type Project struct {
 	TracePOD  string        `json:"trace_pod"`
 	CreateAT  time.Duration `json:"create_at"`
 	UpdateAT  time.Duration `json:"update_at"`
+	Buckets   int           `json:"buckets"`
 }
 
 type ProjectBizCode struct {

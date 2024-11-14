@@ -25,8 +25,8 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 		aggs = map[string]interface{}{}
 	)
 	var (
-		total_translations      = map[string]interface{}{}
-		successful_translations = map[string]interface{}{}
+		totalTranslations      = map[string]interface{}{}
+		successfulTranslations = map[string]interface{}{}
 	)
 	var (
 		ret_code string = "aaaa"
@@ -55,14 +55,14 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 	}
 	// 聚合算成功率
 	if ret_code != "" {
-		total_translations = map[string]interface{}{
+		totalTranslations = map[string]interface{}{
 			"filter": map[string]interface{}{
 				"value_count": map[string]interface{}{
 					"field": "ret_code.keyword",
 				},
 			},
 		}
-		successful_translations = map[string]interface{}{
+		successfulTranslations = map[string]interface{}{
 			"filter": map[string]interface{}{
 				"terms": map[string]interface{}{
 					"ret_code.keyword": []string{"0"},
@@ -71,8 +71,8 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 		}
 	}
 	aggs = map[string]interface{}{
-		"total_translations":      total_translations,
-		"successful_translations": successful_translations,
+		"total_translations":      totalTranslations,
+		"successful_translations": successfulTranslations,
 	}
 	query = map[string]interface{}{
 		"aggs": aggs,

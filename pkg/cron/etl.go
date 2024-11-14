@@ -60,7 +60,7 @@ func NewSyncDataGlobalJob() error {
 	dbCli = mysql.GlobalMySQLConns[config.ConfV2.Base.Region]
 	esCli = elastic.GlobalEsConns[config.ConfV2.Base.Region]
 	// todo
-	projects = []string{"project1", "project2", "project3"}
+	//dbCli.Client.Select(&projects, "select project from project")
 	interval = 10
 
 	go func() {

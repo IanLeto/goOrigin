@@ -2,7 +2,7 @@ package dao
 
 import "time"
 
-type ODAMetric struct {
+type ODAMetricMessage struct {
 	Interval time.Duration `json:"interval"`
 }
 

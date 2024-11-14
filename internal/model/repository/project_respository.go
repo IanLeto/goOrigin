@@ -5,7 +5,7 @@ import (
 	"goOrigin/internal/model/entity"
 )
 
-func ToProjectDAO(project *entity.Project) *dao.TProject {
+func ToProjectDAO(project *entity.ProjectEntity) *dao.TProject {
 	return &dao.TProject{
 		Project:   project.Project,
 		ProjectCN: project.ProjectCN,
@@ -16,8 +16,8 @@ func ToProjectDAO(project *entity.Project) *dao.TProject {
 	}
 }
 
-func ToProjectEntity(tProject *dao.TProject) *entity.Project {
-	return &entity.Project{
+func ToProjectEntity(tProject *dao.TProject) *entity.ProjectEntity {
+	return &entity.ProjectEntity{
 		ID:        tProject.ID,
 		Project:   tProject.Project,
 		ProjectCN: tProject.ProjectCN,
