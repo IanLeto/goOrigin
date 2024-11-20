@@ -36,10 +36,6 @@ func BatchCreate(db *gorm.DB, values interface{}) (interface{}, *gorm.DB, error)
 	return result, result, result.Error
 }
 
-func CreateBySql(db *gorm.DB, value interface{}) {
-
-}
-
 func GetAllValues(db *gorm.DB, output []interface{}) (interface{}, *gorm.DB, error) {
 	result := db.Find(output).Limit(-1)
 	return result, result, result.Error

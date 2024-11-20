@@ -188,6 +188,7 @@ type ComponentConfig struct {
 	MysqlSQLConfig MySQLConfig   `yaml:"mysql" json:"mysql"`
 	EsConfig       ESConfigV2    `yaml:"es" json:"es"`
 	CronJobConfig  CronjobConfig `yaml:"cronJob" json:"cronJob"`
+	PromeConfig    PromeConfig   `yaml:"prome" json:"prome"`
 }
 
 type MySQLConfig struct {
@@ -240,56 +241,15 @@ func initEsConfig(es map[string]interface{}) *ESConfigV2 {
 	return &ESConfigV2{Address: address}
 }
 
-type EnvWindowMySQLLocalConfig struct {
+type PromeConfig struct {
 	Address string `yaml:"address" json:"address"`
 }
 
-type EnvWindowESConfig struct {
-	Conn EnvWindowESConnConfig `yaml:"conn" json:"conn"`
-}
+func initPromeConfig(prome map[string]interface{}) *PromeConfig {
+	address, ok := prome["address"].(string)
+	if !ok {
+		return nil
+	}
 
-type EnvWindowESConnConfig struct {
-	Address string `yaml:"address" json:"address"`
-}
-
-type EnvMacConfig struct {
-	MySQL EnvMacMySQLConfig `yaml:"mysql" json:"mysql"`
-	ES    EnvMacESConfig    `yaml:"es" json:"es"`
-}
-
-type EnvMacMySQLConfig struct {
-	Local EnvMacMySQLLocalConfig `yaml:"local" json:"local"`
-}
-
-type EnvMacMySQLLocalConfig struct {
-	Address string `yaml:"address" json:"address"`
-}
-
-type EnvMacESConfig struct {
-	Conn EnvMacESConnConfig `yaml:"conn" json:"conn"`
-}
-
-type EnvMacESConnConfig struct {
-	Address string `yaml:"address" json:"address"`
-}
-
-type EnvProdConfig struct {
-	MySQL EnvProdMySQLConfig `yaml:"mysql" json:"mysql"`
-	ES    EnvProdESConfig    `yaml:"es" json:"es"`
-}
-
-type EnvProdMySQLConfig struct {
-	Local EnvProdMySQLLocalConfig `yaml:"local" json:"local"`
-}
-
-type EnvProdMySQLLocalConfig struct {
-	Address string `yaml:"address" json:"address"`
-}
-
-type EnvProdESConfig struct {
-	Conn EnvProdESConnConfig `yaml:"conn" json:"conn"`
-}
-
-type EnvProdESConnConfig struct {
-	Address string `yaml:"address" json:"address"`
+	return &PromeConfig{Address: address}
 }

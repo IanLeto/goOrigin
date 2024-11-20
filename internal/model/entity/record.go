@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/prometheus/client_golang/prometheus"
+
 type Record struct {
 	Name       string  `json:"name" bson:"name"`
 	Weight     float32 `json:"weight" bson:"weight"`
@@ -18,4 +20,8 @@ type Record struct {
 	Social     string  `json:"social"`
 	CreateTime int64   `json:"create_time"`
 	ModifyTime int64   `json:"update_time"`
+}
+
+type RecordMetricEntity struct {
+	Weight *prometheus.CounterVec
 }

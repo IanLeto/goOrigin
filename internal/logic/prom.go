@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/api/prometheus/v1"
 	"goOrigin/API/V1"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/clients"
 	"goOrigin/pkg/logger"
 	"time"
@@ -28,4 +29,8 @@ func QueryPromWeight(c *gin.Context, req *V1.QueryWeightRequest) (string, error)
 		return "", err
 	}
 	return res.String(), err
+}
+
+func QueryIanRecordMetric(c *gin.Context, req *V1.QueryIanRecordsRequest) (entity.RecordMetricEntity, error) {
+	panic("implement me")
 }
