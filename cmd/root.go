@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/dao/prometheus"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -19,6 +20,7 @@ var compInit = map[string]func() error{
 	//"k8s":   k8s.InitK8s,
 	//"redis": storage.InitRedis,
 	"mysql": mysql.NewMySQLConns,
+	"prom":  prometheus.NewPromeV2Conns,
 	//"es":    elastic.InitEs,
 }
 
