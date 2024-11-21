@@ -25,3 +25,23 @@ type Record struct {
 type RecordMetricEntity struct {
 	Weight *prometheus.CounterVec
 }
+
+type RecordMetricMessageEntity struct {
+	Name       *prometheus.CounterVec
+	Weight     *prometheus.GaugeVec
+	IsFuck     *prometheus.GaugeVec
+	Vol1       *prometheus.CounterVec
+	Vol2       *prometheus.CounterVec
+	Vol3       *prometheus.CounterVec
+	Vol4       *prometheus.CounterVec
+	Cost       *prometheus.GaugeVec
+	Content    *prometheus.CounterVec
+	Region     *prometheus.CounterVec
+	Retire     *prometheus.GaugeVec
+	Dev        *prometheus.CounterVec
+	Coding     *prometheus.CounterVec
+	Reading    *prometheus.CounterVec
+	Social     *prometheus.CounterVec
+	CreateTime *prometheus.GaugeVec
+	ModifyTime *prometheus.GaugeVec
+}

@@ -14,7 +14,7 @@ type PrometheusConn struct {
 
 func NewPromeV2Conns() *PrometheusConn {
 	var (
-		err error
+	//err error
 	)
 	conf := config.ConfV2
 	for region, info := range conf.Env {
@@ -25,9 +25,8 @@ func NewPromeV2Conns() *PrometheusConn {
 }
 
 func NewPrometheusConn(conf config.PromeConfig) *PrometheusConn {
-	var (
-		err error
-	)
+	var ()
+
 	return &PrometheusConn{}
 
 }
