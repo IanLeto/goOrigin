@@ -103,6 +103,12 @@ func NewComponentConfig() map[string]ComponentConfig {
 			cronjobConfig := initCronJobConfig(cronInfo)
 			eph.CronJobConfig = *cronjobConfig
 		}
+
+		prome, ok := component["prom"].(map[string]interface{})
+		if ok {
+			promeConfig := initPromeConfig(prome)
+			eph.PromeConfig = *promeConfig
+		}
 		res[env] = eph
 	}
 	return res
