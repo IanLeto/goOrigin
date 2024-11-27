@@ -118,7 +118,7 @@ ERR:
 }
 
 //var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-//	Name: "ianRecord",
+//	GetName: "ianRecord",
 //	Help: "record ian",
 //}, []string{"BF", "LUN", "DIN", "EX"})
 //
@@ -187,7 +187,7 @@ ERR:
 //	)
 //	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
 //	info.Set(cast.ToFloat64(req.Body.Weight))
-//	res := storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.Name},
+//	res := storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.GetName},
 //		&ian)
 //
 //	if res.Err() != nil {
@@ -199,7 +199,7 @@ ERR:
 //		goto ERR
 //	}
 //
-//	return req.Name, nil
+//	return req.GetName, nil
 //ERR:
 //	return "", res.Err()
 //}
@@ -208,9 +208,9 @@ ERR:
 ////	response = make([]*params.QueryResponse, 0)
 ////
 ////	filter := bson.M{
-////		"name": req.Name,
+////		"name": req.GetName,
 ////	}
-////	if req.Name == "" {
+////	if req.GetName == "" {
 ////		filter = bson.M{}
 ////	}
 ////	curs, err := storage.GlobalMongo.DB.Collection("ian").Find(context.TODO(), filter)
@@ -241,8 +241,8 @@ ERR:
 //		logger.Error(fmt.Sprintf("初始化 es 失败 %s", err))
 //		return nil, err
 //	}
-//	if req.Name != "" {
-//		queries = append(queries, elastic.NewTermQuery("name", req.Name))
+//	if req.GetName != "" {
+//		queries = append(queries, elastic.NewTermQuery("name", req.GetName))
 //	}
 //	bq.Must(queries...)
 //	daoRes, err = client.Search().Index("ian").Query(eq).Query(bq).Do(c)
@@ -257,7 +257,7 @@ ERR:
 //			goto ERR
 //		}
 //		response = append(response, &V1.QueryResponse{
-//			Name:       ephemeralIan.Name,
+//			GetName:       ephemeralIan.GetName,
 //			CreateTime: time.Unix(ephemeralIan.Time.T, 0).Format(time.RFC3339),
 //			UpdateTime: time.Unix(ephemeralIan.Time.I, 0).Format(time.RFC3339),
 //			Body: struct {
@@ -342,7 +342,7 @@ ERR:
 ////		err error
 ////	)
 ////	tRecord := dao.TRecord{
-////		Name:       req.Name,
+////		GetName:       req.GetName,
 ////		Weight:     req.Weight,
 ////		BF:         req.BF,
 ////		LUN:        req.LUN,
@@ -383,7 +383,7 @@ ERR:
 //
 //	for _, item := range req.Items {
 //		tRecord := dao.TRecord{
-//			Name:       item.Name,
+//			GetName:       item.GetName,
 //			Weight:     item.Weight,
 //			BF:         item.BF,
 //			LUN:        item.LUN,
@@ -448,7 +448,7 @@ ERR:
 ////			Id:         record.ID,
 ////			CreateTime: record.CreateTime,
 ////			ModifyTime: record.ModifyTime,
-////			Name:       record.Name,
+////			GetName:       record.GetName,
 ////			Weight:     record.Weight,
 ////			BF:         record.BF,
 ////			LUN:        record.LUN,
@@ -477,7 +477,7 @@ ERR:
 //func UpdateIanRecordsV2(c *gin.Context, req *V1.UpdateIanRecordRequest) (res *V1.UpdateIanRecordResponse, err error) {
 //	var (
 //		record = dao.TRecord{
-//			Name:       req.Info.Name,
+//			GetName:       req.Info.GetName,
 //			Weight:     req.Info.Weight,
 //			BF:         req.Info.BF,
 //			LUN:        req.Info.LUN,
@@ -506,7 +506,7 @@ ERR:
 //	}
 //	res = &V1.UpdateIanRecordResponse{
 //		Item: V1.IanRecordInfo{
-//			Name:       record.Name,
+//			GetName:       record.GetName,
 //			Weight:     record.Weight,
 //			BF:         record.BF,
 //			LUN:        record.LUN,

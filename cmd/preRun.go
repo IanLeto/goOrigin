@@ -21,7 +21,7 @@ var cronTask = map[string]func() error{
 	//"ian": cron.RegisterNoteIan, // 定期创建日报
 	//"logger":   cron.RegLoggerCron,
 	//"podinfo":  cron.RegPodInfoCronFactory,
-	//"demo":     cron.DemoCronFactory,
+	"demo":     cron.DemoCronFactory,
 	"transfer": cron.NewSyncDataGlobalJob,
 }
 

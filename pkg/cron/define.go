@@ -13,7 +13,7 @@ var GTM *GlobalCronTaskManager
 // Job 接口，所有任务必须实现 Run 方法
 type Job interface {
 	Exec(ctx context.Context) error
-	Name() string
+	GetName() string
 }
 
 // GlobalCronTaskManager 管理任务的结构体
@@ -44,7 +44,7 @@ func NewGlobalCronTaskManager(ctx context.Context, maxConcurrent int) *GlobalCro
 	return tm
 }
 
-// 启动任务管理器，监听 jobChan 并执行任务
+// Start 启动任务管理器，监听 jobChan 并执行任务
 func (tm *GlobalCronTaskManager) Start() {
 	go func() {
 		for {
@@ -54,7 +54,7 @@ func (tm *GlobalCronTaskManager) Start() {
 				<-tm.tokenBucket // 获取令牌，控制并发
 
 				// 更新任务状态为 "running"
-				tm.setStatus(job.Name(), "running")
+				tm.setStatus(job.GetName(), "running")
 
 				// 使用 goroutine 执行任务
 				go func(job Job) {
@@ -64,9 +64,9 @@ func (tm *GlobalCronTaskManager) Start() {
 					// 执行任务
 					err := job.Exec(context.TODO())
 					if err != nil {
-						tm.setStatus(job.Name(), "failed")
+						tm.setStatus(job.GetName(), "failed")
 					} else {
-						tm.setStatus(job.Name(), "completed")
+						tm.setStatus(job.GetName(), "completed")
 					}
 				}(job)
 
@@ -81,7 +81,7 @@ func (tm *GlobalCronTaskManager) Start() {
 
 // 添加任务到任务管理器
 func (tm *GlobalCronTaskManager) AddJob(job Job) {
-	tm.setStatus(job.Name(), "waiting")
+	tm.setStatus(job.GetName(), "waiting")
 	tm.jobChan <- job
 }
 

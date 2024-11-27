@@ -92,7 +92,7 @@ func equalNodeEntitySlices(a, b []*NodeEntity) bool {
 //func (n *NodeEntity) ToMySQLTable() (mysql.Table, error) {
 //
 //	table := dao2.TNode{
-//		Name:     n.Name,
+//		GetName:     n.GetName,
 //		Content:  n.Content,
 //		Depend:   n.Depend,
 //		Father:   n.Father,
@@ -121,7 +121,7 @@ func equalNodeEntitySlices(a, b []*NodeEntity) bool {
 //	}
 //	return &NodeEntity{
 //		ID:       node.ID,
-//		Name:     node.Name,
+//		GetName:     node.GetName,
 //		Content:  node.Content,
 //		Depend:   node.Depend,
 //		Father:   node.Father,
@@ -182,7 +182,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //		dbRes []*dao2.TNode
 //	)
 //	tNode := []*dao2.TNode{
-//		{Name: name, Father: father},
+//		{GetName: name, Father: father},
 //	}
 //	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
 //	data, _, err := mysql.GetValues(db, tNode, 100)
@@ -211,7 +211,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //		}
 //		res = append(res, &NodeEntity{
 //			ID:       v.ID,
-//			Name:     v.Name,
+//			GetName:     v.GetName,
 //			Content:  v.Content,
 //			Depend:   v.Depend,
 //			Father:   v.Father,
@@ -309,7 +309,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //	if err != nil {
 //		goto ERR
 //	}
-//	node.Father = father.Name
+//	node.Father = father.GetName
 //	node.FatherID = father.ID
 //	if source == nil {
 //		err = errors.New("father node not found")

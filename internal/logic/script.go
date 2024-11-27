@@ -84,7 +84,7 @@ func QueryScript(c *gin.Context, req V1.QueryScriptRequest) (res *V1.QueryScript
 		queries = append(queries, elastic.NewMatchQuery("Content", req.Key))
 	}
 	if req.Name != "" {
-		queries = append(queries, elastic.NewTermQuery("Name", req.Name))
+		queries = append(queries, elastic.NewTermQuery("GetName", req.Name))
 	}
 	if req.Type != "" {
 		queries = append(queries, elastic.NewTermQuery("Type", req.Type))

@@ -11,7 +11,7 @@ func CreateJob(c *gin.Context, req V1.CreateJobRequest) (uint, error) {
 	//		job = entity.Job{
 	//			Targets:    req.Targets,
 	//			FilePath:   req.FilePath,
-	//			Name:       req.Name,
+	//			GetName:       req.GetName,
 	//			Type:       req.Type,
 	//			StrategyID: req.StrategyID,
 	//			ScriptIDS:  req.ScriptIDs,
@@ -45,7 +45,7 @@ func UpdateJob(c *gin.Context, req *V1.UpdateJobRequest) (uint, error) {
 	//			ID: req.ID,
 	//			//Target:   req.Target,
 	//			FilePath: req.FilePath,
-	//			Name:     req.Name,
+	//			GetName:     req.GetName,
 	//		}
 	//		err error
 	//	)
@@ -87,7 +87,7 @@ func DeleteJob(c *gin.Context, id int) error {
 	//	}
 	//	response := &V1.GetJobResponse{
 	//		//ID:       tJob.ID,
-	//		Name:     tJob.Name,
+	//		GetName:     tJob.GetName,
 	//		FilePath: tJob.FilePath,
 	//		Target:   strings.Split(tJob.Target, ","),
 	//	}
@@ -111,7 +111,7 @@ func GetJobs(c *gin.Context) (*V1.GetJobsResponse, error) {
 	//for _, tJob := range tJobs {
 	//	infos = append(infos, &V1.GetJobsResponseInfo{
 	//		//ID:        tJob.ID,
-	//		Name:      tJob.Name,
+	//		GetName:      tJob.GetName,
 	//		Content:   "",
 	//		ScriptIDs: strings.Split(tJob.ScriptIDs, ","),
 	//	})
@@ -142,7 +142,7 @@ func RunJob(c *gin.Context, req *V1.RunJobRequest) (*V1.RunJobResponse, error) {
 	//		//ID:        tJob.ID,
 	//		Targets:   strings.Split(tJob.ScriptIDs, ","),
 	//		FilePath:  tJob.FilePath,
-	//		Name:      tJob.Name,
+	//		GetName:      tJob.GetName,
 	//		Type:      tJob.Type,
 	//		ScriptIDS: strings.Split(tJob.ScriptIDs, ","),
 	//	}

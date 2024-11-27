@@ -1,16 +1,17 @@
 package moniter
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+)
 
-func RegMoniter(cols ...prometheus.Collector) {
+var Reg = prometheus.NewRegistry()
 
-	prometheus.MustRegister(cols...)
-}
 func init() {
 	cpu := prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "ian_test_cpu",
 		Help: "hei",
 	})
 	cpu.Set(1)
-	RegMoniter(cpu)
+	Reg.MustRegister(cpu)
+
 }

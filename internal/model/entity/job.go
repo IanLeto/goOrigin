@@ -91,11 +91,11 @@ func (j *Job) ToTable() *dao.TJob {
 //	//	}
 //	//	for _, i := range scripts {
 //	//		_, err = agent.RunScript(ctx, &pbs.RunScriptRequest{
-//	//			Name:    i.Name,
+//	//			GetName:    i.GetName,
 //	//			Content: i.Content,
 //	//		})
 //	//		if err != nil {
-//	//			log.Error(fmt.Sprintf("脚本%s 执行失败 %s", i.Name, err))
+//	//			log.Error(fmt.Sprintf("脚本%s 执行失败 %s", i.GetName, err))
 //	//			goto ERR
 //	//		}
 //	//	}

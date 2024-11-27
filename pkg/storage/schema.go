@@ -60,7 +60,7 @@ package storage
 //func InitSchema(m *MongoConn, collectionName string) error {
 //	c := m.DB(config.Conf.Backend.MongoBackendConfig.DB).C(collectionName)
 //	if err := c.Create(ianSchema); err != nil {
-//		if c.Name == "" {
+//		if c.GetName == "" {
 //			return err
 //		}
 //	}

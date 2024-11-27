@@ -8,11 +8,7 @@ func newIanRecordWeightGaugeVec() *prometheus.GaugeVec {
 	return prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "weight",
 		Help: "ian weight gau per day",
-		ConstLabels: map[string]string{
-			"region": "",
-			"time":   "",
-		},
-	}, []string{})
+	}, []string{"region", "time"})
 }
 
 func SetWeightGauge(metric float64, region string, time string) {
@@ -20,4 +16,9 @@ func SetWeightGauge(metric float64, region string, time string) {
 		"region": region,
 		"time":   time,
 	}).Set(metric)
+}
+
+func init() {
+	Reg.MustRegister(IanRecordWeightGaugeVec)
+	SetWeightGauge(100, "sa", "xs")
 }

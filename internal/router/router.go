@@ -12,6 +12,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	jaeger "github.com/uber/jaeger-client-go"
 	jaegerConfig "github.com/uber/jaeger-client-go/config"
+	"goOrigin/pkg/moniter"
+
 	//"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"goOrigin/config"
 	"goOrigin/internal/router/cmdHandlers"
@@ -220,7 +222,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 	metricGroup := g.Group("v1/metric")
 	{
-		metricGroup.GET("", gin.WrapH(promhttp.Handler()))
+		ops := promhttp.HandlerOpts{
+			EnableOpenMetrics: false,
+		}
+		metricGroup.GET("", gin.WrapH(promhttp.HandlerFor(moniter.Reg, ops)))
 	}
 	return g
 }

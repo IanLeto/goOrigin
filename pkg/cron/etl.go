@@ -35,7 +35,7 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 }
 
 // Name 实现 Job 接口中的 Name 方法
-func (p *SyncDataJob) Name() string {
+func (p *SyncDataJob) GetName() string {
 	return p.name
 }
 

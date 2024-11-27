@@ -29,8 +29,8 @@ func (p *Demo) Exec(ctx context.Context) error {
 	return nil
 }
 
-// Name 实现 Job 接口中的 Name 方法
-func (p *Demo) Name() string {
+// GetName Name 实现 Job 接口中的 Name 方法
+func (p *Demo) GetName() string {
 	return p.name
 }
 
@@ -44,6 +44,7 @@ func getPodInfo() (string, error) {
 	// 模拟获取失败的情况
 	return "", fmt.Errorf("unable to fetch Pod information")
 }
+
 func DemoCronFactory() error {
 	GTM.AddJob(&Demo{name: "ian"})
 	return nil
