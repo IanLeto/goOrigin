@@ -79,13 +79,13 @@ func (tm *GlobalCronTaskManager) Start() {
 	}()
 }
 
-// 添加任务到任务管理器
+// AddJob 添加任务到任务管理器
 func (tm *GlobalCronTaskManager) AddJob(job Job) {
 	tm.setStatus(job.GetName(), "waiting")
 	tm.jobChan <- job
 }
 
-// 停止任务管理器
+// Stop 停止任务管理器
 func (tm *GlobalCronTaskManager) Stop() {
 	close(tm.quit)
 }
@@ -97,7 +97,7 @@ func (tm *GlobalCronTaskManager) setStatus(jobName string, status string) {
 	tm.taskStatus[jobName] = status
 }
 
-// 获取任务状态
+// GetStatus 获取任务状态
 func (tm *GlobalCronTaskManager) GetStatus(jobName string) string {
 	tm.statusMutex.RLock()
 	defer tm.statusMutex.RUnlock()

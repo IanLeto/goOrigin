@@ -114,80 +114,8 @@ func NewComponentConfig() map[string]ComponentConfig {
 	return res
 }
 
-func NewComponentConfigv2() map[string]ComponentConfig {
-	var (
-		res = make(map[string]ComponentConfig)
-	)
-	envMap := viper.GetStringMap("env")
-	for env, componentInfo := range envMap {
-		component, ok := componentInfo.(map[string]interface{})
-		if !ok {
-			fmt.Printf("Invalid componentInfo format for environment %s", env)
-			continue
-		}
-
-		mysql, ok := component["mysql"].(map[string]interface{})
-		if !ok {
-			fmt.Printf("Invalid mysql format for environment %s", env)
-			continue
-		}
-
-		dbName, ok := mysql["dbname"].(string)
-		if !ok {
-			fmt.Printf("Invalid dbname format for environment %s", env)
-			continue
-		}
-
-		user, ok := mysql["user"].(string)
-		if !ok {
-			fmt.Printf("Invalid user format for environment %s", env)
-			continue
-		}
-
-		password, ok := mysql["password"].(string)
-		if !ok {
-			fmt.Printf("Invalid password format for environment %s", env)
-			continue
-		}
-
-		address, ok := mysql["address"].(string)
-		if !ok {
-			fmt.Printf("Invalid address format for environment %s", env)
-			continue
-		}
-
-		isMigration, ok := mysql["is_migration"].(bool)
-		if !ok {
-			fmt.Printf("Invalid is_migration format for environment %s", env)
-			continue
-		}
-
-		res[env] = ComponentConfig{
-			MysqlSQLConfig: MySQLConfig{
-				DBName:      dbName,
-				User:        user,
-				Password:    password,
-				Address:     address,
-				IsMigration: isMigration,
-			},
-		}
-	}
-	return res
-}
-
 type EnvConfig struct {
 	Env map[string]ComponentConfig `yaml:"env" json:"env"`
-}
-
-func NewJobConfig() map[string]interface{} {
-	var (
-		res = make(map[string]interface{})
-	)
-	cronMap := viper.GetStringMap("cron")
-	for cron, cronInfo := range cronMap {
-		res[cron] = cronInfo
-	}
-	return res
 }
 
 type ComponentConfig struct {
