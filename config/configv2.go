@@ -13,11 +13,9 @@ type Component interface {
 type V2Config struct {
 	Base      BaseConfig                 `yaml:"base" json:"base"`
 	Logger    LoggerConfig               `yaml:"logger" json:"logger"`
-	Trace     TraceConfig                `yaml:"trace" json:"trace"`
 	Component []string                   `yaml:"component" json:"component"`
 	Env       map[string]ComponentConfig `yaml:"env" json:"env"`
 	Cron      []string                   `yaml:"cron" json:"cron"`
-	//Cron      map[string]interface{}     `yaml:"cron" json:"cron"`
 }
 
 type BaseConfig struct {
@@ -44,32 +42,6 @@ type LoggerConfig struct {
 	MaxSize int    `yaml:"maxsize" json:"maxsize"`
 	Backup  int    `yaml:"backup" json:"backup"`
 	MaxAge  int    `yaml:"max_age" json:"max_age"`
-}
-
-type TraceConfig struct {
-	Az       string `yaml:"az" json:"az"`
-	App      string `yaml:"app" json:"app"`
-	Biz      string `yaml:"biz" json:"biz"`
-	System   string `yaml:"system" json:"system"`
-	Project  string `yaml:"project" json:"project"`
-	Author   string `yaml:"author" json:"author"`
-	Endpoint string `yaml:"endpoint" json:"endpoint"`
-	Interval string `yaml:"interval" json:"interval"`
-	SvcName  string `yaml:"svcname" json:"svcname"`
-}
-
-func NewTraceConfig() TraceConfig {
-	return TraceConfig{
-		Az:       viper.GetString("trace.az"),
-		App:      viper.GetString("trace.app"),
-		Biz:      viper.GetString("trace.biz"),
-		System:   viper.GetString("trace.system"),
-		Project:  viper.GetString("trace.project"),
-		Author:   viper.GetString("trace.author"),
-		Endpoint: viper.GetString("trace.endpoint"),
-		Interval: viper.GetString("trace.interval"),
-		SvcName:  viper.GetString("trace.svcname"),
-	}
 }
 
 type ConnConfig struct {

@@ -31,6 +31,5 @@ var runCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(runCmd)
 	runCmd.Flags().Bool("version", true, "run dev version")
-	runCmd.Flags().StringP("compare", "", "", "run dev version")
 
 }

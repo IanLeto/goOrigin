@@ -103,12 +103,8 @@ func NewV2Config() *V2Config {
 	return &V2Config{
 		Base:      NewBaseConfig(),
 		Env:       NewComponentConfig(),
-		Trace:     NewTraceConfig(),
 		Component: viper.GetStringSlice("component"),
 		Cron:      viper.GetStringSlice("cron"),
-		//ElasticsearchPassword: viper.GetString("elasticsearch_password"),
-		//ElasticsearchUser:     viper.GetString("elasticsearch_user"),
-		//Cron: NewJobConfig(),
 	}
 }
 
@@ -118,10 +114,3 @@ func (c *Config) watchConfig() {
 		log.Printf("config file changed")
 	})
 }
-
-//func NewElasticSearchSecretConfig() {
-//	viper.SetConfigFile("secret.yaml")
-//	utils.NoError(viper.ReadInConfig())
-//	user := viper.GetString("elasticsearch.user")
-//	password := viper.GetString("elasticsearch.password")
-//}

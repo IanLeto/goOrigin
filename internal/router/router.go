@@ -1,12 +1,10 @@
 package router
 
 import (
-	"context"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -29,30 +27,6 @@ import (
 	"net/http"
 )
 
-func Jaeger() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var parentSpan opentracing.Span
-		tracer, closer := newTracer("go1Origin", "test")
-		defer func() { _ = closer.Close() }()
-		//
-		spanCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request.Header))
-		if err != nil {
-			parentSpan = tracer.StartSpan(c.Request.URL.Path)
-		} else {
-			parentSpan = opentracing.StartSpan(
-				c.Request.URL.Path, opentracing.ChildOf(spanCtx), opentracing.Tag{
-					Key:   string(ext.Component),
-					Value: "Http",
-				}, ext.SpanKindRPCServer)
-		}
-		// 这条很重要
-		defer parentSpan.Finish()
-		c.Set("tracer", tracer)
-		c.Set("ctx", opentracing.ContextWithSpan(context.Background(), parentSpan))
-		c.Next()
-	}
-
-}
 func newTracer(svc, collectorEndpoint string) (opentracing.Tracer, io.Closer) {
 	cfg := jaegerConfig.Configuration{
 
@@ -207,13 +181,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		nodev2Group.POST("/batch", topoHandlers.CreateNodes)
 		nodev2Group.PUT("", topoHandlers.UpdateNode)
 		nodev2Group.DELETE("", topoHandlers.DeleteNode)
-
 		nodev2Group.POST("/list", topoHandlers.GetNodes)
 		nodev2Group.GET("", topoHandlers.GetNodeDetail)
 		nodev2Group.GET("/search", topoHandlers.GetNodeDetail)
-		//nodev2Group.GET("", topoHandlers.GetTopo)
-		//nodev2Group.POST("/batch")
-
 	}
 
 	topov2Group := g.Group("v2/topo")

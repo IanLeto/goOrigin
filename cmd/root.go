@@ -52,6 +52,7 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
+	RootCmd.AddCommand(configCmd)
 	RootCmd.Flags().StringP("config", "c", "", "config")
 	RootCmd.Flags().BoolP("pass", "p", false, "pass")
 	RootCmd.Flags().Bool("debug", false, "debug")
