@@ -1,8 +1,6 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"goOrigin/pkg/utils"
@@ -82,7 +80,6 @@ func NewV2Config() *V2Config {
 	paths := strings.Split(path, ",")
 	for _, p := range paths {
 		viper.SetConfigFile(p)
-
 		// 创建一个临时 Viper 实例来读取当前配置文件
 		tempV := viper.New()
 		tempV.SetConfigFile(p)
@@ -96,9 +93,6 @@ func NewV2Config() *V2Config {
 			log.Fatalf("合并配置文件 %s 时出错: %v", p, err)
 		}
 	}
-	configJSON, err := json.MarshalIndent(viper.AllSettings(), "", "  ")
-	utils.NoError(err)
-	fmt.Println(string(configJSON))
 
 	return &V2Config{
 		Base:      NewBaseConfig(),

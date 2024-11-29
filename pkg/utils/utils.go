@@ -77,7 +77,6 @@ func QueryInt(c *gin.Context, key string, defaultVal ...int) int {
 func ToJson(v interface{}) string {
 	data, err := json.MarshalIndent(v, "", "  ")
 	NoError(err)
-
 	return string(data)
 
 }

@@ -121,14 +121,6 @@ func PreRun(configPath string) string {
 	for _, f := range preCheck {
 		utils.NoError(f())
 	}
-	//event.Bus.Publish("run_mode", "debug")
-	//viper.SetConfigFile(configPath)
-	//utils.NoError(viper.ReadInConfig())
-	//viper.WatchConfig()
-	//viper.OnConfigChange(func(in fsnotify.Event) {
-	//	config.InitConf()
-	//	initComponents()
-	//})
 	return mode
 }
 
