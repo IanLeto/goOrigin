@@ -1,6 +1,8 @@
 package cron
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"github.com/sirupsen/logrus"
@@ -10,12 +12,62 @@ import (
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/internal/model/repository"
+	"io"
+	"os"
 	"time"
 )
 
 type Transfer struct {
 	*entity.Record
 	Alias string
+}
+
+func (t *Transfer) Exec2(ctx context.Context) error {
+	var (
+		esClient = elastic.GlobalEsConns[config.ConfV2.Base.Region]
+		index    = t.Alias
+		err      error
+	)
+	file, err := os.Open("./test.json")
+	defer func() { _ = file.Close() }()
+
+	// 创建一个缓冲区读取器,用于读取 JSON 数据
+	reader := bufio.NewReader(file)
+
+	// 创建一个字节缓冲区,用于存储读取的数据
+	var buffer bytes.Buffer
+
+	// 循环读取 JSON 数据,直到读取完毕或出错
+	for {
+		// 读取一行数据
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				// 读取完毕,跳出循环
+				break
+			}
+			logrus.Errorf("Failed to read record data: %v", err)
+			return err
+		}
+
+		// 将读取的数据写入字节缓冲区
+		buffer.Write(line)
+	}
+
+	// 将字节缓冲区中的数据转换为字节数组
+	body := buffer.Bytes()
+	logrus.Infof("Read record data: %s", body)
+	// 调用 EsV2Conn 的 Create 方法写入数据到 Elasticsearch
+	resp, err := esClient.Create(index, body)
+	if err != nil {
+		logrus.Errorf("Failed to create document in Elasticsearch: %v", err)
+		return err
+	}
+
+	// 处理 Elasticsearch 的响应
+	logrus.Infof("Document created in Elasticsearch. Response: %s", resp)
+
+	return nil
 }
 
 func (t *Transfer) Exec(ctx context.Context) error {
