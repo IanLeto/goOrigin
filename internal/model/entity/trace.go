@@ -183,4 +183,6 @@ type KafkaLogEntity struct {
 	RemotePodId string `json:"remote.podId,omitempty"`
 
 	RemoteApp string `json:"remote.app,omitempty"`
+
+	Trans SpanTransTypeInfoEntity `json:"trans"`
 }

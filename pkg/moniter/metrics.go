@@ -11,6 +11,14 @@ func newIanRecordWeightGaugeVec() *prometheus.GaugeVec {
 	}, []string{"region", "time"})
 }
 
+var SpanCount = newSpanCount()
+
+func newSpanCount() *prometheus.CounterVec {
+	return prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "success span count",
+		Help: "",
+	}, []string{"region", "time"})
+}
 func SetWeightGauge(metric float64, region string, time string) {
 	IanRecordWeightGaugeVec.With(prometheus.Labels{
 		"region": region,
@@ -20,5 +28,6 @@ func SetWeightGauge(metric float64, region string, time string) {
 
 func init() {
 	Reg.MustRegister(IanRecordWeightGaugeVec)
+	Reg.MustRegister(SpanCount)
 	SetWeightGauge(100, "sa", "xs")
 }

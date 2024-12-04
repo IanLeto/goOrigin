@@ -22,7 +22,7 @@ var cronTask = map[string]func() error{
 	//"logger":   cron.RegLoggerCron,
 	//"podinfo":  cron.RegPodInfoCronFactory,
 	"demo":     cron.DemoCronFactory,
-	"transfer": cron.NewSyncDataGlobalJob,
+	"transfer": cron.TransferCornFactory,
 }
 
 // step 1 本地环境变量检查
@@ -92,10 +92,13 @@ var initCronTask = func() error {
 	cron.GTM = cron.NewGlobalCronTaskManager(taskRootCtx, 10)
 	cron.GTM.Start()
 	for _, cronName := range config.ConfV2.Cron {
+		var eph = cronName
 		// 对每个任务进行初始化， 任务自己去读配置文件; 这里回初始化全局CronJob
-		if err := cronTask[cronName](); err != nil {
-			return err
-		}
+		go func(croName string) {
+			if err := cronTask[croName](); err != nil {
+
+			}
+		}(eph)
 
 	}
 	for _, t := range cron.QueueCron {
