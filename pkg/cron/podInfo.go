@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"goOrigin/pkg"
-	"goOrigin/pkg/logger"
+	//"goOrigin/pkg/logger"
 	"time"
 )
 
@@ -18,7 +18,7 @@ type PodFactory struct {
 // Exec 将任务添加到任务队列，任务队列全局唯一
 func (l *PodFactory) Exec(rootCtx context.Context, info pkg.JobMessageInfo) error {
 	var (
-		logger2 = logger.NewLogger()
+		logger2 = logger
 		err     error
 	)
 	if err != nil {

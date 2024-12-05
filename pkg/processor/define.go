@@ -3,12 +3,15 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"goOrigin/internal/model/entity"
+	"goOrigin/pkg/moniter"
 	"goOrigin/pkg/utils"
 	"os"
+	"reflect"
 )
 
 var logger = func() *zap.Logger {
@@ -81,20 +84,64 @@ type MetricProcessor struct {
 
 func (p *MetricProcessor) Process(ctx context.Context, input chan []byte, out chan []byte) {
 	for data := range input {
-		var spanInfo *entity.KafkaLogEntity
-		json.Unmarshal(data, spanInfo)
-		// 如果 RetCode 满足条件
-		if utils.IncludeString(p.RetCodes, spanInfo.Trans.RetCode) {
-			// 从 spanInfo 中提取 region 和 time 标签
-			// 增加指标计数
-			SpanCount.With(prometheus.Labels{
-				"region": region,
-				"time":   time,
-			}).Inc() // 指标加1
+		// 使用目标结构体解码 JSON
+		var spanInfo entity.SpanTransTypeInfoEntity
+		if err := json.Unmarshal(data, &spanInfo); err != nil {
+			// 如果反序列化失败，跳过当前数据
+			fmt.Printf("Failed to unmarshal data: %v\n", err)
+			continue
 		}
 
-		// 将数据传递到下一个处理阶段
-		out <- data
+		// 使用反射提取结构体字段作为 Prometheus 标签
+		labels := extractLabelsUsingReflection(spanInfo)
 
+		// 获取 RetCode
+		retCode, ok := labels["ret_code"]
+		if ok && utils.IncludeString(p.RetCodes, retCode) {
+			// 增加指标计数
+			moniter.SpanCount.With(labels).Inc()
+		}
+
+		// 将数据传递到下一个处理阶段（如果需要）
+		out <- data
 	}
+}
+
+// 使用反射提取结构体字段作为 Prometheus 标签
+func extractLabelsUsingReflection(obj interface{}) prometheus.Labels {
+	labels := prometheus.Labels{}
+
+	// 获取对象的值和类型
+	v := reflect.ValueOf(obj)
+	t := reflect.TypeOf(obj)
+
+	// 确保是结构体
+	if t.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = t.Elem()
+	}
+
+	if t.Kind() != reflect.Struct {
+		fmt.Println("Provided object is not a struct")
+		return labels
+	}
+
+	// 遍历结构体字段
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		value := v.Field(i)
+
+		// 获取字段的 JSON 标签作为标签名
+		tag := field.Tag.Get("json")
+		if tag == "" || tag == "-" {
+			continue
+		}
+
+		// 如果字段值是字符串类型
+		if value.Kind() == reflect.String {
+			labels[tag] = value.String()
+		}
+	}
+
+	return labels
 }
