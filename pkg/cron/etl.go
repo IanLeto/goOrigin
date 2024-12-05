@@ -6,11 +6,10 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
-	"goOrigin/pkg/logger"
 	"time"
 )
 
-var log, _ = logger.InitZap()
+var log = logger
 var GlobalSyncDataJob *SyncDataJob
 
 // SyncDataJob 是一个获取 Pod 信息的任务

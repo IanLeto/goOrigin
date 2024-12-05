@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"goOrigin/pkg"
-	"goOrigin/pkg/logger"
 	"math/rand"
 	"time"
 )
@@ -15,7 +14,7 @@ type LoggerProducer struct {
 
 func (l *LoggerProducer) Exec(ctx context.Context, info pkg.JobMessageInfo) error {
 	var (
-		logger2 = logger.NewLogger()
+		logger2 = logger
 		err     error
 	)
 	if err != nil {
