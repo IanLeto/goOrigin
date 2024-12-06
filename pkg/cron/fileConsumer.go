@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"goOrigin/config"
 	"goOrigin/internal/model/entity"
+	"goOrigin/pkg/processor"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,7 +31,12 @@ func (c *Consumer) Exec(ctx context.Context) error {
 		err     error
 		signals = make(chan os.Signal, 1)
 	)
-
+	var (
+		nodes = make([]processor.Node, 0)
+		pipe  = processor.Pipeline{}
+	)
+	//nodes = append(nodes, &processor.MetricProcessor{RetCodes: []string{"AAAAA"}})
+	pipe.Nodes = nodes
 	// 打开日志文件
 	file, err = os.Open(c.FilePath)
 	if err != nil {
@@ -46,6 +52,8 @@ func (c *Consumer) Exec(ctx context.Context) error {
 
 	// 启动一个 Goroutine 来处理新增的日志内容
 	go func() {
+		var ch = make(chan []byte)
+		defer func() { close(ch) }()
 		for {
 			select {
 			case <-ctx.Done():
@@ -54,9 +62,9 @@ func (c *Consumer) Exec(ctx context.Context) error {
 			default:
 				// 检查是否有新行可读
 				for reader.Scan() {
-					line := reader.Text()
+					ch <- reader.Bytes()
 					// 处理日志行
-					c.processLine(line)
+					pipe.Start(ctx, ch)
 				}
 
 				// 如果读取完成但没有新内容，等待文件更新
@@ -80,6 +88,8 @@ func ConsumerFactory() error {
 		consumer = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig
 	)
 	// todo
+	//var pipeline processor.Pipeline
+	//var ()
 
 	for {
 		select {
