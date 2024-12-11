@@ -49,7 +49,6 @@ func (p *Pipeline) Start(ctx context.Context, input <-chan []byte) <-chan []byte
 		go func(n Node, in <-chan []byte, out chan<- []byte) {
 			err := n.ProcessWithChannel(ctx, in, out)
 			if err != nil {
-				logger.Sugar().Errorln(err)
 			}
 			close(out)
 		}(node, input, output)
