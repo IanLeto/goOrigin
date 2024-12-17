@@ -1,0 +1,33 @@
+package processor
+
+import (
+	"context"
+	"encoding/json"
+	"goOrigin/internal/model/entity"
+)
+
+var (
+	UnDoneSpanInfoEntity map[string][]*entity.KafkaLogEntity
+)
+
+type Agg struct {
+}
+
+func (a *Agg) Process(ctx context.Context, input []byte) ([]byte, error) {
+	var (
+		spanInfo *entity.KafkaLogEntity
+	)
+	_ = json.Unmarshal(input, spanInfo)
+	switch spanInfo.SpanID {
+	// 结束span
+	case "0":
+		return input, nil
+	default:
+		UnDoneSpanInfoEntity[spanInfo.TraceId] = append(UnDoneSpanInfoEntity[spanInfo.TraceId], spanInfo)
+	}
+}
+
+func (a *Agg) ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error {
+	//TODO implement me
+	panic("implement me")
+}
