@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"goOrigin/pkg/processor"
+	"sync/atomic"
 	"testing"
+	"time"
 )
 
 // 基准测试函数
@@ -14,7 +16,7 @@ func BenchmarkPipelineWithChannel(b *testing.B) {
 	for i := 0; i < 10; i++ {
 		p.Add(&processor.SimpleNode{})
 	}
-	var count = 0
+	var counter int64
 	input := make(chan []byte, 1)
 	input <- []byte("benchmark input")
 	close(input)
@@ -23,10 +25,11 @@ func BenchmarkPipelineWithChannel(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		output := p.Start(ctx, input)
 		for range output {
-			count++
+			atomic.AddInt64(&counter, 1)
 		}
 	}
-	fmt.Println(count)
+	time.Sleep(10 * time.Second)
+	fmt.Println(counter)
 }
 
 func BenchmarkPipelineWithoutChannel(b *testing.B) {

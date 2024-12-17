@@ -13,9 +13,9 @@ func ToOdaMetricEntity(tRecord *dao.ODAMetricMessage) *entity.ODAMetricEntity {
 	return &entity.ODAMetricEntity{
 		Interval: tRecord.Interval,
 		Dimension: &entity.Dimension{
-			Cluster:       tRecord.Dimension.Cluster,
-			Src:           tRecord.Dimension.Src,
-			Psrc:          tRecord.Dimension.Psrc,
+			Cluster: tRecord.Dimension.Cluster,
+			//Src:           tRecord.Dimension.Src,
+			//Psrc:          tRecord.Dimension.Psrc,
 			TransType:     tRecord.Dimension.TransType,
 			TransTypeCode: tRecord.Dimension.TransTypeCode,
 			TransTypeDesc: tRecord.Dimension.TransTypeDesc,
@@ -41,9 +41,9 @@ func ToOdaMetricMessage(tRecord *entity.ODAMetricEntity) *dao.ODAMetricMessage {
 	return &dao.ODAMetricMessage{
 		Interval: tRecord.Interval,
 		Dimension: &dao.Dimension{
-			Cluster:       tRecord.Dimension.Cluster,
-			Src:           tRecord.Dimension.Src,
-			Psrc:          tRecord.Dimension.Psrc,
+			Cluster: tRecord.Dimension.Cluster,
+			//Src:           tRecord.Dimension.Src,
+			//Psrc:          tRecord.Dimension.Psrc,
 			TransType:     tRecord.Dimension.TransType,
 			TransTypeCode: tRecord.Dimension.TransTypeCode,
 			TransTypeDesc: tRecord.Dimension.TransTypeDesc,
