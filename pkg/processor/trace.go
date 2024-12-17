@@ -25,6 +25,7 @@ func (a *Agg) Process(ctx context.Context, input []byte) ([]byte, error) {
 	default:
 		UnDoneSpanInfoEntity[spanInfo.TraceId] = append(UnDoneSpanInfoEntity[spanInfo.TraceId], spanInfo)
 	}
+	return nil, nil
 }
 
 func (a *Agg) ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error {
