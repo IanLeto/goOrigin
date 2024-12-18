@@ -42,7 +42,7 @@ func (c *Consumer) Exec(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to open file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	// 捕获终止信号
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
@@ -74,8 +74,8 @@ func (c *Consumer) Exec(ctx context.Context) error {
 	}()
 
 	// 等待退出信号
-	<-signals
-	fmt.Println("Received termination signal, shutting down...")
+	//<-signals
+	//fmt.Println("Received termination signal, shutting down...")
 	return nil
 }
 
@@ -87,10 +87,6 @@ func ConsumerFactory() error {
 	var (
 		consumer = config.ConfV2.Env[config.ConfV2.Base.Region].CronJobConfig.TransferConfig
 	)
-	// todo
-	//var pipeline processor.Pipeline
-	//var ()
-
 	for {
 		select {
 		case <-time.NewTicker(time.Duration(consumer.Interval) * time.Second).C:

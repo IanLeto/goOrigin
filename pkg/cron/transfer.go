@@ -192,8 +192,8 @@ func TransferCornFactory2() error {
 			func() {
 				// 读取配置文件，封装数据流水线
 				var pipeline = processor.Pipeline{}
-				var node1 = &processor.FilterProcessor{}
-				pipeline.Add([]processor.Processor{node1})
+				var node1 processor.Node
+				pipeline.Add(node1)
 
 			}()
 

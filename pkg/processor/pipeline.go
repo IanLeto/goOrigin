@@ -5,12 +5,6 @@ import (
 	"time"
 )
 
-// Node 接口定义了节点的处理方法
-type Node interface {
-	Process(ctx context.Context, input []byte) ([]byte, error)
-	ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error
-}
-
 // SimpleNode 是一个简单的节点实现
 type SimpleNode struct{}
 

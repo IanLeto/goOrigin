@@ -3,6 +3,7 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"goOrigin/internal/model/entity"
 )
 
@@ -17,6 +18,7 @@ func (a *Agg) Process(ctx context.Context, input []byte) ([]byte, error) {
 	var (
 		spanInfo *entity.KafkaLogEntity
 	)
+	fmt.Println(input)
 	_ = json.Unmarshal(input, spanInfo)
 	switch spanInfo.SpanID {
 	// 结束span
