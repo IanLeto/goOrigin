@@ -2,6 +2,7 @@ package processor_test
 
 import (
 	"context"
+	"fmt"
 	"github.com/stretchr/testify/suite"
 	"goOrigin/pkg/processor"
 	"testing"
@@ -44,6 +45,133 @@ func (s *NodeTest) TestFilter() {
 	for _, v := range testCases {
 		res, _ := s.FilterNode.Process(s.ctx, v.input)
 		s.Equal(v.except, res)
+	}
+}
+
+type Span struct {
+	TraceID    string                 `json:"traceId"`
+	SpanID     string                 `json:"spanId"`
+	Time       int64                  `json:"time"`
+	RemoteHost string                 `json:"remote.host"`
+	BizExpand  map[string]interface{} `json:"biz.expand"`
+}
+
+func calculateTraceStatus(ctx context.Context, spans []Span, keyword string) (int, int, int) {
+	traceMap := make(map[string]bool)
+	successTraces := make([]string, 0)
+	successCount := 0
+	failureCount := 0
+
+	for _, span := range spans {
+		transTypeCode, ok := span.BizExpand["trans_type_code"].(string)
+		if !ok {
+			// 如果 trans_type_code 不存在或类型不是字符串,则忽略该 span
+			continue
+		}
+
+		if _, exists := traceMap[span.TraceID]; !exists {
+			traceMap[span.TraceID] = true
+		}
+
+		if transTypeCode != keyword {
+			traceMap[span.TraceID] = false
+		}
+	}
+
+	for traceID, status := range traceMap {
+		if status {
+			successCount++
+			successTraces = append(successTraces, traceID)
+		} else {
+			failureCount++
+		}
+	}
+
+	totalCount := len(traceMap)
+
+	// 打印成功的 trace
+	fmt.Printf("Successful Traces: %v\n", successTraces)
+
+	return successCount, failureCount, totalCount
+}
+
+// 单元测试
+func TestCalculateTraceStatus(t *testing.T) {
+	testCases := []struct {
+		name          string
+		spans         []Span
+		keyword       string
+		ctx           map[string]interface{}
+		expectedSucc  int
+		expectedFail  int
+		expectedTotal int
+	}{
+		{
+			name: "Single trace with matching keyword",
+			spans: []Span{
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+			},
+			keyword:       "A",
+			expectedSucc:  1,
+			expectedFail:  0,
+			expectedTotal: 1,
+		},
+		{
+			name: "Single trace with non-matching keyword",
+			spans: []Span{
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "B"}},
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "B"}},
+			},
+			keyword:       "A",
+			expectedSucc:  0,
+			expectedFail:  1,
+			expectedTotal: 1,
+		},
+		{
+			name: "Multiple traces with mixed keywords",
+			spans: []Span{
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+				{TraceID: "trace2", BizExpand: map[string]interface{}{"trans_type_code": "B"}},
+				{TraceID: "trace2", BizExpand: map[string]interface{}{"trans_type_code": "B"}},
+				{TraceID: "trace3", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+			},
+			keyword:       "A",
+			expectedSucc:  2,
+			expectedFail:  1,
+			expectedTotal: 3,
+		},
+		{
+			name: "Spans with missing trans_type_code",
+			spans: []Span{
+				{TraceID: "trace1", BizExpand: map[string]interface{}{"trans_type_code": "A"}},
+				{TraceID: "trace1", BizExpand: map[string]interface{}{}},
+				{TraceID: "trace2", BizExpand: map[string]interface{}{"trans_type_code": "B"}},
+			},
+			keyword:       "A",
+			expectedSucc:  1,
+			expectedFail:  1,
+			expectedTotal: 2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			successCount, failureCount, totalCount := calculateTraceStatus(context.TODO(), tc.spans, tc.keyword)
+
+			if successCount != tc.expectedSucc {
+				t.Errorf("Expected success count %d, but got %d", tc.expectedSucc, successCount)
+			}
+
+			if failureCount != tc.expectedFail {
+				t.Errorf("Expected failure count %d, but got %d", tc.expectedFail, failureCount)
+			}
+
+			if totalCount != tc.expectedTotal {
+				t.Errorf("Expected total count %d, but got %d", tc.expectedTotal, totalCount)
+			}
+		})
 	}
 }
 

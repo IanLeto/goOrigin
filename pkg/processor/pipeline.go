@@ -2,25 +2,7 @@ package processor
 
 import (
 	"context"
-	"time"
 )
-
-// SimpleNode 是一个简单的节点实现
-type SimpleNode struct{}
-
-func (n *SimpleNode) Process(ctx context.Context, input []byte) ([]byte, error) {
-	// 模拟数据处理,这里简单地将输入数据原样返回
-	time.Sleep(1 * time.Second)
-	return input, nil
-}
-
-func (n *SimpleNode) ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error {
-	for data := range input {
-		time.Sleep(1 * time.Millisecond)
-		output <- data
-	}
-	return nil
-}
 
 // Pipeline 是使用通道实现的流水线
 type Pipeline struct {
