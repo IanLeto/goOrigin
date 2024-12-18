@@ -1,16 +1,25 @@
 package processor
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+	"goOrigin/internal/model/entity"
+)
 
-type Filter struct {
+type FilterTraceNode struct {
 }
 
-func (f *Filter) Process(ctx context.Context, input []byte) ([]byte, error) {
-	//TODO implement me
-	panic("implement me")
+func (f *FilterTraceNode) Process(ctx context.Context, input []byte) ([]byte, error) {
+	var err error
+	var spanInfo entity.KafkaLogEntity
+	err = json.Unmarshal(input, &spanInfo)
+	if spanInfo.Trans.TransTypeCode == "" {
+		return nil, nil
+	}
+	return input, err
 }
 
-func (f *Filter) ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error {
+func (f *FilterTraceNode) ProcessWithChannel(ctx context.Context, input <-chan []byte, output chan<- []byte) error {
 	//TODO implement me
 	panic("implement me")
 }

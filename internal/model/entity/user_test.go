@@ -42,7 +42,7 @@ func (s *UserInfoSuite) TestSubjectAccessView() {
 			ResourceName: "",
 		}
 	)
-	res := s.cpUser.SubjectReview(req)
+	res, _, _ := s.cpUser.SubjectReview(req)
 	s.Equal(false, res.Status.Allowed)
 
 	var (
@@ -56,7 +56,7 @@ func (s *UserInfoSuite) TestSubjectAccessView() {
 			ResourceName: "",
 		}
 	)
-	res2 := s.cpUser.SubjectReview(req2)
+	res2, _, _ := s.cpUser.SubjectReview(req2)
 	s.Equal(true, res2.Status.Allowed)
 }
 

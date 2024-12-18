@@ -118,7 +118,7 @@ type KafkaLogEntity struct {
 
 	SysExpand map[string]string `json:"sys.expand,omitempty"`
 
-	BizExpand map[string]string `json:"biz.expand,omitempty"`
+	//BizExpand map[string]string `json:"biz.expand,omitempty"`
 
 	DbType string `json:"db.type,omitempty"`
 
@@ -184,5 +184,5 @@ type KafkaLogEntity struct {
 
 	RemoteApp string `json:"remote.app,omitempty"`
 
-	Trans SpanTransTypeInfoEntity `json:"trans"`
+	Trans SpanTransTypeInfoEntity `json:"biz.expand"`
 }
