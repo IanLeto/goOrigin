@@ -55,7 +55,7 @@ func max(a, b int) int {
 func BenchmarkMaxSumSlidingWindow(b *testing.B) {
 	nums := []int{1, 4, 2, 10, 23, 3, 1, 0, 20}
 	k := 4
-
+	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		maxSumSlidingWindow(nums, k)
@@ -65,7 +65,7 @@ func BenchmarkMaxSumSlidingWindow(b *testing.B) {
 func BenchmarkMaxSumRegular(b *testing.B) {
 	nums := []int{1, 4, 2, 10, 23, 3, 1, 0, 20}
 	k := 4
-
+	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		maxSumRegular(nums, k)
