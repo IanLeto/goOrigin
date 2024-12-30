@@ -70,13 +70,13 @@ func init() {
 // 初始化指标的默认值
 func initializeMetrics() {
 	defaultLabels := prometheus.Labels{
-		"cluster":         "default-cluster",
-		"trans_type":      "default-type",
+		"cluster":         "global",
+		"trans_type":      "10ff1",
 		"trans_type_code": "0000",
-		"trans_channel":   "default-channel",
-		"svc_name":        "default-service",
-		"project_name":    "default-project",
-		"pod_name":        "default-pod",
+		"trans_channel":   "FF01",
+		"svc_name":        "cpaas",
+		"project_name":    "cpaas",
+		"pod_name":        "iantest",
 	}
 
 	// 为每个指标设置默认值
