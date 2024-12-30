@@ -2,6 +2,9 @@ package entity
 
 import "time"
 
+type SpanEntity struct {
+}
+
 type SuccessRateEntity struct {
 }
 

@@ -1,8 +1,10 @@
 package entity_test
 
 import (
+	"fmt"
 	"goOrigin/API/outter"
 	"goOrigin/internal/model/entity"
+	"goOrigin/pkg/utils"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -24,6 +26,7 @@ func (s *UserInfoSuite) SetupTest() {
 
 // TestMarshal :
 func (s *UserInfoSuite) TestConfig() {
+	fmt.Println(utils.ToJson(entity.KafkaLogEntity{}))
 	s.user.ParseToken(s.token)
 	s.Equal("ian", s.user.Name)
 }

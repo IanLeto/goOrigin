@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>交易数据聚合表单</title>
+  <link rel="stylesheet" href="antd.min.css">
+  <script src="react.production.min.js"></script>
+  <script src="react-dom.production.min.js"></script>
+  <script src="babel.min.js"></script>
+  <script src="antd.min.js"></script>
+  <script src="lodash.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { Form, Table, Checkbox } = antd;
+    const { groupBy, meanBy, sumBy } = _;
+
+    const transData = [
+      {
+        key: '1',
+        traceid: 'TR20230609001',
+        trans_name: '网上银行转账',
+        trans_type: '转账',
+        trans_channel: '网上银行',
+        success_rate: 0.98,
+        count: 1000,
+      },
+      {
+        key: '2',
+        traceid: 'TR20230609002',
+        trans_name: '手机银行支付',
+        trans_type: '支付',
+        trans_channel: '手机银行',
+        success_rate: 0.95,
+        count: 800,
+      },
+      {
+        key: '3',
+        traceid: 'TR20230609003',
+        trans_name: '柜面存款',
+        trans_type: '存款',
+        trans_channel: '柜面',
+        success_rate: 0.99,
+        count: 500,
+      },
+      {
+        key: '4',
+        traceid: 'TR20230609004',
+        trans_name: 'ATM取款',
+        trans_type: '取款',
+        trans_channel: 'ATM',
+        success_rate: 0.97,
+        count: 600,
+      },
+      {
+        key: '5',
+        traceid: 'TR20230609005',
+        trans_name: '网上银行支付',
+        trans_type: '支付',
+        trans_channel: '网上银行',
+        success_rate: 0.96,
+        count: 900,
+      },
+    ];
+
+    class TransForm extends React.Component {
+      state = {
+        selectedDimensions: [],
+      };
+
+      onDimensionChange = (selectedDimensions) => {
+        this.setState({ selectedDimensions });
+      };
+
+      render() {
+        const { selectedDimensions } = this.state;
+        const dimensions = ['trans_type', 'trans_channel'];
+
+        const groupedData = groupBy(transData, (item) =>
+          selectedDimensions.map((dim) => item[dim]).join('-')
+        );
+
+        const aggregatedData = Object.entries(groupedData).map(([key, items]) => ({
+          key,
+          dimensions: key.split('-'),
+          success_rate: meanBy(items, 'success_rate'),
+          count: sumBy(items, 'count'),
+        }));
+
+        const columns = [
+          ...selectedDimensions.map((dim) => ({
+            title: dim === 'trans_type' ? '交易类型' : '交易渠道',
+            dataIndex: 'dimensions',
+            key: dim,
+            render: (dimensions) => dimensions[selectedDimensions.indexOf(dim)],
+          })),
+          {
+            title: '成功率',
+            dataIndex: 'success_rate',
+            key: 'success_rate',
+            render: (rate) => `${(rate * 100).toFixed(2)}%`,
+          },
+          {
+            title: '交易数量',
+            dataIndex: 'count',
+            key: 'count',
+          },
+        ];
+
+        return (
+          <div>
+            <Form layout="inline" style={{ marginBottom: 16 }}>
+              <Form.Item label="选择维度">
+                <Checkbox.Group
+                  options={dimensions.map((dim) => ({
+                    label: dim === 'trans_type' ? '交易类型' : '交易渠道',
+                    value: dim,
+                  }))}
+                  value={selectedDimensions}
+                  onChange={this.onDimensionChange}
+                />
+              </Form.Item>
+            </Form>
+            <Table
+              columns={columns}
+              dataSource={aggregatedData}
+              pagination={false}
+            />
+          </div>
+        );
+      }
+    }
+
+    ReactDOM.render(<TransForm />, document.getElementById('root'));
+  </script>
+</body>
+</html>
