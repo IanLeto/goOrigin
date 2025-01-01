@@ -31,6 +31,7 @@
             padding: 15px;
             width: 300px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
         }
 
         .json-box h2 {
@@ -40,30 +41,13 @@
             text-align: center;
         }
 
-        .json-box p {
-            margin: 5px 0;
+        .json-box pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
             font-size: 14px;
             line-height: 1.5;
-            word-break: break-word;
-        }
-
-        .json-box .key {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .json-box .arrow {
-            color: #888;
-            font-weight: bold;
-        }
-
-        .json-box .value {
-            color: #007BFF;
-        }
-
-        .json-box .null-value {
-            color: #999;
-            font-style: italic;
         }
     </style>
 </head>
@@ -74,28 +58,263 @@
 </div>
 
 <script>
-    // 示例 JSON 数据
+    // 示例 JSON 数据数组
     const jsonDataArray = [
         [
-            { key: 'field1', oldValue: 'value1', newValue: 'value1_updated' },
-            { key: 'field2', oldValue: 'value2', newValue: 'value2_updated' }
-        ],
+  {
+    "ceb.trace.gid": "gid-123456789",
+    "traceId": "trace-abc-123",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-123456789",
+    "traceId": "trace-abc-123",
+    "spanId": "0.1.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-987654321",
+    "traceId": "trace-xyz-456",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-987654321",
+    "traceId": "trace-xyz-456",
+    "spanId": "0.1.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAA1"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-111111111",
+    "traceId": "trace-111-111",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-222222222",
+    "traceId": "trace-222-222",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0888",
+      "trans_type_code": "1002",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-333333333",
+    "traceId": "trace-333-333",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1003",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-333333333",
+    "traceId": "trace-333-333",
+    "spanId": "0.1.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1003",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-444444444",
+    "traceId": "trace-444-444",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0888",
+      "trans_type_code": "1002",
+      "ret_code": "AAA1"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-555555555",
+    "traceId": "trace-555-555",
+    "spanId": "0.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-555555555",
+    "traceId": "trace-555-555",
+    "spanId": "0.1.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  },
+  {
+    "ceb.trace.gid": "gid-555555555",
+    "traceId": "trace-555-555",
+    "spanId": "0.1.1.1",
+    "trans": {
+      "trans_channel": "0999",
+      "trans_type_code": "1001",
+      "ret_code": "AAAA"
+    }
+  }
+],
+        {
+    "trace_channel_type": {
+      "after_key": {
+        "traceId": "trace-xyz-456",
+        "channel": "0999",
+        "type_code": "1001"
+      },
+      "buckets": [
+        {
+          "key": {
+            "traceId": "trace-111-111",
+            "channel": "0999",
+            "type_code": "1001"
+          },
+          "doc_count": 1
+        },
+        {
+          "key": {
+            "traceId": "trace-222-222",
+            "channel": "0888",
+            "type_code": "1002"
+          },
+          "doc_count": 1
+        },
+        {
+          "key": {
+            "traceId": "trace-333-333",
+            "channel": "0999",
+            "type_code": "1003"
+          },
+          "doc_count": 2
+        },
+        {
+          "key": {
+            "traceId": "trace-444-444",
+            "channel": "0888",
+            "type_code": "1002"
+          },
+          "doc_count": 1
+        },
+        {
+          "key": {
+            "traceId": "trace-555-555",
+            "channel": "0999",
+            "type_code": "1001"
+          },
+          "doc_count": 3
+        },
+        {
+          "key": {
+            "traceId": "trace-abc-123",
+            "channel": "0999",
+            "type_code": "1001"
+          },
+          "doc_count": 2
+        },
+        {
+          "key": {
+            "traceId": "trace-xyz-456",
+            "channel": "0999",
+            "type_code": "1001"
+          },
+          "doc_count": 2
+        }
+      ]
+    }
+  },
         [
-            { key: 'field3', oldValue: 'value3', newValue: 'value3' }, // 无变化
-            { key: 'field4', oldValue: 'value4', newValue: null } // 被删除
-        ],
-        [
-            { key: 'field5', oldValue: null, newValue: 'value5_added' }, // 新增
-            { key: 'field6', oldValue: 'value6', newValue: 'value6_updated' }
-        ]
+  {
+    "key": "1",
+    "traceid": "trace-111-111",
+    "trans_channel": "0999",
+    "trans_type_code": "1001",
+    "success_rate": 1,
+    "count": 1
+  },
+  {
+    "key": "2",
+    "traceid": "trace-222-222",
+    "trans_channel": "0888",
+    "trans_type_code": "1002",
+    "success_rate": 1,
+    "count": 1
+  },
+  {
+    "key": "3",
+    "traceid": "trace-333-333",
+    "trans_channel": "0999",
+    "trans_type_code": "1003",
+    "success_rate": 1,
+    "count": 2
+  },
+  {
+    "key": "4",
+    "traceid": "trace-444-444",
+    "trans_channel": "0888",
+    "trans_type_code": "1002",
+    "success_rate": 1,
+    "count": 1
+  },
+  {
+    "key": "5",
+    "traceid": "trace-555-555",
+    "trans_channel": "0999",
+    "trans_type_code": "1001",
+    "success_rate": 1,
+    "count": 3
+  },
+  {
+    "key": "6",
+    "traceid": "trace-abc-123",
+    "trans_channel": "0999",
+    "trans_type_code": "1001",
+    "success_rate": 1,
+    "count": 2
+  },
+  {
+    "key": "7",
+    "traceid": "trace-xyz-456",
+    "trans_channel": "0999",
+    "trans_type_code": "1001",
+    "success_rate": 1,
+    "count": 2
+  }
+]
     ];
 
     // 获取容器
     const jsonContainer = document.getElementById('json-container');
 
-    // 遍历每组 JSON 数据
+    // 遍历 JSON 数据数组
     jsonDataArray.forEach((jsonData, index) => {
-        // 创建一个 JSON 数据块
+        // 创建一个 JSON 数据框
         const jsonBox = document.createElement('div');
         jsonBox.classList.add('json-box');
 
@@ -105,15 +324,11 @@
         jsonBox.appendChild(title);
 
         // 添加 JSON 数据
-        jsonData.forEach(item => {
-            const paragraph = document.createElement('p');
-            const oldValue = item.oldValue === null ? `<span class="null-value">null</span>` : `<span class="value">${item.oldValue}</span>`;
-            const newValue = item.newValue === null ? `<span class="null-value">null</span>` : `<span class="value">${item.newValue}</span>`;
-            paragraph.innerHTML = `<span class="key">${item.key}</span>: ${oldValue} <span class="arrow">=></span> ${newValue}`;
-            jsonBox.appendChild(paragraph);
-        });
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(jsonData, null, 4); // 格式化 JSON 数据
+        jsonBox.appendChild(pre);
 
-        // 将 JSON 数据块添加到容器
+        // 将 JSON 数据框添加到容器
         jsonContainer.appendChild(jsonBox);
     });
 </script>
