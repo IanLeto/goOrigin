@@ -9,6 +9,7 @@ import (
 	"goOrigin/pkg/processor"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -35,7 +36,6 @@ func (c *Consumer) Exec(ctx context.Context) error {
 		nodes = make([]processor.Node, 0)
 		pipe  = processor.Pipeline{}
 	)
-	//nodes = append(nodes, &processor.MetricProcessor{RetCodes: []string{"AAAAA"}})
 	pipe.Nodes = nodes
 	// 打开日志文件
 	file, err = os.Open(c.FilePath)
@@ -43,13 +43,24 @@ func (c *Consumer) Exec(ctx context.Context) error {
 		return fmt.Errorf("failed to open file: %v", err)
 	}
 	defer func() { _ = file.Close() }()
+	actualPath, err := filepath.Abs(c.FilePath)
+	if err != nil {
+		return fmt.Errorf("获取实际文件路径时出错: %v", err)
+	}
 
+	// 打印实际读取的文件路径
+	logger.Sugar().Infof("实际读取的文件路径: %s", actualPath)
 	// 捕获终止信号
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 
 	// 创建一个带偏移量的缓冲读取器
 	reader := bufio.NewScanner(file)
-
+	//for reader.Scan() {
+	//	logger.Sugar().Info("实际内容", reader.Text())
+	//	//ch <- reader.Bytes()
+	//	// 处理日志行
+	//	//pipe.Start(ctx, ch)
+	//}
 	// 启动一个 Goroutine 来处理新增的日志内容
 	go func() {
 		var ch = make(chan []byte)
@@ -62,9 +73,10 @@ func (c *Consumer) Exec(ctx context.Context) error {
 			default:
 				// 检查是否有新行可读
 				for reader.Scan() {
-					ch <- reader.Bytes()
+					logger.Sugar().Info("实际内容", reader.Text())
+					//ch <- reader.Bytes()
 					// 处理日志行
-					pipe.Start(ctx, ch)
+					//pipe.Start(ctx, ch)
 				}
 
 				// 如果读取完成但没有新内容，等待文件更新
