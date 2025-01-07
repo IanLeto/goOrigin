@@ -8,9 +8,7 @@ import (
 	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/processor"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 	"time"
 )
 
@@ -28,9 +26,9 @@ func (c *Consumer) processLine(line string) {
 // Exec 按行读取日志文件，并实时处理新增的日志内容
 func (c *Consumer) Exec(ctx context.Context) error {
 	var (
-		file    *os.File
-		err     error
-		signals = make(chan os.Signal, 1)
+		file *os.File
+		err  error
+		//signals = make(chan os.Signal, 1)
 	)
 	var (
 		nodes = make([]processor.Node, 0)
@@ -51,8 +49,7 @@ func (c *Consumer) Exec(ctx context.Context) error {
 	// 打印实际读取的文件路径
 	logger.Sugar().Infof("实际读取的文件路径: %s", actualPath)
 	// 捕获终止信号
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-
+	file, err = os.Open(actualPath)
 	// 创建一个带偏移量的缓冲读取器
 	reader := bufio.NewScanner(file)
 	//for reader.Scan() {
@@ -61,6 +58,9 @@ func (c *Consumer) Exec(ctx context.Context) error {
 	//	// 处理日志行
 	//	//pipe.Start(ctx, ch)
 	//}
+	if err := reader.Err(); err != nil {
+		fmt.Println("读取文件时发生错误:", err)
+	}
 	// 启动一个 Goroutine 来处理新增的日志内容
 	go func() {
 		var ch = make(chan []byte)
