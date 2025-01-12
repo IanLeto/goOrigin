@@ -113,6 +113,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		recordGroup.PUT("", recordHandlers.UpdateRecord)
 		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
+		recordGroup.POST("/file", recordHandlers.CreateFileRecord)
 
 	}
 	ginpprof.WrapGroup(recordGroup)

@@ -33,6 +33,30 @@ func CreateRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
+
+func CreateFileRecord(c *gin.Context) {
+	var (
+		req = &V1.CreateIanRecordRequest{}
+		res = &V1.CreateIanRecordResponse{}
+		err error
+		//entity = &entity.Record{}
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+
+	res.Id, err = logic.CreateFileRecord(c, req.Region, req.CreateIanRecordRequestInfo)
+	if err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
 func QueryRecord(c *gin.Context) {
 	var (
 		res    = &V1.QueryIanRecordsResponse{}

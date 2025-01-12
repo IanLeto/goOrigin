@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -11,6 +12,7 @@ import (
 	"goOrigin/internal/model/entity"
 	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/logger"
+	"os"
 )
 
 func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
@@ -48,6 +50,63 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 ERR:
 	return 0, err
 
+}
+
+func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
+	var (
+		tRecord      = &dao.TRecord{}
+		recordEntity = &entity.Record{}
+		logger2, err = logger.InitZap()
+		path         string
+	)
+
+	recordEntity.Name = info.Name
+	recordEntity.Weight = info.Weight
+	recordEntity.Vol1 = info.Vol1
+	recordEntity.Vol2 = info.Vol2
+	recordEntity.Vol3 = info.Vol3
+	recordEntity.Vol4 = info.Vol4
+	recordEntity.Content = info.Content
+	recordEntity.Retire = info.Retire
+	recordEntity.Cost = info.Cost
+	recordEntity.Region = region
+	recordEntity.Dev = info.Dev
+	recordEntity.Coding = info.Coding
+
+	recordEntity.Social = info.Social
+
+	tRecord = repository.ToRecordDAO(recordEntity)
+	switch region {
+	case "win":
+		path = "/home/ian/workdir/goOrigin/records.json"
+	}
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	jsonData, err := json.Marshal(tRecord)
+	if err != nil {
+		logger2.Error(fmt.Sprintf("failed to open file: %s", err))
+		goto ERR
+	}
+
+	// 检查文件是否存在,如果不存在则创建
+
+	defer file.Close()
+
+	// 将JSON数据写入文件末尾
+	if _, err := file.Write(jsonData); err != nil {
+		logger2.Error(fmt.Sprintf("failed to write JSON data to file: %s", err))
+		goto ERR
+	}
+
+	// 添加换行符,方便下一次写入
+	if _, err := file.WriteString("\n"); err != nil {
+		logger2.Error(fmt.Sprintf("failed to write newline character to file: %s", err))
+		goto ERR
+	}
+
+	return 0, err
+
+ERR:
+	return 0, err
 }
 
 func UpdateRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
