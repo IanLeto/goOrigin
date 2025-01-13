@@ -12,9 +12,9 @@ func ToOdaMetricEntity(tRecord *dao.ODAMetricMessage) *entity.ODAMetricEntity {
 
 	return &entity.ODAMetricEntity{
 		Interval: tRecord.Interval,
-		Dimension: &entity.Dimension{
+		PredefinedDimensions: &entity.PredefinedDimensions{
 			Cluster: tRecord.Dimension.Cluster,
-			
+
 			TransType:     tRecord.Dimension.TransType,
 			TransTypeCode: tRecord.Dimension.TransTypeCode,
 			TransTypeDesc: tRecord.Dimension.TransTypeDesc,
@@ -40,14 +40,14 @@ func ToOdaMetricMessage(tRecord *entity.ODAMetricEntity) *dao.ODAMetricMessage {
 	return &dao.ODAMetricMessage{
 		Interval: tRecord.Interval,
 		Dimension: &dao.Dimension{
-			Cluster: tRecord.Dimension.Cluster,
-			//Src:           tRecord.Dimension.Src,
-			//Psrc:          tRecord.Dimension.Psrc,
-			TransType:     tRecord.Dimension.TransType,
-			TransTypeCode: tRecord.Dimension.TransTypeCode,
-			TransTypeDesc: tRecord.Dimension.TransTypeDesc,
-			TransChannel:  tRecord.Dimension.TransChannel,
-			RetCode:       tRecord.Dimension.RetCode,
+			Cluster: tRecord.PredefinedDimensions.Cluster,
+			//Src:           tRecord.PredefinedDimensions.Src,
+			//Psrc:          tRecord.PredefinedDimensions.Psrc,
+			TransType:     tRecord.PredefinedDimensions.TransType,
+			TransTypeCode: tRecord.PredefinedDimensions.TransTypeCode,
+			TransTypeDesc: tRecord.PredefinedDimensions.TransTypeDesc,
+			TransChannel:  tRecord.PredefinedDimensions.TransChannel,
+			RetCode:       tRecord.PredefinedDimensions.RetCode,
 		},
 		Indicator: &dao.Indicator{
 			SuccessCount:  tRecord.Indicator.SuccessCount,

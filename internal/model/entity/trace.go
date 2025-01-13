@@ -51,8 +51,7 @@ type SpanContainerInfoEntity struct {
 
 type SpanTransTypeInfoEntity struct {
 	Cluster       string `json:"cluster"`
-	Src           string `json:"src"`
-	Psrc          string `json:"psrc"`
+	SvcName       string `json:"svc_name"`
 	TransType     string `json:"trans_type"`
 	TransTypeCode string `json:"trans_type_code"`
 	TransTypeDesc string `json:"trans_type_desc"`

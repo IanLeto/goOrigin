@@ -191,12 +191,17 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		topov2Group.GET("list", topoHandlers.GetTopoList)
 	}
+	odav2Group := g.Group("v2/pub")
+	{
+		odav2Group.GET("list", nil)
+	}
 	metricGroup := g.Group("v1/metric")
 	{
 		ops := promhttp.HandlerOpts{
 			EnableOpenMetrics: false,
 		}
 		metricGroup.GET("", gin.WrapH(promhttp.HandlerFor(moniter.Reg, ops)))
+
 	}
 	return g
 }

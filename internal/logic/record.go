@@ -29,7 +29,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Vol3 = info.Vol3
 	recordEntity.Vol4 = info.Vol4
 	recordEntity.Content = info.Content
-	recordEntity.Retire = info.Retire
 	recordEntity.Cost = info.Cost
 	recordEntity.Region = region
 	recordEntity.Dev = info.Dev
@@ -67,7 +66,6 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 	recordEntity.Vol3 = info.Vol3
 	recordEntity.Vol4 = info.Vol4
 	recordEntity.Content = info.Content
-	recordEntity.Retire = info.Retire
 	recordEntity.Cost = info.Cost
 	recordEntity.Region = region
 	recordEntity.Dev = info.Dev

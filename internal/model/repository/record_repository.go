@@ -28,7 +28,6 @@ func ToRecordEntity(tRecord *dao.TRecord) *entity.Record {
 		Name:       tRecord.Name,
 		Weight:     tRecord.Weight,
 		Content:    tRecord.Content,
-		Retire:     tRecord.Retire,
 		Cost:       tRecord.Cost,
 		Vol1:       tRecord.Vol1,
 		Vol2:       tRecord.Vol2,
