@@ -11,6 +11,7 @@ import (
 	"goOrigin/config"
 	elastic2 "goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
@@ -207,7 +208,7 @@ func GetTopoList(c *gin.Context, region string) (res []*V1.GetTopoResponse, err 
 		logger = logger2.NewLogger()
 		node   *entity.NodeEntity
 		conn   *elastic2.EsV2Conn
-		doc    *elastic2.EsDoc
+		doc    *dao.EsDoc
 	)
 	var (
 		queries map[string]interface{}

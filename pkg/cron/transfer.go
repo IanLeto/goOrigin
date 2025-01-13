@@ -19,7 +19,7 @@ import (
 )
 
 type Transfer struct {
-	*entity.Record
+	*entity.RecordEntity
 	Alias string
 }
 
@@ -80,7 +80,7 @@ func (t *Transfer) Exec2(ctx context.Context) error {
 	)
 
 	// 将Record结构体转换为JSON格式的字节数组
-	body, err := json.Marshal(t.Record)
+	body, err := json.Marshal(t.RecordEntity)
 	if err != nil {
 		logrus.Errorf("Failed to marshal record: %v", err)
 		return err
@@ -150,8 +150,8 @@ func TransferCornFactory2() error {
 
 			for _, recordTable := range recordTables {
 				GTM.AddJob(&Transfer{
-					Record: repository.ToRecordEntity(recordTable),
-					Alias:  transferConf.ES.Alias,
+					RecordEntity: repository.ToRecordEntity(recordTable),
+					Alias:        transferConf.ES.Alias,
 				})
 			}
 

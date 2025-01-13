@@ -2,7 +2,7 @@ package entity
 
 import "github.com/prometheus/client_golang/prometheus"
 
-type Record struct {
+type RecordEntity struct {
 	Name       string  `json:"name" bson:"name"`
 	Weight     float32 `json:"weight" bson:"weight"`
 	IsFuck     bool    `json:"is_fuck"`

@@ -18,7 +18,7 @@ import (
 func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
-		recordEntity = &entity.Record{}
+		recordEntity = &entity.RecordEntity{}
 		logger2, err = logger.InitZap()
 	)
 
@@ -54,7 +54,7 @@ ERR:
 func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
-		recordEntity = &entity.Record{}
+		recordEntity = &entity.RecordEntity{}
 		logger2, err = logger.InitZap()
 		path         string
 	)
@@ -107,7 +107,7 @@ ERR:
 	return 0, err
 }
 
-func UpdateRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
 	var (
 		tRecord = &dao.TRecord{}
 	)
@@ -124,7 +124,7 @@ ERR:
 
 }
 
-func DeleteRecord(ctx *gin.Context, record *entity.Record) (id uint, err error) {
+func DeleteRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
 	var (
 		tRecord = &dao.TRecord{}
 	)
@@ -141,11 +141,11 @@ ERR:
 
 }
 
-func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64) ([]*entity.Record, error) {
+func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64) ([]*entity.RecordEntity, error) {
 	var (
 		recordEntities = make([]*dao.TRecord, 0)
 		err            error
-		res            = make([]*entity.Record, 0)
+		res            = make([]*entity.RecordEntity, 0)
 	)
 
 	db := mysql.GlobalMySQLConns[region]

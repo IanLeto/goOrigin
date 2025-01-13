@@ -5,7 +5,7 @@ import (
 	"goOrigin/internal/model/entity"
 )
 
-func ToRecordDAO(record *entity.Record) *dao.TRecord {
+func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
 	return &dao.TRecord{
 		Name:    record.Name,
 		Weight:  record.Weight,
@@ -23,8 +23,8 @@ func ToRecordDAO(record *entity.Record) *dao.TRecord {
 	}
 }
 
-func ToRecordEntity(tRecord *dao.TRecord) *entity.Record {
-	return &entity.Record{
+func ToRecordEntity(tRecord *dao.TRecord) *entity.RecordEntity {
+	return &entity.RecordEntity{
 		Name:       tRecord.Name,
 		Weight:     tRecord.Weight,
 		Content:    tRecord.Content,

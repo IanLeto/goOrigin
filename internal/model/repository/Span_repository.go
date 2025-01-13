@@ -17,7 +17,6 @@ func ToOdaMetricEntity(tRecord *dao.ODAMetricMessage) *entity.ODAMetricEntity {
 
 			TransType:     tRecord.Dimension.TransType,
 			TransTypeCode: tRecord.Dimension.TransTypeCode,
-			TransTypeDesc: tRecord.Dimension.TransTypeDesc,
 			TransChannel:  tRecord.Dimension.TransChannel,
 			RetCode:       tRecord.Dimension.RetCode,
 		},
@@ -45,7 +44,6 @@ func ToOdaMetricMessage(tRecord *entity.ODAMetricEntity) *dao.ODAMetricMessage {
 			//Psrc:          tRecord.PredefinedDimensions.Psrc,
 			TransType:     tRecord.PredefinedDimensions.TransType,
 			TransTypeCode: tRecord.PredefinedDimensions.TransTypeCode,
-			TransTypeDesc: tRecord.PredefinedDimensions.TransTypeDesc,
 			TransChannel:  tRecord.PredefinedDimensions.TransChannel,
 			RetCode:       tRecord.PredefinedDimensions.RetCode,
 		},

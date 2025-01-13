@@ -15,7 +15,7 @@ func CreateRecord(c *gin.Context) {
 		req = &V1.CreateIanRecordRequest{}
 		res = &V1.CreateIanRecordResponse{}
 		err error
-		//entity = &entity.Record{}
+		//entity = &entity.RecordEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
@@ -39,7 +39,7 @@ func CreateFileRecord(c *gin.Context) {
 		req = &V1.CreateIanRecordRequest{}
 		res = &V1.CreateIanRecordResponse{}
 		err error
-		//entity = &entity.Record{}
+		//entity = &entity.RecordEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
@@ -60,7 +60,7 @@ ERR:
 func QueryRecord(c *gin.Context) {
 	var (
 		res    = &V1.QueryIanRecordsResponse{}
-		result []*entity.Record
+		result []*entity.RecordEntity
 		err    error
 	)
 	startTime, _ := conv.Int64(c.Query("start_time"))
@@ -86,7 +86,7 @@ func UpdateRecord(c *gin.Context) {
 		req    = &V1.UpdateIanRecordRequest{}
 		res    = &V1.UpdateIanRecordResponse{}
 		err    error
-		record = &entity.Record{}
+		record = &entity.RecordEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)

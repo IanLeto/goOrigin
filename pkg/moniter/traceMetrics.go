@@ -95,8 +95,6 @@ func SetODAMetrics(metric *entity.ODAMetricEntity) {
 		"trans_type_code": metric.TransTypeCode,
 		"trans_channel":   metric.TransChannel,
 		"svc_name":        metric.SvcName,
-		"project_name":    metric.ProjectName,
-		"pod_name":        metric.PodName,
 	}
 
 	// 设置指标值
