@@ -481,7 +481,7 @@ ERR:
 ////		records []*dao.TRecord
 ////		where   = "1 = 1"
 ////		res     = &V1.SelectIanRecordResponse{
-////			Items: []V1.IanRecordInfo{},
+////			Items: []V1.RecordInfo{},
 ////		}
 ////	)
 ////	if name != "" {
@@ -501,7 +501,7 @@ ERR:
 ////		return nil, err
 ////	}
 ////	for _, record := range records {
-////		res.Items = append(res.Items, V1.IanRecordInfo{
+////		res.Items = append(res.Items, V1.RecordInfo{
 ////			Id:         record.ID,
 ////			CreateTime: record.CreateTime,
 ////			ModifyTime: record.ModifyTime,
@@ -562,7 +562,7 @@ ERR:
 //		return
 //	}
 //	res = &V1.UpdateIanRecordResponse{
-//		Item: V1.IanRecordInfo{
+//		Item: V1.RecordInfo{
 //			GetName:       record.GetName,
 //			Weight:     record.Weight,
 //			BF:         record.BF,

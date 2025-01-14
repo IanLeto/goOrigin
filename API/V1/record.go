@@ -122,14 +122,14 @@ type QueryIanRecordsResponse struct {
 }
 
 type UpdateIanRecordRequest struct {
-	Info IanRecordInfo `json:"info"`
+	Info RecordInfo `json:"info"`
 }
 
 type UpdateIanRecordResponse struct {
-	//Item IanRecordInfo `json:"item"`
+	//Item RecordInfo `json:"item"`
 	ID uint `json:"id"`
 }
-type IanRecordInfo struct {
+type RecordInfo struct {
 	Id         uint              `json:"id"`
 	CreateTime int64             `json:"create_time"`
 	ModifyTime int64             `json:"modify_time"`
@@ -140,7 +140,6 @@ type IanRecordInfo struct {
 	Runner     int               `json:"runner"`
 	Support    int               `json:"support"`
 	Squat      int               `json:"squat"`
-	EasyBurpee int               `json:"easy_burpee"`
 	Chair      int               `json:"chair"`
 	Stretch    int               `json:"stretch"`
 	Vol1       string            `json:"vol1"`
