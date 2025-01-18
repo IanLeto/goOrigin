@@ -64,36 +64,39 @@ var DataConv = func(value []byte) ([]byte, error) {
 
 }
 
-var DataConvStage = func(value chan []byte) chan []byte {
-	var (
-		logEntity *entity.KafkaLogEntity
-		res       = make(chan []byte)
-		err       error
-	)
+var DataConvStage = func(value chan []byte, workers int) chan []byte {
+	res := make(chan []byte)
+
+	// 启动指定数量的 worker goroutines
 	go func() {
 		defer close(res)
+		sem := make(chan struct{}, workers) // 控制并发度
 		for i := range value {
-			select {
-			default:
-				err = json.Unmarshal(i, logEntity)
+			sem <- struct{}{} // 占用一个 worker
+			go func(data []byte) {
+				defer func() { <-sem }() // 释放 worker
+				logEntity := &entity.KafkaLogEntity{}
+				err := json.Unmarshal(data, logEntity)
 				if err != nil {
-					logger.Sugar().Errorf("file value: %s", err)
-
+					return
 				}
 				if logEntity.Trans.RetCode != "0000" {
 					logEntity.TraceId = "11"
 				}
 				ephValue, err := json.Marshal(logEntity)
 				if err != nil {
-					logger.Sugar().Errorf("file value: %s", err)
+					return
 				}
 				res <- ephValue
-			}
+			}(i)
+		}
+		// 等待所有 goroutines 结束
+		for i := 0; i < cap(sem); i++ {
+			sem <- struct{}{}
 		}
 	}()
 
 	return res
-
 }
 
 func FileWrite(filePath string, value []byte) ([]byte, error) {
