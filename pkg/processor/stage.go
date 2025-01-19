@@ -110,3 +110,28 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 	_, err = file.Write([]byte(value))
 	return value, err
 }
+
+var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan []byte {
+	var (
+		file *os.File
+		res  = make(chan []byte)
+	)
+	go func() {
+		defer close(res)
+		for _, p := range filePath {
+			select {
+			case <-done:
+				return
+			default:
+				file, err = os.OpenFile(p, os.O_CREATE, 0644)
+				value, err := io.ReadAll(file)
+				logger.Sugar().Infof("file value: %s", string(value))
+				if err != nil {
+					logger.Sugar().Errorf("file value: %s", err)
+				}
+				res <- value
+			}
+		}
+	}()
+	return res
+}

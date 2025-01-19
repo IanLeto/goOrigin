@@ -2,6 +2,7 @@ package processor_test
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/suite"
 	"math/rand"
 	"sync"
 	"testing"
@@ -130,4 +131,23 @@ func BenchmarkDataConvStageWithPool(b *testing.B) {
 			// 消费结果
 		}
 	}
+}
+
+// StageSuite :
+type StageSuite struct {
+	suite.Suite
+}
+
+func (s *StageSuite) SetupTest() {
+
+}
+
+// TestMarshal :
+func (s *StageSuite) TestConfig() {
+
+}
+
+// TestHttpClient :
+func TestViperConfiguration(t *testing.T) {
+	suite.Run(t, new(StageSuite))
 }
