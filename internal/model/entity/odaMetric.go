@@ -2,12 +2,6 @@ package entity
 
 import "time"
 
-type SpanEntity struct {
-}
-
-type SuccessRateEntity struct {
-}
-
 type ODAMetricEntity struct {
 	Interval time.Duration `json:"interval"`
 	*PredefinedDimensions
