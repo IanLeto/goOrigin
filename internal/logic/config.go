@@ -7,6 +7,7 @@ import (
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 func GetConfig(c *gin.Context, path string) ([]byte, error) {
@@ -17,8 +18,20 @@ func GetConfig(c *gin.Context, path string) ([]byte, error) {
 		content []byte
 	)
 	switch path {
+
 	case "":
 		file, err = os.OpenFile("config/configv2.yaml", os.O_RDONLY, 0644)
+		if err != nil {
+			logger.Error("打开配置文件失败", zap.String("path", path), zap.Error(err))
+			goto ERR
+		}
+	default:
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			logger.Error("转换路径失败", zap.String("path", absPath), zap.Error(err))
+			goto ERR
+		}
+		file, err = os.OpenFile(path, os.O_RDONLY, 0644)
 		if err != nil {
 			logger.Error("打开配置文件失败", zap.String("path", path), zap.Error(err))
 			goto ERR
