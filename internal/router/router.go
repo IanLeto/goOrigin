@@ -203,5 +203,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		metricGroup.GET("", gin.WrapH(promhttp.HandlerFor(moniter.Reg, ops)))
 
 	}
+	linktraceGroup := g.Group("v1/linktrace")
+	{
+		linktraceGroup.POST("dimension:", nil)
+	}
 	return g
 }

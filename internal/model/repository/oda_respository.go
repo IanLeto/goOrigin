@@ -2,35 +2,60 @@ package repository
 
 import (
 	"encoding/json"
+	"goOrigin/API/V1"
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"time"
 )
 
-// 从 ODAMetricEntity 转换为 TODAMetric
+// SvcTransAlertRecordInfo 转 ODAMetricEntity
+func ToODAMetricEntityFromInfo(info *V1.SvcTransAlertRecordInfo) *entity.ODAMetricEntity {
+	return &entity.ODAMetricEntity{
+		Interval: time.Duration(info.Interval), // 直接赋值
+		PredefinedDimensions: &entity.PredefinedDimensions{
+			Cluster:       info.Cluster,
+			TransType:     info.TransType,
+			TransTypeCode: info.TransTypeCode,
+			TransChannel:  info.TransChannel,
+			RetCode:       info.RetCode,
+			SvcName:       info.SvcName,
+		},
+		Indicator: &entity.Indicator{
+			SuccessCount:  info.SuccessCount,
+			SuccessRate:   info.SuccessRate,
+			FailedCount:   info.FailedCount,
+			FailedRate:    info.FailedRate,
+			ResponseCount: info.ResponseCount,
+			ResponseRate:  info.ResponseRate,
+		},
+		CustomDimensions: info.CustomDimensions, // 直接赋值为切片
+	}
+}
+
+// ODAMetricEntity 转 TODAMetric
 func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TODAMetric {
 	// 将 CustomDimensions 转换为 JSON 字符串
 	customDimensions, _ := json.Marshal(metric.CustomDimensions)
 
 	return &dao.TODAMetric{
 		Interval:         int64(metric.Interval.Milliseconds()), // 将 time.Duration 转换为毫秒
-		Cluster:          metric.Cluster,
-		TransType:        metric.TransType,
-		TransTypeCode:    metric.TransTypeCode,
-		TransChannel:     metric.TransChannel,
-		RetCode:          metric.RetCode,
-		SvcName:          metric.SvcName,
-		SuccessCount:     metric.SuccessCount,
-		SuccessRate:      metric.SuccessRate,
-		FailedCount:      metric.FailedCount,
-		FailedRate:       metric.FailedRate,
-		ResponseCount:    metric.ResponseCount,
-		ResponseRate:     metric.ResponseRate,
+		Cluster:          metric.PredefinedDimensions.Cluster,
+		TransType:        metric.PredefinedDimensions.TransType,
+		TransTypeCode:    metric.PredefinedDimensions.TransTypeCode,
+		TransChannel:     metric.PredefinedDimensions.TransChannel,
+		RetCode:          metric.PredefinedDimensions.RetCode,
+		SvcName:          metric.PredefinedDimensions.SvcName,
+		SuccessCount:     metric.Indicator.SuccessCount,
+		SuccessRate:      metric.Indicator.SuccessRate,
+		FailedCount:      metric.Indicator.FailedCount,
+		FailedRate:       metric.Indicator.FailedRate,
+		ResponseCount:    metric.Indicator.ResponseCount,
+		ResponseRate:     metric.Indicator.ResponseRate,
 		CustomDimensions: string(customDimensions), // 转换为字符串存储
 	}
 }
 
-// 从 TODAMetric 转换为 ODAMetricEntity
+// TODAMetric 转 ODAMetricEntity
 func ToODAMetricEntity(tMetric *dao.TODAMetric) *entity.ODAMetricEntity {
 	// 将 CustomDimensions 从 JSON 字符串转换为切片
 	var customDimensions []string
