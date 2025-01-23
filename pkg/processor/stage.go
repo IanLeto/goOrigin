@@ -1,10 +1,13 @@
 package processor
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
+	"time"
 )
 
 // FileRead Stage is a stage in the pipeline
@@ -111,27 +114,55 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 	return value, err
 }
 
-var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan []byte {
-	var (
-		file *os.File
-		res  = make(chan []byte)
-	)
+var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan string {
+	res := make(chan string) // 输出通道，用于发送读取到的行内容
+
 	go func() {
-		defer close(res)
+		defer close(res) // 确保通道在退出时关闭
+
 		for _, p := range filePath {
-			select {
-			case <-done:
-				return
-			default:
-				file, err = os.OpenFile(p, os.O_CREATE, 0644)
-				value, err := io.ReadAll(file)
-				logger.Sugar().Infof("file value: %s", string(value))
-				if err != nil {
-					logger.Sugar().Errorf("file value: %s", err)
+			// 打开文件（只读模式）
+			file, err := os.Open(p)
+			if err != nil {
+				fmt.Printf("Failed to open file %s: %v\n", p, err)
+				continue
+			}
+			defer func() { _ = file.Close() }()
+
+			// 创建 bufio.Scanner 按行读取
+			scanner := bufio.NewScanner(file)
+
+			// 处理文件内容
+			for {
+				// 检查是否有 done 信号
+				select {
+				case <-done:
+					return
+				default:
+					for scanner.Scan() {
+						line := scanner.Text() // 读取当前行
+						select {
+						case res <- line: // 将行内容发送到通道
+						case <-done: // 如果收到 done 信号，退出
+							return
+						}
+					}
+
+					// 检查是否遇到错误
+					if err := scanner.Err(); err != nil {
+						fmt.Printf("Error reading file %s: %v\n", p, err)
+						break
+					}
+
+					// 如果到达文件末尾，暂停一段时间等待文件写入新内容
+					time.Sleep(100 * time.Millisecond)
 				}
-				res <- value
+
+				// 如果有新行，发送到通道
+
 			}
 		}
 	}()
+
 	return res
 }

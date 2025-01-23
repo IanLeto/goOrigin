@@ -2,7 +2,9 @@ package processor_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/suite"
+	"goOrigin/pkg/processor"
 	"math/rand"
 	"sync"
 	"testing"
@@ -133,17 +135,27 @@ func BenchmarkDataConvStageWithPool(b *testing.B) {
 	}
 }
 
+type filePathPipe struct {
+	filePath []string
+}
+
 // StageSuite :
 type StageSuite struct {
 	suite.Suite
+	filePathPipe *filePathPipe
 }
 
 func (s *StageSuite) SetupTest() {
-
+	s.filePathPipe = &filePathPipe{}
+	s.filePathPipe.filePath = []string{"/home/ian/workdir/goOrigin/pkg/processor/span.log"}
 }
 
 // TestMarshal :
 func (s *StageSuite) TestConfig() {
+	var ch = make(chan interface{})
+	for v := range processor.FileReadHead(ch, s.filePathPipe.filePath[0]) {
+		fmt.Println(v)
+	}
 
 }
 
