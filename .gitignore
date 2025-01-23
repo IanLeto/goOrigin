@@ -62,3 +62,4 @@ main
 go.mod
 go.sum
 goOrigin
+./.idea
