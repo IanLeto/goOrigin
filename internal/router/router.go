@@ -94,7 +94,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		indexGroup.GET("ping", indexHandlers.Ping)
 		indexGroup.GET("config", indexHandlers.ConfigInfo)
 		indexGroup.GET("configCheck", indexHandlers.ConfigCheck)
-		indexGroup.GET("podInfo", indexHandlers.ConfigCheck)
+		//indexGroup.GET("podInfo", indexHandlers.ConfigCheck)
 		indexGroup.GET("userInfo", indexHandlers.GetUser)
 		indexGroup.GET("", indexHandlers.HttpProxy)
 		//indexGroup.GET("proxy", indexHandlers.HttpProxy)
