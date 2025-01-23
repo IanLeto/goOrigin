@@ -26,3 +26,6 @@ type Indicator struct {
 	ResponseCount int `json:"response_count"`
 	ResponseRate  int `json:"response_rate"`
 }
+
+type SuccessRateEntity struct {
+}

@@ -391,5 +391,5 @@ func GetCurrentLogs(c *gin.Context, cluster string, info *V1.GetLogsReqInfo) (*V
 }
 
 func init() {
-	utils.NoError(k8s.InitK8s())
+	//utils.NoError(k8s.InitK8s())
 }

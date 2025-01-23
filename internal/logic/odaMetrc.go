@@ -11,6 +11,15 @@ import (
 	"strings"
 )
 
+func CreateSvcTransAlertRecord(c *gin.Context, region string, info *V1.SvcTransAlertRecordInfo) {
+	//var (
+	//	record  = &entity.ODAMetricEntity{}
+	//	tRecord = &dao.TODAMetric{}
+	//	err     error
+	//)
+	panic(1)
+}
+
 // OdaSuccessAndFailedRateMetric 返回成功和失败的比率
 func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
 	var (
@@ -84,13 +93,13 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 	// todo
 	value := []byte{}
 	//value, err := conn.Search(alias, query)
-	log.Debug(fmt.Sprintf("query => %s", func() string {
+	logger.Debug(fmt.Sprintf("query => %s", func() string {
 		//s, _ := json.MarshalIndent(query, "", "  ")
 		s, _ := json.Marshal(query)
 		return string(s)
 	}()))
 	if err != nil {
-		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -98,7 +107,7 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 	}
 	err = utils.JsonToStruct(value, projectDocEntity)
 	if err != nil {
-		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -173,7 +182,7 @@ func OdaSuccessCountAndFailedCountMetric(ctx *gin.Context, region string, info *
 	}
 	value, err := conn.Search(alias, query)
 	if err != nil {
-		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -181,7 +190,7 @@ func OdaSuccessCountAndFailedCountMetric(ctx *gin.Context, region string, info *
 	}
 	err = utils.JsonToStruct(value, projectDocEntity)
 	if err != nil {
-		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -295,7 +304,7 @@ func OdaRespRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqI
 	}
 	value, err := conn.Search(alias, query)
 	if err != nil {
-		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -303,7 +312,7 @@ func OdaRespRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqI
 	}
 	err = utils.JsonToStruct(value, successRateEntity)
 	if err != nil {
-		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -377,7 +386,7 @@ func OdaSuccessCountMetric(ctx *gin.Context, region string, info *V1.SuccessRate
 	}
 	value, err := conn.Search(alias, query)
 	if err != nil {
-		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -385,7 +394,7 @@ func OdaSuccessCountMetric(ctx *gin.Context, region string, info *V1.SuccessRate
 	}
 	err = utils.JsonToStruct(value, successRateEntity)
 	if err != nil {
-		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))

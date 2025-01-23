@@ -11,7 +11,8 @@ import (
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/internal/model/repository"
-	"goOrigin/pkg/logger"
+	//"goOrigin/pkg/logger"
+
 	"os"
 )
 
@@ -19,7 +20,7 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
-		logger2, err = logger.InitZap()
+		//logger, err = logger.InitZap()
 	)
 
 	recordEntity.Name = info.Name
@@ -40,7 +41,7 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	db := mysql.GlobalMySQLConns[region]
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
-		logger2.Error(fmt.Sprintf("create record failed %s: %s", err, res))
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, res))
 		goto ERR
 	}
 	//_, err = es.Create("ian", tRecord)
@@ -55,8 +56,8 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
-		logger2, err = logger.InitZap()
-		path         string
+
+		path string
 	)
 
 	recordEntity.Name = info.Name
@@ -81,7 +82,7 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	jsonData, err := json.Marshal(tRecord)
 	if err != nil {
-		logger2.Error(fmt.Sprintf("failed to open file: %s", err))
+		logger.Error(fmt.Sprintf("failed to open file: %s", err))
 		goto ERR
 	}
 
@@ -91,13 +92,13 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 
 	// 将JSON数据写入文件末尾
 	if _, err := file.Write(jsonData); err != nil {
-		logger2.Error(fmt.Sprintf("failed to write JSON data to file: %s", err))
+		logger.Error(fmt.Sprintf("failed to write JSON data to file: %s", err))
 		goto ERR
 	}
 
 	// 添加换行符,方便下一次写入
 	if _, err := file.WriteString("\n"); err != nil {
-		logger2.Error(fmt.Sprintf("failed to write newline character to file: %s", err))
+		logger.Error(fmt.Sprintf("failed to write newline character to file: %s", err))
 		goto ERR
 	}
 
@@ -189,7 +190,7 @@ ERR:
 //	var (
 //		client *elastic.Client
 //		res    *elastic.IndexResponse
-//		logger = logger2.NewLogger()
+//		logger = logger.NewLogger()
 //	)
 //	client, err = clients.NewESClient()
 //	defer func() { client.CloseIndex("ian") }()
@@ -290,7 +291,7 @@ ERR:
 //		queries []elastic.Query
 //		client  *elastic.Client
 //		daoRes  *elastic.SearchResult
-//		logger  = logger2.NewLogger()
+//		logger  = logger.NewLogger()
 //	)
 //	client, err = clients.NewESClient()
 //	defer func() { client.CloseIndex("ian") }()
@@ -367,7 +368,7 @@ ERR:
 //		daoRes  *elastic.SearchResult
 //		ian     entity.Ian
 //		err     error
-//		logger  = logger2.NewLogger()
+//		logger  = logger.NewLogger()
 //	)
 //	client, err = clients.NewESClient()
 //	if err != nil {

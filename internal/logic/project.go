@@ -6,12 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/model/entity"
-	"goOrigin/pkg/logger"
 	"goOrigin/pkg/utils"
 	"strings"
 )
-
-var log, _ = logger.InitZap()
 
 func AggProject(ctx *gin.Context, region string, project string) (*entity.ProjectAggDocEntity, error) {
 	var (
@@ -60,7 +57,7 @@ func AggProject(ctx *gin.Context, region string, project string) (*entity.Projec
 	}
 	value, err := conn.Search(alias, query)
 	if err != nil {
-		log.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
@@ -68,7 +65,7 @@ func AggProject(ctx *gin.Context, region string, project string) (*entity.Projec
 	}
 	err = utils.JsonToStruct(value, projectDocEntity)
 	if err != nil {
-		log.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
+		logger.Error(fmt.Sprintf("conv record failed %s: %s", err, func() string {
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
