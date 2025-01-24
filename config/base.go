@@ -102,6 +102,28 @@ func NewV2Config() *V2Config {
 	}
 }
 
+func NewV2ConfigFromPath(p string) *V2Config {
+	viper.SetConfigFile(p)
+	// 创建一个临时 Viper 实例来读取当前配置文件
+	tempV := viper.New()
+	tempV.SetConfigFile(p)
+	if err := tempV.ReadInConfig(); err != nil {
+		logger2.Sugar().Errorf("读取配置文件 %s 时出错: %v", p, err)
+	}
+
+	// 将当前配置文件的内容合并到主配置中
+	configMap := tempV.AllSettings()
+	if err := viper.MergeConfigMap(configMap); err != nil {
+		logger2.Sugar().Errorf("读取配置文件 %s 时出错: %v", p, err)
+	}
+	return &V2Config{
+		Base:      NewBaseConfig(),
+		Env:       NewComponentConfig(),
+		Component: viper.GetStringSlice("component"),
+		Cron:      viper.GetStringSlice("cron"),
+	}
+}
+
 func (c *Config) watchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {

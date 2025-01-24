@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/dao/prometheus"
 	"goOrigin/pkg/utils"
-	"os"
 )
 
 func paramsStr(v string, err error) string {
@@ -37,12 +35,12 @@ var RootCmd = &cobra.Command{
 	Use:   "tool", // 这个是命令的名字,跟使用没啥关系
 	Short: "",
 	Run: func(cmd *cobra.Command, args []string) {
-		if v, err := cmd.Flags().GetBool("pass"); err != nil && v {
-			utils.NoError(os.Setenv("PASS", "true"))
-		}
-		if v, err := cmd.Flags().GetString("env"); err != nil {
-			config.BaseInfo["env"] = v
-		}
+		//if v, err := cmd.Flags().GetBool("pass"); err != nil && v {
+		//	utils.NoError(os.Setenv("PASS", "true"))
+		//}
+		//if v, err := cmd.Flags().GetString("env"); err != nil {
+		//	config.BaseInfo["env"] = v
+		//}
 
 		configPath := paramsStr(cmd.Flags().GetString("config"))
 		PreRun(configPath)
@@ -53,6 +51,7 @@ var RootCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(configCmd)
+	RootCmd.AddCommand(migrateCmd)
 	RootCmd.Flags().StringP("config", "c", "", "config")
 	RootCmd.Flags().BoolP("pass", "p", false, "pass")
 	RootCmd.Flags().Bool("debug", false, "debug")

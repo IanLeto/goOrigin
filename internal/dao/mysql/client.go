@@ -19,7 +19,6 @@ var GlobalMySQLConns = map[string]*MySQLConn{}
 func NewMySQLConns() error {
 	conf := config.ConfV2
 	for region, info := range conf.Env {
-
 		GlobalMySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
 		if GlobalMySQLConns[region].IsMigrate {
 			err := GlobalMySQLConns[region].Migrate()
@@ -27,7 +26,6 @@ func NewMySQLConns() error {
 				logrus.Errorf("mysql migrate error: %v", err)
 			}
 		}
-
 	}
 	return nil
 }
@@ -38,7 +36,8 @@ type MySQLConn struct {
 }
 
 func (m *MySQLConn) Migrate() error {
-	return m.Client.AutoMigrate(dao.TRecord{})
+	err := m.Client.AutoMigrate(dao.TRecord{}, dao.TODAMetric{})
+	return err
 }
 
 func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {

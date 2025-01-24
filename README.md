@@ -33,7 +33,7 @@
     open .
     ./ori --init --config /home/ian/workdir/cc/goOrigin/conn/config.yaml
     migrate
-    ./ori --migrate --config /home/ian/workdir/cc/goOrigin/conn/config.yaml
+    ./ori --migrate --config /Users/ian/workdir/cc/goOrigin/configV2.yaml
     初始化es 模板
     ./ori --initEs --config /home/ian/workdir/cc/goOrigin/conn/config.yaml --data /home/ian/workdir/cc/goOrigin/conn/elasticsearch.json
 
