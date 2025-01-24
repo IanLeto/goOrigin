@@ -33,7 +33,7 @@
     open .
     ./ori --init --config /home/ian/workdir/cc/goOrigin/conn/config.yaml
     migrate
-    ./ori --migrate --config /Users/ian/workdir/cc/goOrigin/configV2.yaml
+    ./ori migrate --path /Users/ian/workdir/cc/goOrigin/configV2.yaml -p root -u root --host localhost:3306 --db go_ori --type mysql
     初始化es 模板
     ./ori --initEs --config /home/ian/workdir/cc/goOrigin/conn/config.yaml --data /home/ian/workdir/cc/goOrigin/conn/elasticsearch.json
 
@@ -44,5 +44,5 @@
     docker push ianleto/goorigin:$(git rev-parse --short HEAD) &&\
     docker images | grep ianleto/ianhello | awk '{print $3}' | xargs docker rmi -f
     docker ps -a | grep 10c831814d55 | awk '{print $1}' | xargs docker rm -f
-
+    
 ####      

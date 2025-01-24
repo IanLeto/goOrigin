@@ -3,6 +3,8 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"goOrigin/config"
+	"goOrigin/internal/dao"
+	"goOrigin/internal/dao/mysql"
 	"goOrigin/pkg/utils"
 	"os"
 )
@@ -17,7 +19,7 @@ var migrateCmd = &cobra.Command{
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetInt("port")
 		user, _ := cmd.Flags().GetString("user")
-		//password, _ := cmd.Flags().GetString("password")
+		password, _ := cmd.Flags().GetString("password")
 		dbName, _ := cmd.Flags().GetString("db") // 对于 MySQL 来说是数据库名
 
 		// 设置配置路径
@@ -30,10 +32,17 @@ var migrateCmd = &cobra.Command{
 		// 在这里调用对应的初始化逻辑
 		config.ConfV2 = config.NewV2ConfigFromPath(configPath)
 		logger.Sugar().Infof("%s", utils.ToJson(config.ConfV2))
+		var conn dao.Connection
 		switch dbType {
 		case "mysql":
 			logger.Sugar().Info("Initializing MySQL...")
-
+			conn = mysql.NewMysqlV2Conn(config.MySQLConfig{
+				Address:  host,
+				User:     user,
+				Password: password,
+				DBName:   dbName,
+			})
+			utils.NoError(conn.Migrate())
 		case "es":
 			logger.Sugar().Info("Initializing Elasticsearch...")
 			// 调用 Elasticsearch 初始化逻辑
