@@ -207,5 +207,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		linktraceGroup.POST("dimension:", nil)
 	}
+	configGroup := g.Group("v1/config")
+	{
+		configGroup.GET("", indexHandlers.ConfigInfo)
+	}
+
 	return g
 }

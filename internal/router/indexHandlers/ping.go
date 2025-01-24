@@ -44,6 +44,20 @@ func ConfigInfo(c *gin.Context) {
 	baseHandlers.RenderData(c, result, err)
 }
 
+func SourceInfo(c *gin.Context) {
+	var (
+		result = make(map[string]interface{})
+	)
+	v, err := json.Marshal(config.ConfV2)
+	if err != nil {
+		baseHandlers.RenderData(c, nil, err)
+		return
+	}
+
+	err = json.Unmarshal(v, &result)
+	baseHandlers.RenderData(c, result, err)
+}
+
 func ConfigCheck(c *gin.Context) {
 
 	res, err := config.Conf.Backend.K8sConfig.Check()
