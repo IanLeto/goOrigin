@@ -29,9 +29,6 @@ var migrateCmd = &cobra.Command{
 		// 打印初始化参数（可替换为实际的初始化逻辑）
 		logger.Sugar().Info("Host: %s, Port: %d, User: %s, DB: %s", host, port, user, dbName)
 
-		// 在这里调用对应的初始化逻辑
-		config.ConfV2 = config.NewV2ConfigFromPath(configPath)
-		logger.Sugar().Infof("%s", utils.ToJson(config.ConfV2))
 		var conn dao.Connection
 		switch dbType {
 		case "mysql":
