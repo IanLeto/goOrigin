@@ -45,12 +45,6 @@ func CreateScript(c *gin.Context, req V1.CreateScriptRequest) (result interface{
 		goto ERR
 	}
 
-	//switch req.Type {
-	//case "py":
-	//	script = &model.PythonScript{BaseScript: baseScript}
-	//case "sh":
-	//	script = &model.SellScript{BaseScript: baseScript}
-	//}
 	res, err = client.Index().Index("script").BodyJson(script).Do(c)
 	if err != nil {
 		logger.Error(fmt.Sprintf("请求es失败 : %s", err))
@@ -90,10 +84,6 @@ func QueryScript(c *gin.Context, req V1.QueryScriptRequest) (res *V1.QueryScript
 		queries = append(queries, elastic.NewTermQuery("Type", req.Type))
 	}
 	bq.Must(queries...)
-
-	if req.Tags != "" {
-
-	}
 
 	daoRes, err = client.Search().Index("script").Query(eq).Query(bq).Do(c)
 	if err != nil {

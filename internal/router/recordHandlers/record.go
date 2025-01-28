@@ -15,7 +15,6 @@ func CreateRecord(c *gin.Context) {
 		req = &V1.CreateIanRecordRequest{}
 		res = &V1.CreateIanRecordResponse{}
 		err error
-		//entity = &entity.RecordEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)

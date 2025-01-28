@@ -60,7 +60,6 @@ func UpdateIanRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	//res, err = logic.UpdateIanRecord(c, req)
 	if err != nil {
 		goto ERR
 	}
