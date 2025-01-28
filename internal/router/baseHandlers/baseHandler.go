@@ -10,22 +10,6 @@ type Response struct {
 	Data interface{} `json:"data"`
 }
 
-func RenderResponse(c *gin.Context, data interface{}, err error, message string, code int) {
-	if code == 0 {
-		switch err {
-		case nil:
-			code = 200
-		default:
-			code = 500
-		}
-	}
-	c.JSON(code, gin.H{
-		"data":    data,
-		"err":     err,
-		"message": message,
-	})
-}
-
 func RenderData(c *gin.Context, data interface{}, err error) {
 	if err == nil {
 		c.JSON(200, gin.H{
