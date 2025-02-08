@@ -1,7 +1,7 @@
 package dao
 
-// TODAMetric 表映射结构体
-type TODAMetric struct {
+// TTransInfo 表映射结构体
+type TTransInfo struct {
 	*Meta `json:"*_meta,omitempty"`
 
 	Interval         int64  `gorm:"type:bigint;not null" json:"interval"` // 存储为毫秒

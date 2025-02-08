@@ -32,12 +32,12 @@ func ToODAMetricEntityFromInfo(info *V1.SvcTransAlertRecordInfo) *entity.ODAMetr
 	}
 }
 
-// ODAMetricEntity 转 TODAMetric
-func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TODAMetric {
+// ODAMetricEntity 转 TTransInfo
+func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TTransInfo {
 	// 将 CustomDimensions 转换为 JSON 字符串
 	customDimensions, _ := json.Marshal(metric.CustomDimensions)
 
-	return &dao.TODAMetric{
+	return &dao.TTransInfo{
 		Interval:         int64(metric.Interval.Milliseconds()), // 将 time.Duration 转换为毫秒
 		Cluster:          metric.PredefinedDimensions.Cluster,
 		TransType:        metric.PredefinedDimensions.TransType,
@@ -55,8 +55,8 @@ func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TODAMetric {
 	}
 }
 
-// TODAMetric 转 ODAMetricEntity
-func ToODAMetricEntity(tMetric *dao.TODAMetric) *entity.ODAMetricEntity {
+// TTransInfo 转 ODAMetricEntity
+func ToODAMetricEntity(tMetric *dao.TTransInfo) *entity.ODAMetricEntity {
 	// 将 CustomDimensions 从 JSON 字符串转换为切片
 	var customDimensions []string
 	_ = json.Unmarshal([]byte(tMetric.CustomDimensions), &customDimensions)
