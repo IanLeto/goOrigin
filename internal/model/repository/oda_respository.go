@@ -32,7 +32,7 @@ func ToODAMetricEntityFromInfo(info *V1.SvcTransAlertRecordInfo) *entity.ODAMetr
 	}
 }
 
-// ODAMetricEntity 转 TTransInfo
+// ToODAMetricDAO ODAMetricEntity 转 TTransInfo
 func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TTransInfo {
 	// 将 CustomDimensions 转换为 JSON 字符串
 	customDimensions, _ := json.Marshal(metric.CustomDimensions)
