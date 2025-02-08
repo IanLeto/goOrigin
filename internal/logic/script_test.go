@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -280,6 +281,129 @@ func BenchmarkUpdateNodeWithReflection(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		updateNodeWithReflection(a1, a2)
+	}
+}
+
+type FullCacheSuccessRate struct {
+	mu     sync.Mutex
+	events []bool
+	window time.Duration
+}
+
+func NewFullCacheSuccessRate(window time.Duration) *FullCacheSuccessRate {
+	return &FullCacheSuccessRate{
+		events: make([]bool, 0),
+		window: window,
+	}
+}
+
+func (f *FullCacheSuccessRate) Update(isSuccess bool) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	now := time.Now()
+	f.events = append(f.events, isSuccess)
+
+	// 清理超过窗口的数据
+	cutoff := now.Add(-f.window)
+	newEvents := make([]bool, 0, len(f.events))
+	for _, event := range f.events {
+		if now.Sub(cutoff) <= f.window {
+			newEvents = append(newEvents, event)
+		}
+	}
+	f.events = newEvents
+}
+
+func (f *FullCacheSuccessRate) GetSuccessRate() float64 {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	if len(f.events) == 0 {
+		return 0.0
+	}
+
+	successCount := 0
+	for _, event := range f.events {
+		if event {
+			successCount++
+		}
+	}
+	return float64(successCount) / float64(len(f.events))
+}
+
+// ========================== 方案 2：滑动窗口计数法 ==========================
+type SlidingWindowSuccessRate struct {
+	mu             sync.Mutex
+	buckets        [60][2]int // [成功数, 总请求数]
+	lastUpdateTime int64
+}
+
+func NewSlidingWindowSuccessRate() *SlidingWindowSuccessRate {
+	return &SlidingWindowSuccessRate{
+		lastUpdateTime: time.Now().Unix(),
+	}
+}
+
+func (s *SlidingWindowSuccessRate) Update(isSuccess bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	now := time.Now().Unix()
+	elapsed := now - s.lastUpdateTime
+
+	if elapsed >= 60 {
+		// 超过窗口范围，直接清空所有桶
+		for i := range s.buckets {
+			s.buckets[i] = [2]int{0, 0}
+		}
+	} else {
+		// 仅清除过期的数据
+		for i := int64(0); i < elapsed; i++ {
+			s.buckets[(s.lastUpdateTime+i)%60] = [2]int{0, 0}
+		}
+	}
+
+	s.lastUpdateTime = now
+	index := now % 60
+	s.buckets[index][1]++ // 总请求数 +1
+	if isSuccess {
+		s.buckets[index][0]++ // 成功请求数 +1
+	}
+}
+
+func (s *SlidingWindowSuccessRate) GetSuccessRate() float64 {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	totalSuccess := 0
+	totalCount := 0
+
+	for _, bucket := range s.buckets {
+		totalSuccess += bucket[0]
+		totalCount += bucket[1]
+	}
+
+	if totalCount == 0 {
+		return 0.0
+	}
+	return float64(totalSuccess) / float64(totalCount)
+}
+
+// ========================== Benchmark 测试 ==========================
+func BenchmarkFullCache(b *testing.B) {
+	cache := NewFullCacheSuccessRate(60 * time.Second)
+	for i := 0; i < b.N; i++ {
+		cache.Update(i%2 == 0) // 交替存储成功/失败
+		cache.GetSuccessRate()
+	}
+}
+
+func BenchmarkSlidingWindow(b *testing.B) {
+	window := NewSlidingWindowSuccessRate()
+	for i := 0; i < b.N; i++ {
+		window.Update(i%2 == 0) // 交替存储成功/失败
+		window.GetSuccessRate()
 	}
 }
 

@@ -147,7 +147,7 @@ type StageSuite struct {
 
 func (s *StageSuite) SetupTest() {
 	s.filePathPipe = &filePathPipe{}
-	s.filePathPipe.filePath = []string{"/home/ian/workdir/goOrigin/pkg/processor/span.log"}
+	s.filePathPipe.filePath = []string{"/Users/ian/go/src/goOrigin/test.json"}
 }
 
 // TestMarshal :
