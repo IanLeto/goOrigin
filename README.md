@@ -37,6 +37,11 @@
 
     初始化es 模板
     ./ori --initEs --config /home/ian/workdir/cc/goOrigin/conn/config.yaml --data /home/ian/workdir/cc/goOrigin/conn/elasticsearch.json
+    
+    性能测试
+    cd /home/ian/workdir/goOrigin/pkg/processor
+    go test -run=^$ -bench=BenchmarkFullCache -benchmem -cpuprofile full_cache_cpu.prof -memprofile full_cache_mem.prof
+    go tool pprof -alloc_space -top full_cache_mem.prof
 
 #### ci/cd
 
