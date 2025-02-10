@@ -7,6 +7,7 @@ import (
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -163,6 +164,16 @@ var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan stri
 			}
 		}
 	}()
+
+	return res
+}
+
+var AggData = func(done <-chan interface{}, data <-chan []byte, condition func(a any) any) <-chan []byte {
+	res := make(chan []byte)
+	var (
+		err error
+		wg  sync.WaitGroup
+	)
 
 	return res
 }
