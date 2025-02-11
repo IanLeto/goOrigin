@@ -3,7 +3,7 @@ package entity
 import "github.com/prometheus/client_golang/prometheus"
 
 type RecordEntity struct {
-	Name       string  `json:"name" bson:"name"`
+	Title      string  `json:"name" bson:"name"`
 	Weight     float32 `json:"weight" bson:"weight"`
 	IsFuck     bool    `json:"is_fuck"`
 	Vol1       string  `json:"vol1" bson:"vol1"`
@@ -13,7 +13,6 @@ type RecordEntity struct {
 	Cost       int     `json:"cost" bson:"cost"`
 	Content    string  `json:"content" bson:"content"`
 	Region     string  `json:"region" bson:"region"`
-	Retire     int     `json:"retire" bson:"retire"`
 	Dev        string  `json:"dev"`
 	Coding     string  `json:"coding"`
 	Reading    string  `json:"reading"`

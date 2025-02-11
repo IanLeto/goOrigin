@@ -20,10 +20,9 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
-		//logger, err = logger.InitZap()
 	)
 
-	recordEntity.Name = info.Name
+	recordEntity.Title = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
@@ -34,8 +33,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Region = region
 	recordEntity.Dev = info.Dev
 	recordEntity.Coding = info.Coding
-
-	recordEntity.Social = info.Social
 
 	tRecord = repository.ToRecordDAO(recordEntity)
 	db := mysql.GlobalMySQLConns[region]
@@ -60,7 +57,7 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 		path string
 	)
 
-	recordEntity.Name = info.Name
+	recordEntity.Title = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2

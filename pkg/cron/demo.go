@@ -29,7 +29,7 @@ func (p *Demo) Exec(ctx context.Context) error {
 	return nil
 }
 
-// GetName Name 实现 Job 接口中的 Name 方法
+// GetName Title 实现 Job 接口中的 Title 方法
 func (p *Demo) GetName() string {
 	return p.name
 }

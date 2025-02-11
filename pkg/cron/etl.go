@@ -33,7 +33,7 @@ func (p *SyncDataJob) Exec(ctx context.Context) error {
 
 }
 
-// Name 实现 Job 接口中的 Name 方法
+// Title 实现 Job 接口中的 Title 方法
 func (p *SyncDataJob) GetName() string {
 	return p.name
 }
