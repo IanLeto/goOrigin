@@ -8,15 +8,6 @@ type Table interface {
 	GetID() uint
 }
 
-type DBOpt interface {
-	Create() (DBOpt, error)
-	Update() (DBOpt, error)
-	Delete() (DBOpt, error)
-	List() (DBOpt, error)
-	BatchCreate([]DBOpt) error
-	BatchUpdate([]DBOpt)
-}
-
 func Transaction(db *gorm.DB, txFunc func(*gorm.DB) error) error {
 	return db.Transaction(txFunc)
 }

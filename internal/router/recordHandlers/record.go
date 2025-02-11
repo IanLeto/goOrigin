@@ -66,7 +66,9 @@ func QueryRecord(c *gin.Context) {
 	endTime, _ := conv.Int64(c.Query("modify_time"))
 	region, _ := conv.String(c.Query("region"))
 	name, _ := conv.String(c.Query("name"))
-	result, err = logic.QueryRecords(c, region, name, startTime, endTime)
+	page, _ := conv.Int(c.Query("page"))
+	pageSize, _ := conv.Int(c.Query("page_size"))
+	result, err = logic.QueryRecords(c, region, name, startTime, endTime, pageSize, page)
 	if err != nil {
 		goto ERR
 	}

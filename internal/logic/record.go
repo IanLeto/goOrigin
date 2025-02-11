@@ -106,20 +106,29 @@ ERR:
 }
 
 func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
-	var (
-		tRecord = &dao.TRecord{}
-	)
-	tRecord = repository.ToRecordDAO(record)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
-	res, _, err := mysql.Create(db.Client, tRecord)
-	if err != nil {
-		logrus.Errorf("create record failed %s: %s", err, res)
-		goto ERR
-	}
-	return tRecord.ID, err
-ERR:
-	return 0, err
+	var tRecord = &dao.TRecord{}
 
+	// 将 entity 转换为 DAO 结构
+	tRecord = repository.ToRecordDAO(record)
+
+	// 连接数据库
+	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+
+	// 检查记录是否存在
+	existingRecord := &dao.TRecord{}
+	if err := db.Client.Table("t_records").Where("id = ?", tRecord.ID).First(existingRecord).Error; err != nil {
+
+		logrus.Errorf("query record failed: %v", err)
+		return 0, err
+	}
+
+	// 更新记录
+	if err := db.Client.Table("t_records").Where("id = ?", tRecord.ID).Updates(tRecord).Error; err != nil {
+		logrus.Errorf("update record failed: %v", err)
+		return 0, err
+	}
+
+	return tRecord.ID, nil
 }
 
 func DeleteRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
@@ -139,37 +148,46 @@ ERR:
 
 }
 
-func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64) ([]*entity.RecordEntity, error) {
+func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64, pageSize, page int) ([]*entity.RecordEntity, error) {
 	var (
 		recordEntities = make([]*dao.TRecord, 0)
 		err            error
 		res            = make([]*entity.RecordEntity, 0)
 	)
 
+	offset := (page - 1) * pageSize
+
+	// 获取数据库连接
 	db := mysql.GlobalMySQLConns[region]
 	sql := db.Client.Table("t_records")
+
+	// 添加查询条件
 	if name != "" {
 		sql = sql.Where("name = ?", name)
 	}
 	if startTime != 0 {
-		sql = sql.Where(" > ?", startTime)
+		sql = sql.Where("created_at > ?", startTime)
 	}
 	if endTime != 0 {
 		sql = sql.Where("created_at < ?", endTime)
 	}
-	tRecords := sql.Find(&recordEntities)
+
+	// 分页查询
+	tRecords := sql.Limit(pageSize).Offset(offset).Find(&recordEntities)
 	if tRecords.Error != nil {
-		logrus.Errorf("create record failed %s: %s", err, tRecords.Error)
+		logrus.Errorf("query records failed: %s", tRecords.Error)
 		goto ERR
 	}
+
+	// 转换数据
 	for _, recordEntity := range recordEntities {
 		res = append(res, repository.ToRecordEntity(recordEntity))
 	}
 
-	return res, err
+	return res, nil
+
 ERR:
 	return nil, err
-
 }
 
 //var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{
