@@ -112,7 +112,7 @@ func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err e
 	tRecord = repository.ToRecordDAO(record)
 
 	// 连接数据库
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[""].MysqlSQLConfig)
 
 	// 检查记录是否存在
 	existingRecord := &dao.TRecord{}
@@ -136,7 +136,7 @@ func DeleteRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err e
 		tRecord = &dao.TRecord{}
 	)
 	tRecord = repository.ToRecordDAO(record)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[record.Region])
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[""].MysqlSQLConfig)
 	res, _, err := mysql.Create(db.Client, tRecord)
 	if err != nil {
 		logrus.Errorf("create record failed %s: %s", err, res)
@@ -435,7 +435,7 @@ ERR:
 ////		Content:    req.Content,
 ////		Region:     req.Region,
 ////	}
-////	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Region])
+////	db := mysql.NewMysqlV2Conn(config.Conf.Backend.MysqlConfig.Clusters[req.Region])
 ////	res, _, err := mysql.Create(db.Client, &tRecord)
 ////	if err != nil {
 ////		logrus.Errorf("create record failed %s: %s", err, res)
@@ -479,7 +479,7 @@ ERR:
 //		dbs[item.Region] = append(dbs[item.Region], &tRecord)
 //	}
 //	for region, records := range dbs {
-//		db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+//		db := mysql.NewMysqlV2Conn(config.Conf.Backend.MysqlConfig.Clusters[region])
 //		result, _, err := mysql.BatchCreate(db.Client, records)
 //		if err != nil {
 //			logrus.Errorf("create record failed %s: %s", err, res)
@@ -510,7 +510,7 @@ ERR:
 ////		where = fmt.Sprintf("%s and update_time >= %d", where, modifyTime)
 ////	}
 ////
-////	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region])
+////	db := mysql.NewMysqlV2Conn(config.Conf.Backend.MysqlConfig.Clusters[region])
 ////	result, _, err := mysql.GetValueByRaw(db.Client, &records, "t_records", where)
 ////	if err != nil {
 ////		logrus.Errorf("create record failed %s: %s", err, result)
@@ -571,7 +571,7 @@ ERR:
 //			Region:     req.Info.Region,
 //		}
 //	)
-//	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[req.Info.Region])
+//	db := mysql.NewMysqlV2Conn(config.Conf.Backend.MysqlConfig.Clusters[req.Info.Region])
 //	result, _, err := mysql.UpdateValue(db.Client, "", "", &record)
 //	if err != nil {
 //		logrus.Errorf("create record failed %s: %s", err, result)

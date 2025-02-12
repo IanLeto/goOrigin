@@ -78,7 +78,7 @@ func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
 		nodes []*entity.NodeEntity
 		root  *entity.NodeEntity
 	)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	// 先找到该节点信息
 	record, _, err := mysql.GetValue(db, &entity.NodeEntity{ID: id}, "")
 	if err != nil {
@@ -111,7 +111,7 @@ func DeleteSingleNode(c *gin.Context, id uint, region string) (interface{}, erro
 		err  error
 		node *entity.NodeEntity
 	)
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 
 	err = mysql.DeleteValues(db, node)
 	if err != nil {
@@ -191,7 +191,7 @@ func GetTopo(c *gin.Context, name string, id uint, region string) (interface{}, 
 		)
 		return nil, err
 	}
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	record, _, err := mysql.GetValue(db, root, "node")
 	root.Epl(queryMysqlCallback)
 	if err != nil {

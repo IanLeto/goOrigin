@@ -64,7 +64,7 @@ func CreateNodes(c *gin.Context) {
 			Children: info.Children,
 		})
 	}
-	res, err = v2.CreateNodes(c, entities)
+	res, err = v2.CreateNodes(c, entities, "")
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 ERR:

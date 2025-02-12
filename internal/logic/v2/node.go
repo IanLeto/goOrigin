@@ -21,7 +21,7 @@ func CreateNode(c *gin.Context, region string, entity *entity.NodeEntity) (id ui
 		logger = logger2.NewLogger()
 	)
 	tNode := repository.ToDAO(entity)
-	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, tNode)
+	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, tNode)
 	logger.Debug(fmt.Sprintf("create node %s", record))
 	if err != nil {
 		logger.Error("创建node 失败")
@@ -30,7 +30,7 @@ func CreateNode(c *gin.Context, region string, entity *entity.NodeEntity) (id ui
 	return
 }
 
-func CreateNodes(c *gin.Context, nodes []*entity.NodeEntity) (interface{}, error) {
+func CreateNodes(c *gin.Context, nodes []*entity.NodeEntity, region string) (interface{}, error) {
 	var (
 		err error
 	)
@@ -40,7 +40,7 @@ func CreateNodes(c *gin.Context, nodes []*entity.NodeEntity) (interface{}, error
 	if len(nodes) == 0 {
 		return nil, err
 	}
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[nodes[0].Region]).Client
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	record, _, err := mysql.Create(db, nodes)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *entity.NodeE
 	)
 	nodeEntity, err := GetNodeDetail(c, region, id)
 	nodeEntity.MergeWith(nodeUpdate)
-	record, _, err := mysql.Create(mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client, repository.ToDAO(nodeEntity))
+	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, repository.ToDAO(nodeEntity))
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err
@@ -81,7 +81,7 @@ func GetNodeDetail(c *gin.Context, region string, id uint) (*entity.NodeEntity, 
 		result *entity.NodeEntity
 	)
 	tNode.ID = id
-	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db = mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	_, err := mysql.GetValueByID(db, tNode)
 	if err != nil {
 		goto ERR
@@ -99,7 +99,7 @@ func GetNodes(c *gin.Context, name, father, region string) (nodes []*entity.Node
 		db     *gorm.DB
 		tNodes []*dao.TNode
 	)
-	db = mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db = mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	err = db.Table("t_node").Where("name = ? and father = ?", name, father).Find(&tNodes).Error
 	if err != nil {
 		goto ERR
@@ -119,7 +119,7 @@ func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
 		tNode = &dao.TNode{}
 	)
 	tNode.ID = id
-	db := mysql.NewMysqlConn(config.Conf.Backend.MysqlConfig.Clusters[region]).Client
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
 	err = mysql.DeleteValue(db, tNode)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("del data failed by %s", err))
