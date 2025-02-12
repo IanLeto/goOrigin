@@ -7,7 +7,6 @@ import (
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
-	"sync"
 	"time"
 )
 
@@ -115,6 +114,7 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 	return value, err
 }
 
+// FileReadHead 监听文件新增内容，并通过通道返回新行
 var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan string {
 	res := make(chan string) // 输出通道，用于发送读取到的行内容
 
@@ -128,39 +128,47 @@ var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan stri
 				fmt.Printf("Failed to open file %s: %v\n", p, err)
 				continue
 			}
-			defer func() { _ = file.Close() }()
+			defer file.Close()
 
-			// 创建 bufio.Scanner 按行读取
-			scanner := bufio.NewScanner(file)
+			// 获取文件当前大小，跳转到末尾
+			stat, err := file.Stat()
+			if err != nil {
+				fmt.Printf("Failed to get file info %s: %v\n", p, err)
+				continue
+			}
+			offset := stat.Size()
+			file.Seek(offset, 0) // 从文件末尾开始监听
 
-			// 处理文件内容
+			reader := bufio.NewReader(file)
+
 			for {
-				// 检查是否有 done 信号
 				select {
 				case <-done:
-					return
+					return // 如果收到 `done` 信号，退出
 				default:
-					for scanner.Scan() {
-						line := scanner.Text() // 读取当前行
-						select {
-						case res <- line: // 将行内容发送到通道
-						case <-done: // 如果收到 done 信号，退出
-							return
+					// 读取新内容
+					line, err := reader.ReadString('\n')
+					if err != nil { // 说明暂时没有新内容
+						// **检测文件是否增长**
+						newStat, err := file.Stat()
+						if err == nil && newStat.Size() > offset {
+							// **文件变大，调整偏移量**
+							offset, _ = file.Seek(0, os.SEEK_CUR)
 						}
+						time.Sleep(100 * time.Millisecond) // 没有新内容，等待一会儿
+						continue
 					}
 
-					// 检查是否遇到错误
-					if err := scanner.Err(); err != nil {
-						fmt.Printf("Error reading file %s: %v\n", p, err)
-						break
+					// 发送新内容到通道
+					select {
+					case res <- line:
+					case <-done:
+						return
 					}
 
-					// 如果到达文件末尾，暂停一段时间等待文件写入新内容
-					time.Sleep(100 * time.Millisecond)
+					// 更新偏移量
+					offset, _ = file.Seek(0, os.SEEK_CUR)
 				}
-
-				// 如果有新行，发送到通道
-
 			}
 		}
 	}()
@@ -171,8 +179,9 @@ var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan stri
 var AggData = func(done <-chan interface{}, data <-chan []byte, condition func(a any) any) <-chan []byte {
 	res := make(chan []byte)
 	var (
-		err error
-		wg  sync.WaitGroup
+	//err     error
+	//wg      sync.WaitGroup
+	//buckets = make([]struct{}, 50)
 	)
 
 	return res

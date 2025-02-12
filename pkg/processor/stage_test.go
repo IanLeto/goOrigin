@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/suite"
+	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/processor"
 	"math/rand"
 	"sync"
 	"testing"
-
-	"goOrigin/internal/model/entity"
 )
 
 // 定义一个对象池，用于复用 KafkaLogEntity 实例
