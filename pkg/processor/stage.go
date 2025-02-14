@@ -118,23 +118,21 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan string {
 	res := make(chan string) // 输出通道，用于发送读取到的行内容
 
-	go func() {
-		defer close(res) // 确保通道在退出时关闭
-
-		for _, p := range filePath {
-			// 打开文件（只读模式）
-			file, err := os.Open(p)
+	for _, p := range filePath {
+		// 打开文件（只读模式）
+		go func(path string) {
+			file, err := os.Open(path)
 			if err != nil {
-				fmt.Printf("Failed to open file %s: %v\n", p, err)
-				continue
+				fmt.Printf("Failed to open file %s: %v\n", path, err)
+				return
 			}
 			defer file.Close()
 
 			// 获取文件当前大小，跳转到末尾
 			stat, err := file.Stat()
 			if err != nil {
-				fmt.Printf("Failed to get file info %s: %v\n", p, err)
-				continue
+				fmt.Printf("Failed to get file info %s: %v\n", path, err)
+				return
 			}
 			offset := stat.Size()
 			file.Seek(offset, 0) // 从文件末尾开始监听
@@ -170,8 +168,9 @@ var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan stri
 					offset, _ = file.Seek(0, os.SEEK_CUR)
 				}
 			}
-		}
-	}()
+		}(p)
+
+	}
 
 	return res
 }
@@ -185,4 +184,15 @@ var AggData = func(done <-chan interface{}, data <-chan []byte, condition func(a
 	)
 
 	return res
+}
+
+var AggDataStage = func(done <-chan interface{}, data <-chan []byte, condition func(a any) any, workers int) <-chan []byte {
+	panic(1)
+	//var (
+	//	out = make(chan []byte)
+	//	wg  sync.WaitGroup
+	//)
+	//for i := 0; i < workers; i++ {
+	//	wg.add(1)
+	//}
 }
