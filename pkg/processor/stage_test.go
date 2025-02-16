@@ -146,12 +146,12 @@ type StageSuite struct {
 
 func (s *StageSuite) SetupTest() {
 	s.filePathPipe = &filePathPipe{}
-	s.filePathPipe.filePath = []string{"/Users/ian/go/src/goOrigin/test.json"}
+	s.filePathPipe.filePath = []string{"/home/ian/workdir/goOrigin/pkg/processor/span.log"}
 }
 
 // TestMarshal :
 func (s *StageSuite) TestConfig() {
-	var ch = make(chan interface{})
+	var ch = make(chan struct{})
 	for v := range processor.FileReadHead(ch, s.filePathPipe.filePath[0]) {
 		fmt.Println(v)
 	}

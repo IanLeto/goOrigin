@@ -1,9 +1,10 @@
 package processor
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/hpcloud/tail"
+	_ "github.com/hpcloud/tail"
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
@@ -114,53 +115,43 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 	return value, err
 }
 
-var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan string {
-	res := make(chan string) // 输出通道，用于发送读取到的行内容
+// FileReadHead 监听多个文件的新增内容，并通过通道返回新行
+func FileReadHead(done <-chan struct{}, filePaths ...string) <-chan string {
+	res := make(chan string) // 输出通道
 
-	for _, p := range filePath {
+	for _, filePath := range filePaths {
 		go func(path string) {
-			file, err := os.Open(path)
+			config := tail.Config{
+				ReOpen:    true,                                 // 文件被移动或删除后重新打开
+				Follow:    true,                                 // 持续监听新内容
+				Location:  &tail.SeekInfo{Offset: 0, Whence: 2}, // 从文件末尾开始读取
+				MustExist: false,                                // 文件不存在时不报错，等待创建
+				Poll:      true,                                 // 轮询模式，适用于 inotify 不支持的平台
+			}
+
+			tails, err := tail.TailFile(path, config)
 			if err != nil {
-				fmt.Printf("Failed to open file %s: %v\n", path, err)
+				fmt.Printf("Failed to tail file %s: %v\n", path, err)
 				return
 			}
-			defer file.Close()
+			defer tails.Cleanup() // 退出时释放资源
 
-			// 创建一个 Scanner 逐行读取文件
-			reader := bufio.NewScanner(file)
-
-			// 读取文件已有的内容（从头开始）
-			for reader.Scan() {
-				select {
-				case res <- reader.Text(): // 发送读取的行内容
-				case <-done:
-					close(res)
-					return
-				}
-			}
-
-			// 检查是否有错误
-			if err := reader.Err(); err != nil {
-				fmt.Printf("Error reading file %s: %v\n", path, err)
-				return
-			}
-
-			// 监听文件新增内容
+			// 监听文件内容
 			for {
 				select {
-				case <-done:
-					close(res)
+				case <-done: // 监听到退出信号，退出 goroutine
+					fmt.Printf("Stopping file tailing: %s\n", path)
 					return
-				default:
-					// 读取新内容
-					if reader.Scan() {
-						res <- reader.Text()
-					} else {
-						time.Sleep(500 * time.Millisecond) // 休眠一段时间，避免 CPU 过载
+				case line, ok := <-tails.Lines:
+					if !ok {
+						fmt.Printf("Tail file closed, reopening: %s\n", path)
+						time.Sleep(time.Second) // 等待 1 秒后重新打开
+						continue
 					}
+					res <- line.Text
 				}
 			}
-		}(p)
+		}(filePath)
 	}
 
 	return res
