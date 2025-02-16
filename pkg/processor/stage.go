@@ -114,12 +114,10 @@ func FileWrite(filePath string, value []byte) ([]byte, error) {
 	return value, err
 }
 
-// FileReadHead 监听文件新增内容，并通过通道返回新行
 var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan string {
 	res := make(chan string) // 输出通道，用于发送读取到的行内容
 
 	for _, p := range filePath {
-		// 打开文件（只读模式）
 		go func(path string) {
 			file, err := os.Open(path)
 			if err != nil {
@@ -128,48 +126,41 @@ var FileReadHead = func(done <-chan interface{}, filePath ...string) <-chan stri
 			}
 			defer file.Close()
 
-			// 获取文件当前大小，跳转到末尾
-			stat, err := file.Stat()
-			if err != nil {
-				fmt.Printf("Failed to get file info %s: %v\n", path, err)
+			// 创建一个 Scanner 逐行读取文件
+			reader := bufio.NewScanner(file)
+
+			// 读取文件已有的内容（从头开始）
+			for reader.Scan() {
+				select {
+				case res <- reader.Text(): // 发送读取的行内容
+				case <-done:
+					close(res)
+					return
+				}
+			}
+
+			// 检查是否有错误
+			if err := reader.Err(); err != nil {
+				fmt.Printf("Error reading file %s: %v\n", path, err)
 				return
 			}
-			offset := stat.Size()
-			file.Seek(offset, 0) // 从文件末尾开始监听
 
-			reader := bufio.NewReader(file)
-
+			// 监听文件新增内容
 			for {
 				select {
 				case <-done:
-					return // 如果收到 `done` 信号，退出
+					close(res)
+					return
 				default:
 					// 读取新内容
-					line, err := reader.ReadString('\n')
-					if err != nil { // 说明暂时没有新内容
-						// **检测文件是否增长**
-						newStat, err := file.Stat()
-						if err == nil && newStat.Size() > offset {
-							// **文件变大，调整偏移量**
-							offset, _ = file.Seek(0, os.SEEK_CUR)
-						}
-						time.Sleep(100 * time.Millisecond) // 没有新内容，等待一会儿
-						continue
+					if reader.Scan() {
+						res <- reader.Text()
+					} else {
+						time.Sleep(500 * time.Millisecond) // 休眠一段时间，避免 CPU 过载
 					}
-
-					// 发送新内容到通道
-					select {
-					case res <- line:
-					case <-done:
-						return
-					}
-
-					// 更新偏移量
-					offset, _ = file.Seek(0, os.SEEK_CUR)
 				}
 			}
 		}(p)
-
 	}
 
 	return res
