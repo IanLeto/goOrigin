@@ -142,11 +142,33 @@ type filePathPipe struct {
 type StageSuite struct {
 	suite.Suite
 	filePathPipe *filePathPipe
+	testData     []entity.KafkaLogEntity // 测试数据
 }
 
 func (s *StageSuite) SetupTest() {
 	s.filePathPipe = &filePathPipe{}
 	s.filePathPipe.filePath = []string{"/home/ian/workdir/goOrigin/pkg/processor/span.log"}
+
+	// 构造测试数据
+	s.testData = []entity.KafkaLogEntity{
+		{
+			LogType:      "API_CALL",
+			RemoteApp:    "service-A",
+			ResultCode:   "0",
+			Service:      "order-service",
+			InstanceZone: "us-east-1",
+			TimesCostMs:  200,
+		},
+		{
+			LogType:      "DB_QUERY",
+			RemoteApp:    "service-B",
+			ResultCode:   "500",
+			Service:      "payment-service",
+			InstanceZone: "eu-west-1",
+			TimesCostMs:  500,
+		},
+	}
+
 }
 
 // TestMarshal :
@@ -156,6 +178,46 @@ func (s *StageSuite) TestConfig() {
 		fmt.Println(v)
 	}
 
+}
+
+// TestDataClear 测试 DataClear 函数
+func (s *StageSuite) TestDataClear() {
+	done := make(chan struct{})
+	dataChan := make(chan []byte, len(s.testData))
+
+	// 发送测试数据
+	go func() {
+		for _, log := range s.testData {
+			jsonData, _ := json.Marshal(log)
+			dataChan <- jsonData
+		}
+		close(dataChan) // 关闭通道，确保 DataClear 退出
+	}()
+
+	// 运行 DataClear
+	output := processor.DataClear(done, dataChan)
+
+	// 读取输出并验证
+	var results []entity.KafkaLogEntity
+	for jsonData := range output {
+		var result entity.KafkaLogEntity
+		err := json.Unmarshal(jsonData, &result)
+		s.Require().NoError(err, "JSON 解析失败")
+		results = append(results, result)
+	}
+
+	// 断言转换后的数据数量
+	s.Equal(len(s.testData), len(results), "转换后的数据数量不匹配")
+
+	// 断言第一条数据
+	s.Equal("API_CALL", results[0].LogType)
+	s.Equal("service-A", results[0].RemoteApp)
+	s.Equal("0", results[0].ResultCode)
+
+	// 断言第二条数据
+	s.Equal("DB_QUERY", results[1].LogType)
+	s.Equal("service-B", results[1].RemoteApp)
+	s.Equal("500", results[1].ResultCode)
 }
 
 // TestHttpClient :

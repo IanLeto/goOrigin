@@ -10,8 +10,8 @@ type ODAMetricEntity struct {
 }
 
 type PredefinedDimensions struct {
+	TraceID       string `json:"trace_id"`
 	Cluster       string `json:"cluster"`
-	TransType     string `json:"trans_type"`
 	TransTypeCode string `json:"trans_type_code"` // 锚定字段
 	TransChannel  string `json:"trans_channel"`
 	RetCode       string `json:"ret_code"`
@@ -28,4 +28,19 @@ type Indicator struct {
 }
 
 type SuccessRateEntity struct {
+}
+
+func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
+	// 组装目标结构
+	metric := ODAMetricEntity{
+		PredefinedDimensions: &PredefinedDimensions{
+			Cluster:       log.InstanceZone,
+			TransTypeCode: log.LogType,
+			TransChannel:  log.RemoteApp,
+			RetCode:       log.ResultCode,
+			SvcName:       log.Service,
+		},
+	}
+
+	return metric
 }

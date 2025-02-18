@@ -168,6 +168,39 @@ var AggData = func(done <-chan interface{}, data <-chan []byte, condition func(a
 	return res
 }
 
+var DataClear = func(done <-chan struct{}, data <-chan []byte) <-chan []byte {
+	var (
+		out = make(chan []byte)
+		//wg  *sync.WaitGroup
+	)
+	go func() {
+		defer close(out)
+		//defer wg.Done()
+		for i := range data {
+			select {
+			case <-done:
+				return
+			case out <- i:
+				var ephEntity *entity.KafkaLogEntity
+				err := json.Unmarshal(i, ephEntity)
+				if err != nil {
+					logger.Sugar().Errorf("file value: %s", err)
+				}
+				res := entity.ConvertLogToMetric(ephEntity)
+				logger.Sugar().Debugln("DataConv: ", res)
+				out := make(chan []byte, 1) // 通道需要有缓冲，否则 goroutine 可能会阻塞
+				if data, err := json.Marshal(ephEntity); err != nil {
+					fmt.Println("JSON 序列化失败:", err) // 优雅地处理错误
+				} else {
+					out <- data // 仅发送成功序列化的数据
+				}
+
+			}
+		}
+	}()
+	return out
+}
+
 var AggDataStage = func(done <-chan interface{}, data <-chan []byte, condition func(a any) any, workers int) <-chan []byte {
 	panic(1)
 	//var (

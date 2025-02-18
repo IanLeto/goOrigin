@@ -91,7 +91,6 @@ func initializeMetrics() {
 func SetODAMetrics(metric *entity.ODAMetricEntity) {
 	labels := prometheus.Labels{
 		"cluster":         metric.Cluster,
-		"trans_type":      metric.TransType,
 		"trans_type_code": metric.TransTypeCode,
 		"trans_channel":   metric.TransChannel,
 		"svc_name":        metric.SvcName,

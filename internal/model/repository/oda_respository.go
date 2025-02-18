@@ -8,13 +8,12 @@ import (
 	"time"
 )
 
-// SvcTransAlertRecordInfo 转 ODAMetricEntity
+// ToODAMetricEntityFromInfo SvcTransAlertRecordInfo 转 ODAMetricEntity
 func ToODAMetricEntityFromInfo(info *V1.SvcTransAlertRecordInfo) *entity.ODAMetricEntity {
 	return &entity.ODAMetricEntity{
 		Interval: time.Duration(info.Interval), // 直接赋值
 		PredefinedDimensions: &entity.PredefinedDimensions{
 			Cluster:       info.Cluster,
-			TransType:     info.TransType,
 			TransTypeCode: info.TransTypeCode,
 			TransChannel:  info.TransChannel,
 			RetCode:       info.RetCode,
@@ -40,7 +39,6 @@ func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TTransInfo {
 	return &dao.TTransInfo{
 		Interval:         int64(metric.Interval.Milliseconds()), // 将 time.Duration 转换为毫秒
 		Cluster:          metric.PredefinedDimensions.Cluster,
-		TransType:        metric.PredefinedDimensions.TransType,
 		TransTypeCode:    metric.PredefinedDimensions.TransTypeCode,
 		TransChannel:     metric.PredefinedDimensions.TransChannel,
 		RetCode:          metric.PredefinedDimensions.RetCode,
@@ -55,7 +53,7 @@ func ToODAMetricDAO(metric *entity.ODAMetricEntity) *dao.TTransInfo {
 	}
 }
 
-// TTransInfo 转 ODAMetricEntity
+// ToODAMetricEntity TTransInfo 转 ODAMetricEntity
 func ToODAMetricEntity(tMetric *dao.TTransInfo) *entity.ODAMetricEntity {
 	// 将 CustomDimensions 从 JSON 字符串转换为切片
 	var customDimensions []string
@@ -65,7 +63,6 @@ func ToODAMetricEntity(tMetric *dao.TTransInfo) *entity.ODAMetricEntity {
 		Interval: time.Duration(tMetric.Interval) * time.Millisecond, // 将毫秒转换回 time.Duration
 		PredefinedDimensions: &entity.PredefinedDimensions{
 			Cluster:       tMetric.Cluster,
-			TransType:     tMetric.TransType,
 			TransTypeCode: tMetric.TransTypeCode,
 			TransChannel:  tMetric.TransChannel,
 			RetCode:       tMetric.RetCode,
