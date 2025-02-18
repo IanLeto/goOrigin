@@ -30,6 +30,7 @@ func NewMySQLConns() error {
 			}
 		}
 	}
+
 	return nil
 }
 
