@@ -41,6 +41,13 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 			SvcName:       log.Service,
 		},
 	}
-
 	return metric
+}
+
+type TransInfoEntity struct {
+	TraceID string `json:"trace_id"`
+	Cluster string `json:"cluster"`
+	Channel string `json:"channel"`
+	PodName string `json:"pod_name"`
+	SvcName string `json:"svc_name"`
 }

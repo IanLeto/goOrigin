@@ -8,6 +8,7 @@ import (
 	"goOrigin/internal/model/entity"
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -201,13 +202,53 @@ var DataClear = func(done <-chan struct{}, data <-chan []byte) <-chan []byte {
 	return out
 }
 
-var AggDataStage = func(done <-chan interface{}, data <-chan []byte, condition func(a any) any, workers int) <-chan []byte {
-	panic(1)
-	//var (
-	//	out = make(chan []byte)
-	//	wg  sync.WaitGroup
-	//)
-	//for i := 0; i < workers; i++ {
-	//	wg.add(1)
-	//}
+var AggDataStage = func(done <-chan interface{}, data <-chan []byte) <-chan []byte {
+	out := make(chan []byte) // 结果输出 channel
+
+	go func() {
+		defer close(out) // 结束时关闭输出 channel
+
+		aggregated := make(map[string]entity.TransInfoEntity) // 存储聚合结果
+		var mu sync.Mutex                                     // 保护 map 避免并发问题
+
+		for {
+			select {
+			case <-done:
+				// **当 `done` 关闭时，输出最终结果**
+				mu.Lock()
+				finalResult, _ := json.Marshal(aggregated)
+				mu.Unlock()
+				out <- finalResult
+				return
+
+			case rawData, ok := <-data:
+				if !ok {
+					return // 如果 `data` 关闭，则退出
+				}
+
+				// 解析 JSON 数据
+				var log entity.KafkaLogEntity
+				if err := json.Unmarshal(rawData, &log); err != nil {
+					fmt.Println("JSON 解析失败:", err)
+					continue
+				}
+
+				if log.TraceId == "" {
+					continue // 忽略没有 TraceId 的数据
+				}
+
+				// **更新聚合数据**
+				mu.Lock()
+				aggregated[log.TraceId] = entity.TransInfoEntity{
+					Cluster: log.SysName,
+					Channel: log.Trans.TransChannel,
+					PodName: log.ContainerPodID,
+					SvcName: log.SysName,
+				}
+				mu.Unlock()
+			}
+		}
+	}()
+
+	return out
 }
