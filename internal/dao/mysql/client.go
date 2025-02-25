@@ -15,20 +15,24 @@ var logger, _ = logger2.InitZap()
 var GlobalMySQLConns = map[string]*MySQLConn{}
 
 func NewMySQLConns() error {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("⚠️ 数据库迁移失败 : %v\n", r)
-		}
-	}()
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		fmt.Printf("⚠️ 数据库迁移失败 : %v\n", r)
+	//	}
+	//}()
 	conf := config.ConfV2
 	for region, info := range conf.Env {
 		GlobalMySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
-		if GlobalMySQLConns[region].IsMigrate {
-			err := GlobalMySQLConns[region].Migrate()
-			if err != nil {
-				logger.Sugar().Warnf("环境 %s mysql migrate error: %v", region, err)
+
+		if _, ok := GlobalMySQLConns[region]; ok && GlobalMySQLConns[region] != nil {
+			if GlobalMySQLConns[region].IsMigrate {
+				err := GlobalMySQLConns[region].Migrate()
+				if err != nil {
+					logger.Sugar().Warnf("环境 %s mysql migrate error: %v", region, err)
+				}
 			}
 		}
+
 	}
 
 	return nil
@@ -45,18 +49,14 @@ func (m *MySQLConn) Migrate() error {
 }
 
 func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
-	var (
-		err    error
-		client *gorm.DB
-	)
-
-	client, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
+	client, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=%s",
 		conf.User, conf.Password, conf.Address, conf.DBName, "Asia%2FShanghai")), &gorm.Config{})
 
 	if err != nil {
-		logger.Sugar().Warnf("mysql connect error: %v", err)
+		logger.Sugar().Warnf("❌ MySQL 连接失败: %v", err)
+		return nil // ✅ 返回错误，而不是 `nil`
 	}
-	// 新建GORM配置对象，设置日志级别为Info
+
 	return &MySQLConn{
 		Client:    client,
 		IsMigrate: conf.IsMigration,
