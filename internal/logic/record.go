@@ -131,23 +131,6 @@ func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err e
 	return tRecord.ID, nil
 }
 
-func DeleteRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
-	var (
-		tRecord = &dao.TRecord{}
-	)
-	tRecord = repository.ToRecordDAO(record)
-	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[""].MysqlSQLConfig)
-	res, _, err := mysql.Create(db.Client, tRecord)
-	if err != nil {
-		logrus.Errorf("create record failed %s: %s", err, res)
-		goto ERR
-	}
-	return tRecord.ID, err
-ERR:
-	return 0, err
-
-}
-
 func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTime int64, pageSize, page int) ([]*entity.RecordEntity, error) {
 	var (
 		recordEntities = make([]*dao.TRecord, 0)

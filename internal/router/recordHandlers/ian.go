@@ -10,11 +10,9 @@ import (
 
 func DeleteIanRecord(c *gin.Context) {
 	var (
-		//id  = c.GetString("id")
 		res int64
 		err error
 	)
-	//res, err = logic.DeleteIanRecord(c, id)
 	if err != nil {
 		goto ERR
 	}
@@ -35,7 +33,6 @@ func AppendIanRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	//res, err = logic.AppendIanRecord(c, &req)
 	if err != nil {
 		goto ERR
 	}
