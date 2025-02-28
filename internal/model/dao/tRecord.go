@@ -2,18 +2,18 @@ package dao
 
 type TRecord struct {
 	*Meta   `json:"*_meta,omitempty"`
-	Name    string  `json:"name" gorm:"type:varchar(100);not null" json:"name,omitempty"`
-	Weight  float32 `json:"weight" gorm:"type:float;not null" json:"weight,omitempty"`
-	IsFuck  bool    `json:"is_fuck" gorm:"type:boolean;not null" json:"is_fuck,omitempty"`
-	Vol1    string  `json:"vol1" gorm:"type:varchar(100)" json:"vol_1,omitempty"`
-	Vol2    string  `json:"vol2" gorm:"type:varchar(100)" json:"vol_2,omitempty"`
-	Vol3    string  `json:"vol3" gorm:"type:varchar(100)" json:"vol_3,omitempty"`
-	Vol4    string  `json:"vol4" gorm:"type:varchar(100)" json:"vol_4,omitempty"`
-	Content string  `json:"content" gorm:"type:text" json:"content,omitempty"`
-	Region  string  `json:"region" gorm:"type:varchar(100)" json:"region,omitempty"`
-	Retire  int     `gorm:"type:int" json:"retire,omitempty"`
-	Cost    int     `gorm:"type:int" json:"cost,omitempty"`
-	Dev     string  `gorm:"type:varchar(100)" json:"dev,omitempty"`
-	Coding  string  `gorm:"type:varchar(100)" json:"coding,omitempty"`
-	Social  string  `gorm:"type:varchar(100)" json:"social,omitempty"`
+	Name    string  `json:"name" gorm:"column:name;type:varchar(100);not null"`
+	Weight  float32 `json:"weight" gorm:"column:weight;type:float;not null"`
+	IsFuck  bool    `json:"is_fuck" gorm:"column:is_fuck;type:boolean;not null"`
+	Vol1    string  `json:"vol1" gorm:"column:vol1;type:text"`
+	Vol2    string  `json:"vol2" gorm:"column:vol2;type:text"`
+	Vol3    string  `json:"vol3" gorm:"column:vol3;type:text"`
+	Vol4    string  `json:"vol4" gorm:"column:vol4;type:text"`
+	Content string  `json:"content" gorm:"column:content;type:text"`
+	Region  string  `json:"region" gorm:"column:region;type:varchar(100)"`
+	Retire  int     `json:"retire" gorm:"column:retire;type:int"`
+	Cost    int     `json:"cost" gorm:"column:cost;type:int"`
+	Dev     string  `json:"dev" gorm:"column:dev;type:varchar(100)"`
+	Coding  string  `json:"coding" gorm:"column:coding;type:varchar(100)"`
+	Social  string  `json:"social" gorm:"column:social;type:varchar(100)"`
 }

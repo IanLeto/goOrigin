@@ -15,7 +15,6 @@ type RecordEntity struct {
 	Region     string  `json:"region" bson:"region"`
 	Dev        string  `json:"dev"`
 	Coding     string  `json:"coding"`
-	Reading    string  `json:"reading"`
 	Social     string  `json:"social"`
 	CreateTime int64   `json:"create_time"`
 	ModifyTime int64   `json:"update_time"`
