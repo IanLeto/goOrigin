@@ -142,7 +142,9 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 
 	// 获取数据库连接
 	db := mysql.GlobalMySQLConns[region]
-	sql := db.Client.Table("t_records")
+
+	// 开启调试模式，打印 SQL 语句
+	sql := db.Client.Debug().Table("t_records")
 
 	// 添加查询条件
 	if name != "" {
@@ -153,6 +155,9 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 	}
 	if endTime != 0 {
 		sql = sql.Where("created_at < ?", endTime)
+	}
+	if pageSize == 0 {
+		pageSize = 50
 	}
 
 	// 分页查询
