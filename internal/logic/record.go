@@ -161,7 +161,7 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 	}
 
 	// 分页查询
-	tRecords := sql.Limit(pageSize).Offset(offset).Find(&recordEntities)
+	tRecords := sql.Limit(pageSize).Offset(offset).Find(&recordEntities).Order("created_at desc")
 	if tRecords.Error != nil {
 		logrus.Errorf("query records failed: %s", tRecords.Error)
 		goto ERR
