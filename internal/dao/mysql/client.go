@@ -49,8 +49,8 @@ func (m *MySQLConn) Migrate() error {
 }
 
 func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
-	client, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=True&loc=%s",
-		conf.User, conf.Password, conf.Address, conf.DBName, "Asia%2FShanghai")), &gorm.Config{})
+	client, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		conf.User, conf.Password, conf.Address, conf.DBName)), &gorm.Config{})
 
 	if err != nil {
 		logger.Sugar().Warnf("❌ MySQL 连接失败: %v", err)
