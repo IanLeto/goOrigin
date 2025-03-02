@@ -87,12 +87,6 @@ type CreateIanRecordResponse struct {
 	Id uint `json:"id"`
 }
 
-type QueryIanRecordsRequest struct {
-	Name      string `json:"name,omitempty"`
-	StartTime int64  `json:"start_time"`
-	EndTime   int64  `json:"end_time"`
-}
-
 type QueryIanRecordsResponse struct {
 	Items []interface{} `json:"items"`
 }

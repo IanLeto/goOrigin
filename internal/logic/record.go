@@ -151,17 +151,17 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 		sql = sql.Where("name = ?", name)
 	}
 	if startTime != 0 {
-		sql = sql.Where("created_at > ?", startTime)
+		sql = sql.Where("create_time > ?", startTime)
 	}
 	if endTime != 0 {
-		sql = sql.Where("created_at < ?", endTime)
+		sql = sql.Where("modify_time < ?", endTime)
 	}
 	if pageSize == 0 {
 		pageSize = 50
 	}
 
 	// 分页查询
-	tRecords := sql.Limit(pageSize).Offset(offset).Find(&recordEntities).Order("created_at desc")
+	tRecords := sql.Order("create_time DESC").Limit(pageSize).Offset(offset).Find(&recordEntities).Order("create_time")
 	if tRecords.Error != nil {
 		logrus.Errorf("query records failed: %s", tRecords.Error)
 		goto ERR
