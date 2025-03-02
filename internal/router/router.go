@@ -111,7 +111,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		recordGroup.POST("", recordHandlers.CreateRecord)
 		recordGroup.GET("", recordHandlers.QueryRecord)
 		recordGroup.PUT("", recordHandlers.UpdateRecord)
-		recordGroup.DELETE("", recordHandlers.DeleteIanRecord)
+		recordGroup.DELETE("", recordHandlers.DeleteRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)
 		recordGroup.POST("/file", recordHandlers.CreateFileRecord)
 

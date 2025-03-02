@@ -21,7 +21,9 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
 	)
-
+	if region == "" {
+		region = "win"
+	}
 	recordEntity.Title = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
@@ -176,6 +178,31 @@ func QueryRecords(ctx *gin.Context, region string, name string, startTime, endTi
 
 ERR:
 	return nil, err
+}
+
+// DeleteRecord 根据 ID 删除记录
+func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
+	if region == "" {
+		region = "win"
+	}
+
+	db := mysql.GlobalMySQLConns[region]
+
+	// 先检查记录是否存在（可选）
+	var tRecord dao.TRecord
+	if err := db.Client.First(&tRecord, recordID).Error; err != nil {
+		logger.Error(fmt.Sprintf("record not found: %s", err))
+		return err
+	}
+
+	// 执行删除
+	if err := db.Client.Delete(&tRecord).Error; err != nil {
+		logger.Error(fmt.Sprintf("delete record failed: %s", err))
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("record deleted successfully: ID = %d", recordID))
+	return nil
 }
 
 //var weight = prometheus.NewGaugeVec(prometheus.GaugeOpts{

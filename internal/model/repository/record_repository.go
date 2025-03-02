@@ -8,6 +8,7 @@ import (
 
 func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
 	return &dao.TRecord{
+
 		Name:    record.Title,
 		Weight:  record.Weight,
 		Vol1:    record.Vol1,
@@ -28,6 +29,7 @@ func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
 func ToRecordEntity(tRecord *dao.TRecord) *entity.RecordEntity {
 	// 创建 `RecordEntity` 实例
 	record := &entity.RecordEntity{
+		ID:         tRecord.ID,
 		Title:      tRecord.Name,
 		Weight:     tRecord.Weight,
 		Content:    tRecord.Content,
