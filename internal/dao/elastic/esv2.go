@@ -10,12 +10,21 @@ import (
 	"io"
 )
 
+var (
+	LogIndict = ``
+	EventDict = ``
+)
+
 var GlobalEsConns = map[string]*EsV2Conn{}
 
 type EsV2Conn struct {
 	Client *elasticsearch7.Client
 }
 
+func (c *EsV2Conn) Migrate() error {
+	//c.Client.
+	panic(1)
+}
 func NewEsV2Conn(conf *config.EsInfo) *EsV2Conn {
 	var (
 		conn = &EsV2Conn{}

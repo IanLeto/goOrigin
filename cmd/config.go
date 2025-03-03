@@ -7,18 +7,6 @@ import (
 	"os"
 )
 
-var (
-	brokers          string
-	topic            string
-	consumerGroup    string
-	consumerMember   string
-	outFile          string
-	consumeMsgsLimit int
-	username         string
-	password         string
-	auth             string
-)
-
 var configCmd = &cobra.Command{
 	Use: "config",
 	Run: func(cmd *cobra.Command, args []string) {
