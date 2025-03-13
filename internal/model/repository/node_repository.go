@@ -12,25 +12,23 @@ func ToDAO(node *entity.NodeEntity) *dao.TNode {
 		Name:     node.Name,
 		Content:  node.Content,
 		Depend:   node.Depend,
-		Father:   node.Father,
-		FatherID: node.FatherID,
+		FatherID: node.ParentID,
 		Done:     node.Done,
 		Status:   node.Status,
 		Region:   node.Region,
 		Note:     node.Note,
-		//Tags:     string.Join(node.Tags, ","), // Assuming tags are stored as a comma-separated string
 	}
 }
 
 // ToEntity converts a TNode (DAO) to a NodeEntity.
 func ToEntity(tnode *dao.TNode) *entity.NodeEntity {
 	return &entity.NodeEntity{
-		ID:       tnode.ID,
-		Name:     tnode.Name,
-		Content:  tnode.Content,
-		Depend:   tnode.Depend,
-		Father:   tnode.Father,
-		FatherID: tnode.FatherID,
+		ID:      tnode.ID,
+		Name:    tnode.Name,
+		Content: tnode.Content,
+		Depend:  tnode.Depend,
+
+		ParentID: tnode.FatherID,
 		Done:     tnode.Done,
 		Status:   tnode.Status,
 		Region:   tnode.Region,

@@ -1,17 +1,15 @@
 package V1
 
 type CreateNodeInfo struct {
-	Name       string   `json:"name"`
-	Content    string   `json:"content"`
-	Depend     string   `json:"depend"`
-	FatherName string   `json:"father_name"`
-	FatherId   uint     `json:"father_id"`
-	Region     string   `json:"region"`
-	Children   []string `json:"children"`
-	Done       bool     `json:"done"`
-	Tags       []string `json:"tags"`
-	Note       string   `json:"note"`
-	Status     string   `json:"status"`
+	Name     string   `json:"name"`
+	Content  string   `json:"content"`
+	Depend   string   `json:"depend"`
+	ParentId uint     `json:"parent_id"`
+	Region   string   `json:"region"`
+	Done     bool     `json:"done"`
+	Tags     []string `json:"tags"`
+	Note     string   `json:"note"`
+	Status   string   `json:"status"`
 }
 
 type CreateNodeRequest struct {
@@ -45,8 +43,6 @@ type GetNodeListRequest struct {
 	Father  string `json:"father"`
 	Region  string `json:"region"`
 }
-type GetNodeListResponse struct {
-}
 
 type GetTopoResponse struct {
 	Name    string      `json:"name"`
@@ -64,7 +60,7 @@ type UpdateNodeRequest struct {
 	Region     string `json:"region"`
 	Content    string `json:"content"`
 	Depend     string `json:"depend"`
-	FatherId   uint   `json:"father_id"`
+	ParentID   uint   `json:"parent_id"`
 	FatherName string `json:"father_name"`
 	Done       *bool  `json:"done"`
 	Note       string `json:"note"`

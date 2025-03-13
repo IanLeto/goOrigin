@@ -25,13 +25,12 @@ func CreateNode(c *gin.Context) {
 	entity.Name = req.Name
 	entity.Content = req.Content
 	entity.Depend = req.Depend
-	entity.FatherID = req.FatherId
+	entity.ParentID = req.ParentId
 	entity.Done = req.Done
 	entity.Region = req.Region
 	entity.Status = "New"
 	entity.Note = req.Note
 	entity.Tags = req.Tags
-	entity.Children = req.Children
 	res, err = v2.CreateNode(c, req.Region, entity)
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
@@ -55,13 +54,11 @@ func CreateNodes(c *gin.Context) {
 			Name:     info.Name,
 			Content:  info.Content,
 			Depend:   info.Depend,
-			Father:   info.FatherName,
-			FatherID: info.FatherId,
+			ParentID: info.ParentId,
 			Done:     info.Done,
 			Tags:     info.Tags,
 			Note:     info.Note,
 			Region:   info.Region,
-			Children: info.Children,
 		})
 	}
 	res, err = v2.CreateNodes(c, entities, "")
@@ -96,8 +93,7 @@ func UpdateNode(c *gin.Context) {
 		Name:     req.Name,
 		Content:  req.Content,
 		Depend:   req.Depend,
-		Father:   req.FatherName,
-		FatherID: req.FatherId,
+		ParentID: req.ParentID,
 		Status:   req.Status,
 		Note:     req.Note,
 	}

@@ -15,11 +15,6 @@ var logger, _ = logger2.InitZap()
 var GlobalMySQLConns = map[string]*MySQLConn{}
 
 func NewMySQLConns() error {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		fmt.Printf("⚠️ 数据库迁移失败 : %v\n", r)
-	//	}
-	//}()
 	conf := config.ConfV2
 	for region, info := range conf.Env {
 		GlobalMySQLConns[region] = NewMysqlV2Conn(info.MysqlSQLConfig)
@@ -44,7 +39,7 @@ type MySQLConn struct {
 }
 
 func (m *MySQLConn) Migrate() error {
-	err := m.Client.AutoMigrate(dao.TRecord{}, dao.TTransInfo{}, dao.TAchievementRecord{})
+	err := m.Client.AutoMigrate(dao.TRecord{}, dao.TTransInfo{}, dao.TAchievementRecord{}, dao.TNode{})
 	return err
 }
 

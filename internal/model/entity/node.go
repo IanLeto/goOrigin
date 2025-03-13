@@ -2,6 +2,7 @@ package entity
 
 import (
 	"context"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	//dao2 "goOrigin/internal/model/dao"
 )
@@ -11,8 +12,7 @@ type NodeEntity struct {
 	Name     string        `json:"name"`
 	Content  string        `json:"content"`
 	Depend   string        `json:"depend"`
-	Father   string        `json:"father_name"`
-	FatherID uint          `json:"father_id"`
+	ParentID uint          `json:"parent_id"`
 	Done     bool          `json:"done"`
 	Status   string        `json:"status"`
 	Tags     []string      `json:"tags"`
@@ -22,71 +22,25 @@ type NodeEntity struct {
 	Nodes    []*NodeEntity `json:"nodes"`
 }
 
-func (n *NodeEntity) MergeWith(other *NodeEntity) {
-	if other.ID != 0 && n.ID != other.ID {
-		n.ID = other.ID
-	}
-	if other.Name != "" && n.Name != other.Name {
-		n.Name = other.Name
-	}
-	if other.Content != "" && n.Content != other.Content {
-		n.Content = other.Content
-	}
-	if other.Depend != "" && n.Depend != other.Depend {
-		n.Depend = other.Depend
-	}
-	if other.Father != "" && n.Father != other.Father {
-		n.Father = other.Father
-	}
-	if other.FatherID != 0 && n.FatherID != other.FatherID {
-		n.FatherID = other.FatherID
-	}
-	if other.Status != "" && n.Status != other.Status {
-		n.Status = other.Status
-	}
-	if other.Note != "" && n.Note != other.Note {
-		n.Note = other.Note
-	}
-	if other.Region != "" && n.Region != other.Region {
-		n.Region = other.Region
-	}
-	if len(other.Tags) != 0 && !equalStringSlices(n.Tags, other.Tags) {
-		n.Tags = other.Tags
-	}
-	if len(other.Children) != 0 && !equalStringSlices(n.Children, other.Children) {
-		n.Children = other.Children
-	}
-	if other.Nodes != nil && !equalNodeEntitySlices(n.Nodes, other.Nodes) {
-		n.Nodes = other.Nodes
+func (n *NodeEntity) BuildTree() {
+
+}
+
+// 递归打印树
+func PrintTree(nodes []*NodeEntity, level int) {
+	for _, node := range nodes {
+		fmt.Printf("%s- %s (ID: %d)\n", getIndent(level), node.Name, node.ID)
+		PrintTree(node.Nodes, level+1)
 	}
 }
 
-// Helper function to compare two slices of strings.
-func equalStringSlices(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
+// 获取缩进
+func getIndent(level int) string {
+	indent := ""
+	for i := 0; i < level; i++ {
+		indent += "  "
 	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-// Helper function to compare two slices of *NodeEntity.
-func equalNodeEntitySlices(a, b []*NodeEntity) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		// This is a simple comparison that can be made more complex if needed.
-		// For example, you might want to compare IDs or other identifying fields.
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
+	return indent
 }
 
 //func (n *NodeEntity) ToMySQLTable() (mysql.Table, error) {
@@ -96,7 +50,7 @@ func equalNodeEntitySlices(a, b []*NodeEntity) bool {
 //		Content:  n.Content,
 //		Depend:   n.Depend,
 //		Father:   n.Father,
-//		FatherID: n.FatherID,
+//		ParentID: n.ParentID,
 //		Done:     n.Done,
 //		Status:   n.Status,
 //		Region:   n.Region,
@@ -125,7 +79,7 @@ func equalNodeEntitySlices(a, b []*NodeEntity) bool {
 //		Content:  node.Content,
 //		Depend:   node.Depend,
 //		Father:   node.Father,
-//		FatherID: node.FatherID,
+//		ParentID: node.ParentID,
 //		Done:     node.Done,
 //		Status:   node.Status,
 //		Tags:     tags,
@@ -215,7 +169,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //			Content:  v.Content,
 //			Depend:   v.Depend,
 //			Father:   v.Father,
-//			FatherID: v.FatherID,
+//			ParentID: v.ParentID,
 //			Done:     v.Done,
 //			Status:   v.Status,
 //			Tags:     ephemeralTags,
@@ -265,7 +219,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //			},
 //		}
 //		goto Query
-//	case node.FatherID != 0:
+//	case node.ParentID != 0:
 //		query = map[string]interface{}{
 //			"bool": map[string]interface{}{
 //				"must": map[string]interface{}{
@@ -310,7 +264,7 @@ func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
 //		goto ERR
 //	}
 //	node.Father = father.GetName
-//	node.FatherID = father.ID
+//	node.ParentID = father.ID
 //	if source == nil {
 //		err = errors.New("father node not found")
 //		goto ERR

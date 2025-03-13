@@ -54,7 +54,6 @@ func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *entity.NodeE
 		err    error
 	)
 	nodeEntity, err := GetNodeDetail(c, region, id)
-	nodeEntity.MergeWith(nodeUpdate)
 	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, repository.ToDAO(nodeEntity))
 	if err != nil {
 		logger.Error("创建node 失败")

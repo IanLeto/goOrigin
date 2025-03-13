@@ -17,6 +17,3 @@ type TRecord struct {
 	Coding  string  `json:"coding" gorm:"column:coding;type:varchar(100)"`
 	Social  string  `json:"social" gorm:"column:social;type:varchar(100)"`
 }
-
-type DocRecord struct {
-}
