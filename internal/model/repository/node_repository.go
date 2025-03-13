@@ -12,7 +12,7 @@ func ToDAO(node *entity.NodeEntity) *dao.TNode {
 		Name:     node.Name,
 		Content:  node.Content,
 		Depend:   node.Depend,
-		FatherID: node.ParentID,
+		ParentID: node.ParentID,
 		Done:     node.Done,
 		Status:   node.Status,
 		Region:   node.Region,
@@ -28,7 +28,7 @@ func ToEntity(tnode *dao.TNode) *entity.NodeEntity {
 		Content: tnode.Content,
 		Depend:  tnode.Depend,
 
-		ParentID: tnode.FatherID,
+		ParentID: tnode.ParentID,
 		Done:     tnode.Done,
 		Status:   tnode.Status,
 		Region:   tnode.Region,

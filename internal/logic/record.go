@@ -41,7 +41,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 		logger.Error(fmt.Sprintf("create record failed %s: %s", err, res))
 		goto ERR
 	}
-	//_, err = es.Create("ian", tRecord)
 
 	return tRecord.ID, err
 ERR:
