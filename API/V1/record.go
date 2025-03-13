@@ -77,7 +77,6 @@ type CreateIanRecordRequestInfo struct {
 	Vol4    string  `json:"vol4"`
 	Content string  `json:"content"`
 	Cost    int     `json:"cost"`
-	Retire  int     `json:"retire"`
 	Dev     string  `json:"dev"`
 	Coding  string  `json:"coding"`
 	Social  string  `json:"social"`

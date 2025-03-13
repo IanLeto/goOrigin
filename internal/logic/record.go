@@ -33,8 +33,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Content = info.Content
 	recordEntity.Cost = info.Cost
 	recordEntity.Region = region
-	recordEntity.Dev = info.Dev
-	recordEntity.Coding = info.Coding
 
 	tRecord = repository.ToRecordDAO(recordEntity)
 	db := mysql.GlobalMySQLConns[region]
@@ -68,8 +66,6 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 	recordEntity.Content = info.Content
 	recordEntity.Cost = info.Cost
 	recordEntity.Region = region
-	recordEntity.Dev = info.Dev
-	recordEntity.Coding = info.Coding
 
 	recordEntity.Social = info.Social
 
