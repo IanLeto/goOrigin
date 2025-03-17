@@ -109,7 +109,7 @@ func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err e
 	tRecord = repository.ToRecordDAO(record)
 
 	// 连接数据库
-	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[""].MysqlSQLConfig)
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[record.Region].MysqlSQLConfig)
 
 	// 检查记录是否存在
 	existingRecord := &dao.TRecord{}
