@@ -109,7 +109,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	recordGroup := g.Group("/v1/record")
 	{
 		recordGroup.POST("", recordHandlers.CreateRecord)
-		recordGroup.GET("", recordHandlers.QueryRecord)
+		recordGroup.GET("", recordHandlers.QueryRecords)
 		recordGroup.PUT("", recordHandlers.UpdateRecord)
 		recordGroup.DELETE("", recordHandlers.DeleteRecord)
 		recordGroup.POST("/append", recordHandlers.AppendIanRecord)

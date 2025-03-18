@@ -16,12 +16,18 @@ func CreateRecord(c *gin.Context) {
 		res = &V1.CreateIanRecordResponse{}
 		err error
 	)
+	if req.Region == "" {
+		c.Set("region", "win")
+	} else {
+		c.Set("region", req.Region)
+	}
+
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
 
-	res.Id, err = logic.CreateRecord(c, req.Region, req.CreateIanRecordRequestInfo)
+	res.Id, err = logic.CreateRecord(c, req.CreateIanRecordRequestInfo)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
@@ -38,14 +44,13 @@ func CreateFileRecord(c *gin.Context) {
 		req = &V1.CreateIanRecordRequest{}
 		res = &V1.CreateIanRecordResponse{}
 		err error
-		//entity = &entity.RecordEntity{}
 	)
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
 
-	res.Id, err = logic.CreateFileRecord(c, req.Region, req.CreateIanRecordRequestInfo)
+	res.Id, err = logic.CreateFileRecord(c, req.CreateIanRecordRequestInfo)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR
@@ -56,7 +61,7 @@ func CreateFileRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
-func QueryRecord(c *gin.Context) {
+func QueryRecords(c *gin.Context) {
 	var (
 		res    = &V1.QueryIanRecordsResponse{}
 		result []*entity.RecordEntity

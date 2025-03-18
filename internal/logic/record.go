@@ -16,14 +16,12 @@ import (
 	"os"
 )
 
-func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
+func CreateRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
+		region       = ctx.GetString("region")
 	)
-	if region == "" {
-		region = "win"
-	}
 	recordEntity.Title = info.Name
 	recordEntity.Weight = info.Weight
 	recordEntity.Vol1 = info.Vol1
@@ -32,7 +30,6 @@ func CreateRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordReque
 	recordEntity.Vol4 = info.Vol4
 	recordEntity.Content = info.Content
 	recordEntity.Cost = info.Cost
-	recordEntity.Region = region
 
 	tRecord = repository.ToRecordDAO(recordEntity)
 	db := mysql.GlobalMySQLConns[region]
@@ -48,12 +45,12 @@ ERR:
 
 }
 
-func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordRequestInfo) (uint, error) {
+func CreateFileRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, error) {
 	var (
 		tRecord      = &dao.TRecord{}
 		recordEntity = &entity.RecordEntity{}
-
-		path string
+		region       = ctx.GetString("region")
+		path         string
 	)
 
 	recordEntity.Title = info.Name
@@ -64,8 +61,6 @@ func CreateFileRecord(ctx *gin.Context, region string, info *V1.CreateIanRecordR
 	recordEntity.Vol4 = info.Vol4
 	recordEntity.Content = info.Content
 	recordEntity.Cost = info.Cost
-	recordEntity.Region = region
-
 	recordEntity.Social = info.Social
 
 	tRecord = repository.ToRecordDAO(recordEntity)
