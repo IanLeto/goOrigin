@@ -25,6 +25,27 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
+func CreateNode(ctx *gin.Context, entity *entity.NodeEntity) (uint, error) {
+	var (
+		err    error
+		tNode  *dao.TNode
+		region = ctx.GetString("region")
+	)
+	db := mysql.GlobalMySQLConns[region]
+	tNode = repository.ToTnode(entity)
+
+	res, _, err := mysql.Create(db.Client, tNode)
+	if err != nil {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, res))
+		goto ERR
+	}
+
+	return tNode.ID, err
+ERR:
+	return 0, err
+
+}
+
 func GetNodes(c *gin.Context, name string, status string, parentId int, startTime, endTime int64, pageSize, page int) ([]*entity.NodeEntity, error) {
 	var (
 		nodeEntities = make([]*dao.TNode, 0)
