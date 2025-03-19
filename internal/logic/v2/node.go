@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"github.com/sirupsen/logrus"
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
@@ -93,25 +94,50 @@ ERR:
 	}
 }
 
-func GetNodes(c *gin.Context, name, father, region string) (nodes []*entity.NodeEntity, err error) {
+func GetNodes(c *gin.Context, name string, status string, parentId int, startTime, endTime int64, pageSize, page int) ([]*entity.NodeEntity, error) {
 	var (
-		db     *gorm.DB
-		tNodes []*dao.TNode
+		nodeEntities = make([]*dao.TNode, 0)
+		err          error
+		res          = make([]*entity.NodeEntity, 0)
+		region       = c.GetString("region")
 	)
-	db = mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
-	err = db.Table("t_node").Where("name = ? and father = ?", name, father).Find(&tNodes).Error
-	if err != nil {
+	db := mysql.GlobalMySQLConns[region]
+	sql := db.Client.Debug().Table("t_nodes")
+	if name != "" {
+		sql = sql.Where("name = ?", name)
+	}
+	if startTime != 0 {
+		sql = sql.Where("create_time > ?", startTime)
+	}
+	if endTime != 0 {
+		sql = sql.Where("modify_time < ?", endTime)
+	}
+	// 添加查询条件
+	if name != "" {
+		sql = sql.Where("name = ?", name)
+	}
+	sql = sql.Where("parent_id = ?", parentId)
+	if pageSize == 0 {
+		pageSize = 50
+	}
+
+	// 分页查询
+	tRecords := sql.Order("create_time DESC").Limit(pageSize).Find(&nodeEntities)
+	if tRecords.Error != nil {
+		logrus.Errorf("query records failed: %s", tRecords.Error)
 		goto ERR
 	}
-	for _, v := range tNodes {
-		nodes = append(nodes, repository.ToNodeEntity(v))
-	}
-ERR:
-	{
-		return nil, err
-	}
-}
 
+	// 转换数据
+	for _, nodeEntity := range nodeEntities {
+		res = append(res, repository.ToNodeEntity(nodeEntity))
+	}
+
+	return res, nil
+
+ERR:
+	return nil, err
+}
 func DeleteNode(c *gin.Context, id uint, region string) (interface{}, error) {
 	var (
 		err   error

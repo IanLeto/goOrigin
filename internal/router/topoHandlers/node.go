@@ -109,10 +109,11 @@ ERR:
 
 func GetNodes(c *gin.Context) {
 	var (
-		name   = c.Query("name")
-		father = c.Query("father")
-		region = c.Query("region")
-		err    error
+		name      = c.Query("name")
+		parent_id = c.Query("parent_id")
+		region    = c.Query("region")
+		status    = c.Query("status")
+		err       error
 	)
 	res, err := v2.GetNodes(c, name, father, region)
 	if err != nil {
