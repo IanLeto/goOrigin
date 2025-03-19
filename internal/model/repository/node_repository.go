@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ToDAO converts a NodeEntity to a TNode (DAO).
-func ToDAO(node *entity.NodeEntity) *dao.TNode {
+// ToTnode converts a NodeEntity to a TNode (DAO).
+func ToTnode(node *entity.NodeEntity) *dao.TNode {
 	return &dao.TNode{
 		Name:     node.Name,
 		Content:  node.Content,
@@ -15,13 +15,12 @@ func ToDAO(node *entity.NodeEntity) *dao.TNode {
 		ParentID: node.ParentID,
 		Done:     node.Done,
 		Status:   node.Status,
-		Region:   node.Region,
 		Note:     node.Note,
 	}
 }
 
-// ToEntity converts a TNode (DAO) to a NodeEntity.
-func ToEntity(tnode *dao.TNode) *entity.NodeEntity {
+// ToNodeEntity converts a TNode (DAO) to a NodeEntity.
+func ToNodeEntity(tnode *dao.TNode) *entity.NodeEntity {
 	return &entity.NodeEntity{
 		ID:      tnode.ID,
 		Name:    tnode.Name,
@@ -31,7 +30,6 @@ func ToEntity(tnode *dao.TNode) *entity.NodeEntity {
 		ParentID: tnode.ParentID,
 		Done:     tnode.Done,
 		Status:   tnode.Status,
-		Region:   tnode.Region,
 		Note:     tnode.Note,
 		Tags:     strings.Split(tnode.Tags, ","), // Convert the string back into a slice of strings
 		// Children and Nodes fields handling here...

@@ -27,7 +27,6 @@ func CreateNode(c *gin.Context) {
 	entity.Depend = req.Depend
 	entity.ParentID = req.ParentId
 	entity.Done = req.Done
-	entity.Region = req.Region
 	entity.Status = "New"
 	entity.Note = req.Note
 	entity.Tags = req.Tags
@@ -58,7 +57,6 @@ func CreateNodes(c *gin.Context) {
 			Done:     info.Done,
 			Tags:     info.Tags,
 			Note:     info.Note,
-			Region:   info.Region,
 		})
 	}
 	res, err = v2.CreateNodes(c, entities, "")

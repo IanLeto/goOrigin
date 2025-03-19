@@ -20,7 +20,7 @@ func CreateNode(c *gin.Context, region string, entity *entity.NodeEntity) (id ui
 	var (
 		logger = logger2.NewLogger()
 	)
-	tNode := repository.ToDAO(entity)
+	tNode := repository.ToTnode(entity)
 	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, tNode)
 	logger.Debug(fmt.Sprintf("create node %s", record))
 	if err != nil {
@@ -54,7 +54,7 @@ func UpdateNode(c *gin.Context, id uint, region string, nodeUpdate *entity.NodeE
 		err    error
 	)
 	nodeEntity, err := GetNodeDetail(c, region, id)
-	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, repository.ToDAO(nodeEntity))
+	record, _, err := mysql.Create(mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client, repository.ToTnode(nodeEntity))
 	if err != nil {
 		logger.Error("创建node 失败")
 		return "", err
@@ -85,7 +85,7 @@ func GetNodeDetail(c *gin.Context, region string, id uint) (*entity.NodeEntity, 
 	if err != nil {
 		goto ERR
 	}
-	result = repository.ToEntity(tNode)
+	result = repository.ToNodeEntity(tNode)
 	return result, err
 ERR:
 	{
@@ -104,7 +104,7 @@ func GetNodes(c *gin.Context, name, father, region string) (nodes []*entity.Node
 		goto ERR
 	}
 	for _, v := range tNodes {
-		nodes = append(nodes, repository.ToEntity(v))
+		nodes = append(nodes, repository.ToNodeEntity(v))
 	}
 ERR:
 	{

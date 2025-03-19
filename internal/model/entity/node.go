@@ -21,10 +21,6 @@ type NodeEntity struct {
 	Nodes    []*NodeEntity `json:"nodes"`
 }
 
-func (n *NodeEntity) BuildTree() {
-
-}
-
 // Epl 接收一个callback ，callback 为递归查询子节点的实现，目前支持 mysql ， searchlight
 func (n *NodeEntity) Epl(fn func(entity *NodeEntity) (*NodeEntity, error)) {
 	for _, child := range n.Children {

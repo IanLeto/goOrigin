@@ -28,11 +28,13 @@ type CreateNodeResponse struct {
 	Next    string `json:"next"`
 }
 
-type GetNodeRequest struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
-	Father  string `json:"father"`
-	Region  string `json:"region"`
+type GetNodesRequest struct {
+	Name        string `json:"name"`
+	Content     string `json:"content"`
+	ParentID    string `json:"parent_id"`
+	DeadLine    string `json:"dead_line"`
+	Status      string `json:"status"`
+	Achievement int    `json:"achievement"`
 }
 type GetNodeResponse struct {
 }
@@ -65,13 +67,6 @@ type UpdateNodeRequest struct {
 	Done       *bool  `json:"done"`
 	Note       string `json:"note"`
 	Status     string `json:"status"`
-}
-
-type SearchNodeRequest struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
-	Father  string `json:"father"`
-	Keyword string `json:"keyword"`
 }
 
 type SearchNodeResponse struct {

@@ -13,6 +13,7 @@ import (
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
+	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/clients"
 	logger2 "goOrigin/pkg/logger"
 )
@@ -24,7 +25,52 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, id, name, father, content string, done bool) (node []*entity.NodeEntity, err error) {
+func GetNodes(c *gin.Context, name string, status string, parent_id int, startTime, endTime int64, pageSize, page int) ([]*entity.NodeEntity, error) {
+	var (
+		nodeEntities = make([]*dao.TNode, 0)
+		err          error
+		res          = make([]*entity.NodeEntity, 0)
+		region       = c.GetString("region")
+	)
+	db := mysql.GlobalMySQLConns[region]
+	sql := db.Client.Debug().Table("t_nodes")
+	if name != "" {
+		sql = sql.Where("name = ?", name)
+	}
+	if startTime != 0 {
+		sql = sql.Where("create_time > ?", startTime)
+	}
+	if endTime != 0 {
+		sql = sql.Where("modify_time < ?", endTime)
+	}
+	// 添加查询条件
+	if name != "" {
+		sql = sql.Where("name = ?", name)
+	}
+	sql = sql.Where("parent_id = ?", parent_id)
+	if pageSize == 0 {
+		pageSize = 50
+	}
+
+	// 分页查询
+	tRecords := sql.Order("create_time DESC").Limit(pageSize).Find(&nodeEntities)
+	if tRecords.Error != nil {
+		logrus.Errorf("query records failed: %s", tRecords.Error)
+		goto ERR
+	}
+
+	// 转换数据
+	for _, nodeEntity := range nodeEntities {
+		res = append(res, repository.ToNodeEntity(nodeEntity))
+	}
+
+	return res, nil
+
+ERR:
+	return nil, err
+}
+
+func SearchNodes(c *gin.Context, id, name, father, content string, done bool) (node []*entity.NodeEntity, err error) {
 	var (
 		logger  = logger2.NewLogger()
 		queries []elastic.Query
