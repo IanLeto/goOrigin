@@ -25,7 +25,7 @@ func NewExistEsQuery(param string, query elastic.Query) elastic.Query {
 	return query
 }
 
-func GetNodes(c *gin.Context, name string, status string, parent_id int, startTime, endTime int64, pageSize, page int) ([]*entity.NodeEntity, error) {
+func GetNodes(c *gin.Context, name string, status string, parentId int, startTime, endTime int64, pageSize, page int) ([]*entity.NodeEntity, error) {
 	var (
 		nodeEntities = make([]*dao.TNode, 0)
 		err          error
@@ -47,7 +47,7 @@ func GetNodes(c *gin.Context, name string, status string, parent_id int, startTi
 	if name != "" {
 		sql = sql.Where("name = ?", name)
 	}
-	sql = sql.Where("parent_id = ?", parent_id)
+	sql = sql.Where("parent_id = ?", parentId)
 	if pageSize == 0 {
 		pageSize = 50
 	}
