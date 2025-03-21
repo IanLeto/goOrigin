@@ -108,22 +108,23 @@ ERR:
 }
 
 func GetNodes(c *gin.Context) {
-	var (
-		name      = c.Query("name")
-		parent_id = c.Query("parent_id")
-		region    = c.Query("region")
-		status    = c.Query("status")
-		err       error
-	)
-	res, err := v2.GetNodes(c, name, father, region)
-	if err != nil {
-		goto ERR
-	}
-
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+	panic(1)
+	//	var (
+	//		name      = c.Query("name")
+	//		parent_id = c.Query("parent_id")
+	//		region    = c.Query("region")
+	//		status    = c.Query("status")
+	//		err       error
+	//	)
+	//	res, err := v2.GetNodes(c, name, father, region)
+	//	if err != nil {
+	//		goto ERR
+	//	}
+	//
+	//	V1.BuildResponse(c, V1.BuildInfo(res))
+	//	return
+	//ERR:
+	//	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func SearchNode(c *gin.Context) {
