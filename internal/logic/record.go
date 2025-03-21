@@ -502,7 +502,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 ////		records []*dao.TRecord
 ////		where   = "1 = 1"
 ////		res     = &V1.SelectIanRecordResponse{
-////			Items: []V1.RecordInfo{},
+////			Items: []V1.CreateIanRecordRequestInfo{},
 ////		}
 ////	)
 ////	if name != "" {
@@ -522,7 +522,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 ////		return nil, err
 ////	}
 ////	for _, record := range records {
-////		res.Items = append(res.Items, V1.RecordInfo{
+////		res.Items = append(res.Items, V1.CreateIanRecordRequestInfo{
 ////			Id:         record.ID,
 ////			CreateTime: record.CreateTime,
 ////			ModifyTime: record.ModifyTime,
@@ -583,7 +583,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //		return
 //	}
 //	res = &V1.UpdateIanRecordResponse{
-//		Item: V1.RecordInfo{
+//		Item: V1.CreateIanRecordRequestInfo{
 //			GetName:       record.GetName,
 //			Weight:     record.Weight,
 //			BF:         record.BF,
