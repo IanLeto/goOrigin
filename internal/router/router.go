@@ -118,7 +118,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	ginpprof.WrapGroup(recordGroup)
 	k8sGroup := g.Group("v1/k8s/deploy")
 	{
-		k8sGroup.POST("", k8sHandlers.CreateDeploy)
 		k8sGroup.GET("", k8sHandlers.ListDeploy)
 		k8sGroup.DELETE("", k8sHandlers.DeleteDeploy)
 		k8sGroup.PUT("", k8sHandlers.UpdateDeploy)

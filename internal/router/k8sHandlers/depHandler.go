@@ -8,23 +8,6 @@ import (
 	"goOrigin/internal/logic"
 )
 
-func CreateDeploy(c *gin.Context) {
-	var (
-		req  = V1.CreateDeploymentReq{}
-		name interface{}
-		err  error
-	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
-		goto ERR
-	}
-	name, err = logic.CreateDeployment(c, &req)
-	V1.BuildResponse(c, V1.BuildInfo(name))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
 func DeleteDeploy(c *gin.Context) {
 	var (
 		name = c.GetString("name")
@@ -72,40 +55,6 @@ func ListDeploy(c *gin.Context) {
 	}
 
 	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
-func CreateConfigMap(c *gin.Context) {
-	var (
-		req  = V1.CreateDeploymentReq{}
-		name interface{}
-		err  error
-	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
-		goto ERR
-	}
-	name, err = logic.CreateDeployment(c, &req)
-	V1.BuildResponse(c, V1.BuildInfo(name))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
-func SelectConfigMap(c *gin.Context) {
-	var (
-		req  = V1.GetConfigMapRequestInfo{}
-		name interface{}
-		err  error
-	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		logrus.Errorf("%s", err)
-		goto ERR
-	}
-	name, err = logic.GetConfigMapDetail(c, &req)
-	V1.BuildResponse(c, V1.BuildInfo(name))
 	return
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))

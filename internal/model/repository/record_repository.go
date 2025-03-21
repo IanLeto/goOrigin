@@ -9,16 +9,17 @@ import (
 func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
 	return &dao.TRecord{
 
-		Title:   record.Title,
-		Weight:  record.Weight,
-		Vol1:    record.Vol1,
-		Vol2:    record.Vol2,
-		Vol3:    record.Vol3,
-		Vol4:    record.Vol4,
-		Content: record.Content,
-		IsFuck:  record.IsFuck,
-		Cost:    record.Cost,
-		Social:  record.Social,
+		Title:     record.Title,
+		MorWeight: record.MorWeight,
+		NigWeight: record.NigWeight,
+		Vol1:      record.Vol1,
+		Vol2:      record.Vol2,
+		Vol3:      record.Vol3,
+		Vol4:      record.Vol4,
+		Content:   record.Content,
+		IsFuck:    record.IsFuck,
+		Cost:      record.Cost,
+		Social:    record.Social,
 	}
 }
 
@@ -28,7 +29,8 @@ func ToRecordEntity(tRecord *dao.TRecord) *entity.RecordEntity {
 	record := &entity.RecordEntity{
 		ID:         tRecord.ID,
 		Title:      tRecord.Title,
-		Weight:     tRecord.Weight,
+		MorWeight:  tRecord.MorWeight,
+		NigWeight:  tRecord.NigWeight,
 		Content:    tRecord.Content,
 		Cost:       tRecord.Cost,
 		Vol1:       tRecord.Vol1,

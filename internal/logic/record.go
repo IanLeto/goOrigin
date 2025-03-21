@@ -23,7 +23,8 @@ func CreateRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, 
 		region       = ctx.GetString("region")
 	)
 	recordEntity.Title = info.Name
-	recordEntity.Weight = info.Weight
+	recordEntity.MorWeight = info.Weight
+	recordEntity.MorWeight = info.NigWeight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
 	recordEntity.Vol3 = info.Vol3
@@ -54,7 +55,7 @@ func CreateFileRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (ui
 	)
 
 	recordEntity.Title = info.Name
-	recordEntity.Weight = info.Weight
+	recordEntity.MorWeight = info.Weight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
 	recordEntity.Vol3 = info.Vol3
@@ -224,12 +225,12 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //		logger.Error(fmt.Sprintf("创建 ianrecord:%s 失败 %s", ian.ToString(), err))
 //		return nil, err
 //	}
-//	if req.Body.Weight == 0 {
+//	if req.Body.MorWeight == 0 {
 //		return res, err
 //	}
 //	// 不另启dao了 写入prometheus
 //	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
-//	info.Set(cast.ToFloat64(req.Body.Weight))
+//	info.Set(cast.ToFloat64(req.Body.MorWeight))
 //
 //	//res, err := storage.GlobalMongo.DB.Collection("ian").InsertOne(context.TODO(), &ian)
 //	//if err != nil {
@@ -264,7 +265,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //		ian = entity.NewIan(req)
 //	)
 //	info := weight.WithLabelValues(req.Body.BF, req.Body.LUN, req.Body.DIN, req.Body.EXTRA)
-//	info.Set(cast.ToFloat64(req.Body.Weight))
+//	info.Set(cast.ToFloat64(req.Body.MorWeight))
 //	res := storage.GlobalMongo.DB.Collection("ian").FindOneAndReplace(context.TODO(), bson.M{"name": req.GetName},
 //		&ian)
 //
@@ -339,9 +340,9 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //			CreateTime: time.Unix(ephemeralIan.Time.T, 0).Format(time.RFC3339),
 //			UpdateTime: time.Unix(ephemeralIan.Time.I, 0).Format(time.RFC3339),
 //			Body: struct {
-//				Weight float32 `json:"weight"`
+//				MorWeight float32 `json:"weight"`
 //			}{
-//				Weight: ephemeralIan.Body.Weight,
+//				MorWeight: ephemeralIan.Body.MorWeight,
 //			},
 //			BETre: struct {
 //				Core       int `json:"core"`
@@ -421,7 +422,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 ////	)
 ////	tRecord := dao.TRecord{
 ////		GetName:       req.GetName,
-////		Weight:     req.Weight,
+////		MorWeight:     req.MorWeight,
 ////		BF:         req.BF,
 ////		LUN:        req.LUN,
 ////		DIN:        req.DIN,
@@ -462,7 +463,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //	for _, item := range req.Items {
 //		tRecord := dao.TRecord{
 //			GetName:       item.GetName,
-//			Weight:     item.Weight,
+//			MorWeight:     item.MorWeight,
 //			BF:         item.BF,
 //			LUN:        item.LUN,
 //			DIN:        item.DIN,
@@ -527,7 +528,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 ////			CreateTime: record.CreateTime,
 ////			ModifyTime: record.ModifyTime,
 ////			GetName:       record.GetName,
-////			Weight:     record.Weight,
+////			MorWeight:     record.MorWeight,
 ////			BF:         record.BF,
 ////			LUN:        record.LUN,
 ////			DIN:        record.DIN,
@@ -556,7 +557,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //	var (
 //		record = dao.TRecord{
 //			GetName:       req.Info.GetName,
-//			Weight:     req.Info.Weight,
+//			MorWeight:     req.Info.MorWeight,
 //			BF:         req.Info.BF,
 //			LUN:        req.Info.LUN,
 //			DIN:        req.Info.DIN,
@@ -585,7 +586,7 @@ func DeleteRecord(ctx *gin.Context, region string, recordID uint) error {
 //	res = &V1.UpdateIanRecordResponse{
 //		Item: V1.CreateIanRecordRequestInfo{
 //			GetName:       record.GetName,
-//			Weight:     record.Weight,
+//			MorWeight:     record.MorWeight,
 //			BF:         record.BF,
 //			LUN:        record.LUN,
 //			DIN:        record.DIN,

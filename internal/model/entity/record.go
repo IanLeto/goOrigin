@@ -13,9 +13,11 @@ type RecordTimeInfo struct {
 
 // RecordEntity 结构体，包含原始数据 + 时间信息
 type RecordEntity struct {
-	ID         uint           `json:"id" bson:"_id"`
-	Title      string         `json:"title" bson:"title"`
-	Weight     float32        `json:"weight" bson:"weight"`
+	ID        uint    `json:"id" bson:"_id"`
+	Title     string  `json:"title" bson:"title"`
+	MorWeight float32 `json:"weight" bson:"weight"`
+	NigWeight float32 `json:"nig_weight" bson:"weight"`
+
 	IsFuck     bool           `json:"is_fuck"`
 	Vol1       string         `json:"vol1" bson:"vol1"`
 	Vol2       string         `json:"vol2" bson:"vol2"`

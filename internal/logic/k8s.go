@@ -25,36 +25,6 @@ import (
 	"time"
 )
 
-func CreateDeployment(c *gin.Context, req *V1.CreateDeploymentReq) (string, error) {
-
-	var (
-		res = ""
-		err error
-	)
-	deploy, err := entity.NewDeployParams(req)
-	if err != nil {
-		return "", err
-	}
-	// 启用mongo 事务
-	err = storage.GlobalMongo.Client.UseSession(c, func(sessionContext mongo.SessionContext) error {
-		err = sessionContext.StartTransaction()
-		if err != nil {
-			return err
-		}
-		data, err := storage.GlobalMongo.DB.Collection("pod").InsertOne(c, &deploy)
-		dep, err := k8s.Conn.CreateDeploy(c, "default", deploy.Deployment)
-		if err != nil {
-			_ = sessionContext.AbortTransaction(sessionContext)
-			return err
-		} else {
-			_ = sessionContext.AbortTransaction(sessionContext)
-		}
-		res = fmt.Sprintf("%s-%s", data.InsertedID.(primitive.ObjectID), dep.Name)
-		return nil
-	})
-
-	return res, err
-}
 func CreateDeploymentV2(c *gin.Context, req *V1.CreateDeploymentReq) (string, error) {
 
 	var (
