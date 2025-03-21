@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-const k8sConfigMap = "/root/config/config.yaml"
 const NodeMapping = "node"
 
 func NewV2Config() *V2Config {
