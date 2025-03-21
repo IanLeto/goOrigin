@@ -2,8 +2,6 @@ package clients
 
 import (
 	"github.com/olivere/elastic/v7"
-
-	"goOrigin/config"
 )
 
 type EsAPIs interface {
@@ -12,24 +10,6 @@ type EsAPIs interface {
 
 type EsConn struct {
 	Client *elastic.Client
-}
-
-func NewEsConn(conf *config.Config) (*EsConn, error) {
-	//var (
-	//	conn = &EsConn{}
-	//	err  error
-	//)
-	//if conf == nil {
-	//	conf = config.Conf
-	//}
-	//client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetHealthcheck(false),
-	//	elastic.SetURL(config.Conf.Backend.EsConfig.Address))
-	//if err != nil {
-	//	return nil, err
-	//}
-	//conn.Client = client
-	//return conn, err
-	panic(1)
 }
 
 func NewESClient() (*elastic.Client, error) {

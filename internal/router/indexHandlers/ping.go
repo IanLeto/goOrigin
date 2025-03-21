@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
-	"goOrigin/pkg/cron"
 
 	//"go.opentelemetry.io/otel/trace"
 	"goOrigin/config"
@@ -56,26 +55,6 @@ func SourceInfo(c *gin.Context) {
 
 	err = json.Unmarshal(v, &result)
 	baseHandlers.RenderData(c, result, err)
-}
-
-func ConfigCheck(c *gin.Context) {
-
-	res, err := config.Conf.Backend.K8sConfig.Check()
-	if err != nil {
-		baseHandlers.RenderData(c, res, err)
-		return
-	}
-
-	baseHandlers.RenderData(c, "ok", err)
-}
-
-func JobInfo(c *gin.Context) {
-
-	result := map[string]interface{}{
-		"token": cron.GTM.GetToken(),
-	}
-
-	baseHandlers.RenderData(c, result, nil)
 }
 
 func PodInfoCheck(c *gin.Context) {

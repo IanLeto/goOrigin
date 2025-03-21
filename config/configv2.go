@@ -70,11 +70,6 @@ func NewComponentConfig() map[string]ComponentConfig {
 			esConfInfo := initEsConfig(esInfo)
 			eph.EsConfig = *esConfInfo
 		}
-		cronInfo, ok := component["cronjob"].(map[string]interface{})
-		if ok {
-			cronjobConfig := initCronJobConfig(cronInfo)
-			eph.CronJobConfig = *cronjobConfig
-		}
 
 		prome, ok := component["prom"].(map[string]interface{})
 		if ok {
@@ -91,10 +86,9 @@ type EnvConfig struct {
 }
 
 type ComponentConfig struct {
-	MysqlSQLConfig MySQLConfig   `yaml:"mysql" json:"mysql"`
-	EsConfig       ESConfigV2    `yaml:"es" json:"es"`
-	CronJobConfig  CronjobConfig `yaml:"cronJob" json:"cronJob"`
-	PromeConfig    PromeConfig   `yaml:"prome" json:"prome"`
+	MysqlSQLConfig MySQLConfig `yaml:"mysql" json:"mysql"`
+	EsConfig       ESConfigV2  `yaml:"es" json:"es"`
+	PromeConfig    PromeConfig `yaml:"prome" json:"prome"`
 }
 
 type MySQLConfig struct {

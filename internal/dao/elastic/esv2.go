@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
-	"goOrigin/config"
 	"io"
 )
 
@@ -24,23 +23,6 @@ type EsV2Conn struct {
 func (c *EsV2Conn) Migrate() error {
 	//c.Client.
 	panic(1)
-}
-func NewEsV2Conn(conf *config.EsInfo) *EsV2Conn {
-	var (
-		conn = &EsV2Conn{}
-		err  error
-	)
-
-	client, err := elasticsearch7.NewClient(elasticsearch7.Config{
-		Addresses: []string{
-			conf.Address,
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-	conn.Client = client
-	return conn
 }
 
 func (c *EsV2Conn) Create(index string, body []byte) ([]byte, error) {
