@@ -6,42 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"goOrigin/API/V1"
 	"goOrigin/internal/dao/elastic"
-	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/entity"
-	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/utils"
 	"strings"
 )
-
-func CreateSvcTransAlertRecord(c *gin.Context, region string, info *V1.SvcTransAlertRecordInfo) (uint, error) {
-	var (
-		err error
-	)
-
-	// 1. 将 SvcTransAlertRecordInfo 转换为 ODAMetricEntity
-	metricEntity := repository.ToODAMetricEntityFromInfo(info)
-
-	// 2. 将 ODAMetricEntity 转换为 TODAMetric DAO 对象
-	tRecord := repository.ToODAMetricDAO(metricEntity)
-
-	// 3. 获取数据库连接
-	db, ok := mysql.GlobalMySQLConns[region]
-	if !ok {
-		err = fmt.Errorf("database connection for region '%s' not found", region)
-		logger.Error(err.Error())
-		return 0, err
-	}
-
-	// 4. 插入记录到数据库
-	res, _, err := mysql.Create(db.Client, tRecord)
-	if err != nil {
-		logger.Error(fmt.Sprintf("create TODAMetric record failed %s: %s", err, res))
-		return 0, err
-	}
-
-	// 5. 返回生成的记录 ID
-	return tRecord.ID, nil
-}
 
 // OdaSuccessAndFailedRateMetric 返回成功和失败的比率
 func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {

@@ -39,7 +39,7 @@ type MySQLConn struct {
 }
 
 func (m *MySQLConn) Migrate() error {
-	err := m.Client.AutoMigrate(dao.TRecord{}, dao.TTransInfo{}, dao.TAchievementRecord{}, dao.TNode{})
+	err := m.Client.AutoMigrate(dao.TRecord{}, dao.TTransInfo{}, dao.TAchievementRecord{}, dao.TNode{}, dao.TTransInfo{})
 	return err
 }
 

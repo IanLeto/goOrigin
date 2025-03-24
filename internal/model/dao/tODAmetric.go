@@ -1,21 +1,17 @@
 package dao
 
-// TTransInfo 表映射结构体
+// TTransInfo 数据库表结构（GORM ORM 结构）
 type TTransInfo struct {
-	*Meta `json:"*_meta,omitempty"`
+	*Meta     `json:"*_meta,omitempty"`
+	TraceID   string `json:"trace_id" gorm:"column:trace_id;type:varchar(255);not null"`
+	Cluster   string `json:"cluster" gorm:"column:cluster;type:varchar(100);not null"`
+	Channel   string `json:"channel" gorm:"column:channel;type:varchar(100);not null"`
+	PodName   string `json:"pod_name" gorm:"column:pod_name;type:varchar(100);not null"`
+	SvcName   string `json:"svc_name" gorm:"column:svc_name;type:varchar(100);not null"`
+	TransType string `json:"trans_type" gorm:"column:trans_type;type:varchar(50);not null"`
+}
 
-	Interval         int64  `gorm:"type:bigint;not null" json:"interval"` // 存储为毫秒
-	Cluster          string `gorm:"type:varchar(255)" json:"cluster"`
-	TransType        string `gorm:"type:varchar(255)" json:"trans_type"`
-	TransTypeCode    string `gorm:"type:varchar(255)" json:"trans_type_code"` // 锚定字段
-	TransChannel     string `gorm:"type:varchar(255)" json:"trans_channel"`
-	RetCode          string `gorm:"type:varchar(255)" json:"ret_code"`
-	SvcName          string `gorm:"type:varchar(255)" json:"svc_name"`
-	SuccessCount     int    `gorm:"type:int" json:"success_count"`
-	SuccessRate      int    `gorm:"type:int" json:"success_rate"`
-	FailedCount      int    `gorm:"type:int" json:"failed_count"`
-	FailedRate       int    `gorm:"type:int" json:"failed_rate"`
-	ResponseCount    int    `gorm:"type:int" json:"response_count"`
-	ResponseRate     int    `gorm:"type:int" json:"response_rate"`
-	CustomDimensions string `gorm:"type:text" json:"custom_dimensions"` // 存储为 JSON 格式字符串
+// TableName 指定数据库表名
+func (TTransInfo) TableName() string {
+	return "trans_info"
 }
