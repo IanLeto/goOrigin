@@ -102,7 +102,7 @@ func UpdateRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
-	res.ID, err = logic.UpdateRecord(c, record)
+	res.ID, err = logic.UpdateRecord(c, req.Region, record)
 	if err != nil {
 		goto ERR
 	}

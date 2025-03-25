@@ -25,8 +25,6 @@ type RecordEntity struct {
 	Vol4       string         `json:"vol4" bson:"vol4"`
 	Cost       int            `json:"cost" bson:"cost"`
 	Content    string         `json:"content" bson:"content"`
-	Region     string         `json:"region" bson:"region"`
-	Dev        string         `json:"dev"`
 	Coding     string         `json:"coding"`
 	Social     string         `json:"social"`
 	CreateTime int64          `json:"create_time"`

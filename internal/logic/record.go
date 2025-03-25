@@ -20,8 +20,8 @@ func CreateRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, 
 		recordEntity = &entity.RecordEntity{}
 		region       = ctx.GetString("region")
 	)
-	recordEntity.Title = info.Name
-	recordEntity.MorWeight = info.Weight
+	recordEntity.Title = info.Title
+	recordEntity.MorWeight = info.MorWeight
 	recordEntity.MorWeight = info.NigWeight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
@@ -52,8 +52,8 @@ func CreateFileRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (ui
 		path         string
 	)
 
-	recordEntity.Title = info.Name
-	recordEntity.MorWeight = info.Weight
+	recordEntity.Title = info.Title
+	recordEntity.MorWeight = info.MorWeight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
 	recordEntity.Vol3 = info.Vol3
@@ -96,14 +96,14 @@ ERR:
 	return 0, err
 }
 
-func UpdateRecord(ctx *gin.Context, record *entity.RecordEntity) (id uint, err error) {
+func UpdateRecord(ctx *gin.Context, region string, record *entity.RecordEntity) (id uint, err error) {
 	var tRecord = &dao.TRecord{}
 
 	// 将 entity 转换为 DAO 结构
 	tRecord = repository.ToRecordDAO(record)
 
 	// 连接数据库
-	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[record.Region].MysqlSQLConfig)
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
 
 	// 检查记录是否存在
 	existingRecord := &dao.TRecord{}
