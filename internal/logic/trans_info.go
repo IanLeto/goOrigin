@@ -395,3 +395,7 @@ func OdaSuccessCountMetric(ctx *gin.Context, region string, info *V1.SuccessRate
 ERR:
 	return nil, err
 }
+
+func CreateType() {
+
+}

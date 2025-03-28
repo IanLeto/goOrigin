@@ -11,11 +11,11 @@ func AggregateByTraceID(logs []entity.KafkaLogEntity) map[string]entity.TransInf
 			continue
 		}
 
-		// 取出 Channel、PodName、SvcName
+		// 取出 Channel、PodName、Project
 		transInfo := entity.TransInfoEntity{
 			Cluster: log.SysName,        // 取 SysName 作为 Cluster
 			PodName: log.ContainerPodID, // 取 PodName
-			SvcName: log.SysName,        // 取 SysName 作为 SvcName
+			Project: log.SysName,        // 取 SysName 作为 Project
 		}
 
 		// 以 TraceId 作为 key 进行聚合

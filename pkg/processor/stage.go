@@ -243,7 +243,7 @@ var AggDataStage = func(done <-chan interface{}, data <-chan []byte) <-chan []by
 					Cluster: log.SysName,
 					Channel: log.Trans.TransChannel,
 					PodName: log.ContainerPodID,
-					SvcName: log.SysName,
+					Project: log.SysName,
 				}
 				mu.Unlock()
 			}
