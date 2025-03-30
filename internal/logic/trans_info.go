@@ -424,7 +424,7 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 	for code, name := range req.TransType {
 		transType := &dao.EcampTransTypeTb{
 			Code:      code,
-			NameCN:    name,
+			CodeCN:    name,
 			ProjectID: uint(projectInfo.ID),
 		}
 

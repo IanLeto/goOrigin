@@ -45,7 +45,7 @@ func ToTransInfoEntityFromProject(
 	}
 
 	for _, t := range transTypes {
-		entity.TransType[t.Code] = t.NameCN
+		entity.TransType[t.Code] = t.CodeCN
 		for _, svc := range t.ServiceCodes {
 			entity.ServiceCode[svc.ServiceCode] = svc.ServiceCodeCN
 

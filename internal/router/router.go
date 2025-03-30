@@ -102,7 +102,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 	trasnGroup := g.Group("v1/trans")
 	{
-		trasnGroup.GET("", trans_type.CreateTransInfo)
+		trasnGroup.POST("", trans_type.CreateTransInfo)
 	}
 
 	odav2Group := g.Group("v2/pub")

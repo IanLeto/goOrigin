@@ -23,9 +23,18 @@ func (*EcampProjectInfoTb) TableName() string {
 type EcampTransTypeTb struct {
 	ID           uint   `gorm:"primaryKey"`
 	Code         string `gorm:"size:50"`  // T001
-	NameCN       string `gorm:"size:100"` // 开户7
+	CodeCN       string `gorm:"size:100"` // 开户7
 	ProjectID    uint
 	ServiceCodes []EcampServiceCodeTb `gorm:"foreignKey:TransTypeID"`
+}
+
+type EcampServiceCodeTb struct {
+	TransTypeID   uint   `gorm:"primaryKey"`
+	ServiceCode   string `gorm:"size:50"`  // SC001
+	ServiceCodeCN string `gorm:"size:100"` // 开户成功
+	TraceID       string `gorm:"size:255"`
+	Cluster       string `gorm:"size:100"`
+	PodName       string `gorm:"size:100"`
 }
 
 const TableNameEcampTransTypeTb = "ecamp_trans_type_tb"
@@ -38,14 +47,4 @@ const TableNameEcampServiceCodeTb = "ecamp_service_code_tb"
 
 func (*EcampServiceCodeTb) TableName() string {
 	return TableNameEcampServiceCodeTb
-}
-
-type EcampServiceCodeTb struct {
-	ID            uint   `gorm:"primaryKey"`
-	ServiceCode   string `gorm:"size:50"`  // SC001
-	ServiceCodeCN string `gorm:"size:100"` // 开户成功
-	TransTypeID   uint
-	TraceID       string `gorm:"size:255"`
-	Cluster       string `gorm:"size:100"`
-	PodName       string `gorm:"size:100"`
 }
