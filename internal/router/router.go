@@ -7,6 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"goOrigin/internal/router/trans_type"
 	"goOrigin/pkg/moniter"
 
 	"goOrigin/internal/router/indexHandlers"
@@ -99,6 +100,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		topov2Group.GET("list", topoHandlers.GetTopoList)
 	}
+	trasnGroup := g.Group("v1/trans")
+	{
+		trasnGroup.GET("", trans_type.CreateTransInfo)
+	}
+
 	odav2Group := g.Group("v2/pub")
 	{
 		odav2Group.GET("list", nil)

@@ -1,11 +1,14 @@
 package logic
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"goOrigin/API/V1"
 	"goOrigin/internal/dao/elastic"
+	"goOrigin/internal/dao/mysql"
+	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/utils"
 	"strings"
@@ -396,6 +399,68 @@ ERR:
 	return nil, err
 }
 
-func CreateType() {
+func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (interface{}, error) {
+	var (
+		db          = mysql.GlobalMySQLConns[region].Client
+		projectInfo dao.EcampProjectInfoTb
+		err         error
+	)
 
+	// 查找项目是否存在
+	err = db.Where("project = ? AND trace_pod = ? AND az = ?", req.Project, req.PodName, req.TraceID).First(&projectInfo).Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("project not found: %s", err))
+		return nil, err
+	}
+
+	// 启动事务
+	tx := db.Begin()
+	if tx.Error != nil {
+		logger.Error(fmt.Sprintf("failed to begin tx: %s", tx.Error))
+		return nil, tx.Error
+	}
+
+	// 插入交易类型
+	for code, name := range req.TransType {
+		transType := &dao.EcampTransTypeTb{
+			Code:      code,
+			NameCN:    name,
+			ProjectID: uint(projectInfo.ID),
+		}
+
+		// 可根据需求选择是否允许重复 code（如唯一约束）
+		err = tx.Where("code = ? AND project_id = ?", code, projectInfo.ID).FirstOrCreate(transType).Error
+		if err != nil {
+			tx.Rollback()
+			logger.Error(fmt.Sprintf("failed to create trans type: %s", err))
+			return nil, err
+		}
+
+		// 插入对应的交易码
+		for svcCode, svcName := range req.ServiceCode {
+			svc := &dao.EcampServiceCodeTb{
+				ServiceCode:   svcCode,
+				ServiceCodeCN: svcName,
+				TransTypeID:   transType.ID,
+				TraceID:       req.TraceID,
+				Cluster:       req.Cluster,
+				PodName:       req.PodName,
+			}
+
+			err = tx.Create(svc).Error
+			if err != nil {
+				tx.Rollback()
+				logger.Error(fmt.Sprintf("failed to create service code: %s", err))
+				return nil, err
+			}
+		}
+	}
+
+	// 提交事务
+	if err = tx.Commit().Error; err != nil {
+		logger.Error(fmt.Sprintf("failed to commit transaction: %s", err))
+		return nil, err
+	}
+
+	return "success", nil
 }

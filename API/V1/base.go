@@ -18,17 +18,17 @@ type BaseK8sRequestInfo struct {
 
 func BuildErrResponse(c *gin.Context, info *BaseErrResponseInfo) {
 	c.JSON(400, gin.H{
-		"Data":    nil,
-		"Message": info.Message,
-		"Code":    info.Code,
+		"Data":        nil,
+		"Message":     info.Message,
+		"ServiceCode": info.Code,
 	})
 }
 
 func BuildResponse(c *gin.Context, info *BaseResponseInfo) {
 	c.JSON(200, gin.H{
-		"Data":    info.Data,
-		"Message": info.Message,
-		"Code":    200,
+		"Data":        info.Data,
+		"Message":     info.Message,
+		"ServiceCode": 200,
 	})
 }
 

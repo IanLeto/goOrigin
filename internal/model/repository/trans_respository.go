@@ -19,12 +19,12 @@ func ToServiceCodeDAOs(
 		}
 		for svcCode, svcCN := range entity.ServiceCode {
 			results = append(results, &dao.EcampServiceCodeTb{
-				Code:        svcCode,
-				NameCN:      svcCN,
-				TransTypeID: transTypeID,
-				TraceID:     entity.TraceID,
-				Cluster:     entity.Cluster,
-				PodName:     entity.PodName,
+				ServiceCode:   svcCode,
+				ServiceCodeCN: svcCN,
+				TransTypeID:   transTypeID,
+				TraceID:       entity.TraceID,
+				Cluster:       entity.Cluster,
+				PodName:       entity.PodName,
 			})
 		}
 	}
@@ -47,7 +47,7 @@ func ToTransInfoEntityFromProject(
 	for _, t := range transTypes {
 		entity.TransType[t.Code] = t.NameCN
 		for _, svc := range t.ServiceCodes {
-			entity.ServiceCode[svc.Code] = svc.NameCN
+			entity.ServiceCode[svc.ServiceCode] = svc.ServiceCodeCN
 
 			// 只取第一条记录的 TraceID/Cluster/PodName（假定相同）
 			if entity.TraceID == "" {

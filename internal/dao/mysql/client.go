@@ -40,7 +40,7 @@ type MySQLConn struct {
 
 func (m *MySQLConn) Migrate() error {
 	logger.Sugar().Warnf("开始mirgrate:")
-	err := m.Client.AutoMigrate(dao.TRecord{}, dao.EcampTransInfoTb{}, dao.TAchievementRecord{}, dao.TNode{}, dao.EcampTransInfoTb{})
+	err := m.Client.AutoMigrate(dao.TRecord{}, dao.EcampServiceCodeTb{}, dao.EcampTransTypeTb{}, dao.TAchievementRecord{}, dao.TNode{})
 	return err
 }
 

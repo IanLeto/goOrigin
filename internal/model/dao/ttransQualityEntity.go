@@ -41,11 +41,11 @@ func (*EcampServiceCodeTb) TableName() string {
 }
 
 type EcampServiceCodeTb struct {
-	ID          uint   `gorm:"primaryKey"`
-	Code        string `gorm:"size:50"`  // SC001
-	NameCN      string `gorm:"size:100"` // 开户成功
-	TransTypeID uint
-	TraceID     string `gorm:"size:255"`
-	Cluster     string `gorm:"size:100"`
-	PodName     string `gorm:"size:100"`
+	ID            uint   `gorm:"primaryKey"`
+	ServiceCode   string `gorm:"size:50"`  // SC001
+	ServiceCodeCN string `gorm:"size:100"` // 开户成功
+	TransTypeID   uint
+	TraceID       string `gorm:"size:255"`
+	Cluster       string `gorm:"size:100"`
+	PodName       string `gorm:"size:100"`
 }
