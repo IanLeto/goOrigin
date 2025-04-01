@@ -26,6 +26,7 @@ type EcampTransTypeTb struct {
 	CodeCN       string `gorm:"size:100"` // 开户7
 	ProjectID    uint
 	ServiceCodes []EcampServiceCodeTb `gorm:"foreignKey:TransTypeID"`
+	IsAlert      bool
 }
 
 type EcampServiceCodeTb struct {
@@ -35,6 +36,7 @@ type EcampServiceCodeTb struct {
 	TraceID       string `gorm:"size:255"`
 	Cluster       string `gorm:"size:100"`
 	PodName       string `gorm:"size:100"`
+	IsERR         bool
 }
 
 const TableNameEcampTransTypeTb = "ecamp_trans_type_tb"
