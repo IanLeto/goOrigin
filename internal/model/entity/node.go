@@ -2,55 +2,21 @@ package entity
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	//dao2 "goOrigin/internal/model/dao"
 )
 
 type NodeEntity struct {
-	ID       uint          `json:"id"`
-	Name     string        `json:"name"`
-	Content  string        `json:"content"`
-	Depend   string        `json:"depend"`
-	ParentID uint          `json:"parent_id"`
-	Done     bool          `json:"done"`
-	Status   string        `json:"status"`
-	Tags     []string      `json:"tags"`
-	Note     string        `json:"note"`
-	Region   string        `json:"region"`
-	Children []string      `json:"children"`
-	Nodes    []*NodeEntity `json:"nodes"`
-}
-
-// Epl 接收一个callback ，callback 为递归查询子节点的实现，目前支持 mysql ， searchlight
-func (n *NodeEntity) Epl(fn func(entity *NodeEntity) (*NodeEntity, error)) {
-	for _, child := range n.Children {
-		var epl = &NodeEntity{
-			Name: child,
-		}
-		result, err := fn(epl)
-		if err != nil {
-			logrus.Errorf("获取topo失败 %s", err)
-			return
-		}
-		n.Nodes = append(n.Nodes, result)
-	}
-}
-
-// ToNodes todo 获取node的所有节点，并将其转为slice
-func (n *NodeEntity) ToNodes() []*NodeEntity {
-	var (
-		res []*NodeEntity
-	)
-	for _, v := range n.Nodes {
-		if res != nil {
-			res = append(res, v)
-		}
-		if len(v.Nodes) != 0 {
-			v.ToNodes()
-		}
-
-	}
-	return res
+	ID        uint          `json:"id"`
+	Name      string        `json:"name"`       // 节点名称
+	Content   string        `json:"content"`    // 节点描述内容
+	ParentID  uint          `json:"parent_id"`  // 父节点 id
+	DependIDs []uint        `json:"depend_ids"` // 依赖的其他节点 id（拓扑展示时用）
+	Done      bool          `json:"done"`       // 是否完成
+	Status    string        `json:"status"`     // 当前状态
+	Tags      []string      `json:"tags"`       // 标签
+	Note      string        `json:"note"`       // 备注
+	Region    string        `json:"region"`     // 区域/域
+	Children  []*NodeEntity `json:"children"`   // 子节点（树形结构）
 }
 
 type Topo struct {
