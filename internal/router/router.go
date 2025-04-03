@@ -88,11 +88,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	nodev2Group := g.Group("v2/node")
 	{
 		nodev2Group.POST("", topoHandlers.CreateNode)
-		nodev2Group.POST("/batch", topoHandlers.CreateNodes)
+		//nodev2Group.POST("/batch", topoHandlers.CreateNodes)
 		nodev2Group.PUT("", topoHandlers.UpdateNode)
 		nodev2Group.DELETE("", topoHandlers.DeleteNode)
 		nodev2Group.GET("", topoHandlers.GetNodeDetail)
 		nodev2Group.GET("/search", topoHandlers.GetNodeDetail)
+
+		// ✅ 加上这一行
+		nodev2Group.GET("/list", topoHandlers.ListNodes)
 	}
 
 	trasnGroup := g.Group("v1/trans")

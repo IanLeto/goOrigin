@@ -6,7 +6,7 @@ import (
 	"goOrigin/internal/model/entity"
 )
 
-func ToTnode(node *entity.NodeEntity) *dao.TNode {
+func ToTNode(node *entity.NodeEntity) *dao.TNode {
 	// 序列化 Tags 和 DependIDs 为 JSON 字符串
 	tagsJSON, _ := json.Marshal(node.Tags)
 	dependJSON, _ := json.Marshal(node.DependIDs)
@@ -50,12 +50,4 @@ func ToNodeEntity(tnode *dao.TNode) *entity.NodeEntity {
 		Region:    tnode.Region,
 		Tags:      tags,
 	}
-}
-
-func ToNodeEntities(nodes []*dao.TNode) []*entity.NodeEntity {
-	result := make([]*entity.NodeEntity, 0, len(nodes))
-	for _, t := range nodes {
-		result = append(result, ToNodeEntity(t))
-	}
-	return result
 }
