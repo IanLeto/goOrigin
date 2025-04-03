@@ -1,10 +1,5 @@
 package entity
 
-import (
-	"context"
-	//dao2 "goOrigin/internal/model/dao"
-)
-
 type NodeEntity struct {
 	ID        uint          `json:"id"`
 	Name      string        `json:"name"`       // 节点名称
@@ -22,8 +17,4 @@ type NodeEntity struct {
 type Topo struct {
 	*NodeEntity
 	Children []*NodeEntity `json:"children"`
-}
-
-func GetTopo(ctx context.Context, root *NodeEntity) *NodeEntity {
-	return nil
 }

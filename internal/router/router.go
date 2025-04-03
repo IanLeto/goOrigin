@@ -91,15 +91,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		nodev2Group.POST("/batch", topoHandlers.CreateNodes)
 		nodev2Group.PUT("", topoHandlers.UpdateNode)
 		nodev2Group.DELETE("", topoHandlers.DeleteNode)
-		nodev2Group.POST("/list", topoHandlers.GetNodes)
 		nodev2Group.GET("", topoHandlers.GetNodeDetail)
 		nodev2Group.GET("/search", topoHandlers.GetNodeDetail)
 	}
 
-	topov2Group := g.Group("v2/topo")
-	{
-		topov2Group.GET("list", topoHandlers.GetTopoList)
-	}
 	trasnGroup := g.Group("v1/trans")
 	{
 		trasnGroup.POST("", trans_type.CreateTransInfo)

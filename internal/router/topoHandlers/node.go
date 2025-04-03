@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
-	"goOrigin/internal/logic"
 	v2 "goOrigin/internal/logic/v2"
 	"goOrigin/internal/model/entity"
 )
@@ -24,7 +23,6 @@ func CreateNode(c *gin.Context) {
 	}
 	entity.Name = req.Name
 	entity.Content = req.Content
-	entity.Depend = req.Depend
 	entity.ParentID = req.ParentId
 	entity.Done = req.Done
 	entity.Status = "New"
@@ -52,7 +50,6 @@ func CreateNodes(c *gin.Context) {
 		entities = append(entities, &entity.NodeEntity{
 			Name:     info.Name,
 			Content:  info.Content,
-			Depend:   info.Depend,
 			ParentID: info.ParentId,
 			Done:     info.Done,
 			Tags:     info.Tags,
@@ -90,7 +87,6 @@ func UpdateNode(c *gin.Context) {
 	nodeEntity := &entity.NodeEntity{
 		Name:     req.Name,
 		Content:  req.Content,
-		Depend:   req.Depend,
 		ParentID: req.ParentID,
 		Status:   req.Status,
 		Note:     req.Note,
@@ -105,26 +101,6 @@ func UpdateNode(c *gin.Context) {
 	return
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
-func GetNodes(c *gin.Context) {
-	panic(1)
-	//	var (
-	//		name      = c.Query("name")
-	//		parent_id = c.Query("parent_id")
-	//		region    = c.Query("region")
-	//		status    = c.Query("status")
-	//		err       error
-	//	)
-	//	res, err := v2.GetNodes(c, name, father, region)
-	//	if err != nil {
-	//		goto ERR
-	//	}
-	//
-	//	V1.BuildResponse(c, V1.BuildInfo(res))
-	//	return
-	//ERR:
-	//	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
 func SearchNode(c *gin.Context) {
@@ -163,60 +139,6 @@ ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
 }
 
-func GetTopo(c *gin.Context) {
-	var (
-		name   = c.Query("name")
-		region = c.Query("region")
-		res    interface{}
-		err    error
-	)
-	id, err := conv.Uint(c.Query("id"))
-	if err != nil {
-		goto ERR
-	}
-
-	res, err = logic.GetTopo(c, name, id, region)
-	if err != nil {
-		goto ERR
-	}
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-func GetTopoList(c *gin.Context) {
-	var (
-		res    interface{}
-		err    error
-		region = c.Query("region")
-	)
-
-	res, err = logic.GetTopoList(c, region)
-	if err != nil {
-		goto ERR
-	}
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
-func DeleteNodes(c *gin.Context) {
-	var (
-		ids = c.QueryArray("ids")
-		err error
-	)
-	res, err := logic.DeleteNodes(c, ids)
-	if err != nil {
-		goto ERR
-	}
-
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
 func DeleteNode(c *gin.Context) {
 	var (
 		region = c.Query("region")
@@ -225,31 +147,6 @@ func DeleteNode(c *gin.Context) {
 	id, err := conv.Uint(c.Query("id"))
 
 	res, err := v2.DeleteNode(c, id, region)
-	if err != nil {
-		goto ERR
-	}
-
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
-}
-
-func EDeleteNode(c *gin.Context) {
-	var (
-		err error
-		res interface{}
-	)
-	id, _ := conv.Uint(c.Query("id"))
-	region := c.Query("region")
-
-	single := c.Query("single")
-	isSingle, _ := conv.Bool(single)
-	if isSingle {
-		res, err = logic.DeleteSingleNode(c, id, region)
-	} else {
-		res, err = logic.DeleteNode(c, id, region)
-	}
 	if err != nil {
 		goto ERR
 	}
