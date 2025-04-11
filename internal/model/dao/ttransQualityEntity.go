@@ -27,6 +27,8 @@ type EcampTransTypeTb struct {
 	ProjectID    uint
 	ServiceCodes []EcampServiceCodeTb `gorm:"foreignKey:TransTypeID"`
 	IsAlert      bool
+	Dimension1   string `gorm:"size:100"` // 交易类型
+	Dimension2   string `gorm:"size:100"` // 交易渠道
 }
 
 type EcampServiceCodeTb struct {

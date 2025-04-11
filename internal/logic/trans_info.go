@@ -407,7 +407,7 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 	)
 
 	// 查找项目是否存在
-	err = db.Where("project = ? AND trace_pod = ? AND az = ?", req.Project, req.PodName, req.TraceID).First(&projectInfo).Error
+	err = db.Where("project = ?", req.Project).First(&projectInfo).Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("project not found: %s", err))
 		return nil, err
@@ -423,9 +423,11 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 	// 插入交易类型
 	for code, name := range req.TransType {
 		transType := &dao.EcampTransTypeTb{
-			Code:      code,
-			CodeCN:    name,
-			ProjectID: uint(projectInfo.ID),
+			Code:       code,
+			CodeCN:     name,
+			ProjectID:  uint(projectInfo.ID),
+			Dimension1: req.Dimension1,
+			Dimension2: req.Dimension2,
 		}
 
 		// 可根据需求选择是否允许重复 code（如唯一约束）
@@ -442,9 +444,7 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 				ServiceCode:   svcCode,
 				ServiceCodeCN: svcName,
 				TransTypeID:   transType.ID,
-				TraceID:       req.TraceID,
 				Cluster:       req.Cluster,
-				PodName:       req.PodName,
 			}
 
 			err = tx.Create(svc).Error
