@@ -8,6 +8,7 @@ import (
 	"goOrigin/API/V1"
 	"goOrigin/internal/logic"
 	"goOrigin/internal/model/entity"
+	"time"
 )
 
 func CreateRecord(c *gin.Context) {
@@ -102,6 +103,29 @@ func UpdateRecord(c *gin.Context) {
 		logrus.Errorf("%s", err)
 		goto ERR
 	}
+
+	// 将请求体转换为记录实体
+	record.ID = req.ID
+
+	// 检查是否有CreateIanRecordRequestInfo数据
+	if req.CreateIanRecordRequestInfo != nil {
+		record.Title = req.Title
+		record.MorWeight = req.MorWeight
+		record.NigWeight = req.NigWeight
+		record.IsFuck = req.IsFuck
+		record.Vol1 = req.Vol1
+		record.Vol2 = req.Vol2
+		record.Vol3 = req.Vol3
+		record.Vol4 = req.Vol4
+		record.Content = req.Content
+		record.Cost = req.Cost
+		record.Coding = req.Coding
+		record.Social = req.Social
+	}
+
+	// 更新修改时间
+	record.ModifyTime = time.Now().Unix()
+
 	res.ID, err = logic.UpdateRecord(c, req.Region, record)
 	if err != nil {
 		goto ERR

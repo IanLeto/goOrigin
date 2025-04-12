@@ -7,8 +7,17 @@ import (
 )
 
 func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
-	return &dao.TRecord{
+	if record == nil {
+		return nil
+	}
 
+	// 创建Meta实例
+	meta := &dao.Meta{
+		ID: record.ID,
+	}
+
+	return &dao.TRecord{
+		Meta:      meta, // 使用创建的Meta实例
 		Title:     record.Title,
 		MorWeight: record.MorWeight,
 		NigWeight: record.NigWeight,

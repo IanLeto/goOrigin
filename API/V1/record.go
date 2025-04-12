@@ -29,8 +29,9 @@ type QueryIanRecordsResponse struct {
 }
 
 type UpdateIanRecordRequest struct {
-	Info   CreateIanRecordRequestInfo `json:"info"`
-	Region string                     `json:"region"`
+	ID uint `json:"id"`
+	*CreateIanRecordRequestInfo
+	Region string `json:"region"`
 }
 
 type UpdateIanRecordResponse struct {
