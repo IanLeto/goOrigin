@@ -423,11 +423,11 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 	// 插入交易类型
 	for code, name := range req.TransType {
 		transType := &dao.EcampTransTypeTb{
-			Code:       code,
-			CodeCN:     name,
-			ProjectID:  uint(projectInfo.ID),
-			Dimension1: req.Dimension1,
-			Dimension2: req.Dimension2,
+			TransType:   code,
+			TransTypeCN: name,
+			ProjectID:   uint(projectInfo.ID),
+			Dimension1:  req.Dimension1,
+			Dimension2:  req.Dimension2,
 		}
 
 		// 可根据需求选择是否允许重复 code（如唯一约束）
@@ -444,7 +444,6 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 				ServiceCode:   svcCode,
 				ServiceCodeCN: svcName,
 				TransTypeID:   transType.ID,
-				Cluster:       req.Cluster,
 			}
 
 			err = tx.Create(svc).Error

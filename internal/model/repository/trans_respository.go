@@ -22,9 +22,7 @@ func ToServiceCodeDAOs(
 				ServiceCode:   svcCode,
 				ServiceCodeCN: svcCN,
 				TransTypeID:   transTypeID,
-				TraceID:       entity.TraceID,
 				Cluster:       entity.Cluster,
-				PodName:       entity.PodName,
 			})
 		}
 	}
@@ -45,16 +43,11 @@ func ToTransInfoEntityFromProject(
 	}
 
 	for _, t := range transTypes {
-		entity.TransType[t.Code] = t.CodeCN
+		entity.TransType[t.TransType] = t.TransTypeCN
 		for _, svc := range t.ServiceCodes {
 			entity.ServiceCode[svc.ServiceCode] = svc.ServiceCodeCN
+			// 只取第一条记录的 ProjectID/Cluster/PodName（假定相同）
 
-			// 只取第一条记录的 TraceID/Cluster/PodName（假定相同）
-			if entity.TraceID == "" {
-				entity.TraceID = svc.TraceID
-				entity.Cluster = svc.Cluster
-				entity.PodName = svc.PodName
-			}
 		}
 	}
 	return entity

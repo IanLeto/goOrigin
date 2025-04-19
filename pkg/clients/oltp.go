@@ -79,7 +79,7 @@ package clients
 //	)
 //	utils.NoError(err)
 //	for _, span := range spans {
-//		traceID := span.SpanContext().TraceID().String()
+//		traceID := span.SpanContext().ProjectID().String()
 //		spanID := span.SpanContext().SpanID().String()
 //
 //		startTime := span.StartTime().String()
