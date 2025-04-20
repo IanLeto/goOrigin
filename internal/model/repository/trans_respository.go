@@ -22,7 +22,6 @@ func ToServiceCodeDAOs(
 				ServiceCode:   svcCode,
 				ServiceCodeCN: svcCN,
 				TransTypeID:   transTypeID,
-				Cluster:       entity.Cluster,
 			})
 		}
 	}
