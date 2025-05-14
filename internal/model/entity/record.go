@@ -11,7 +11,15 @@ type RecordTimeInfo struct {
 	CreateTimeCompact   string `json:"create_time_compact"`    // 紧凑格式（无分隔符）
 }
 
-// RecordEntity 结构体，包含原始数据 + 时间信息
+// BalanceInfo 表示余额和消费相关的信息
+type BalanceInfo struct {
+	CurrentBalance float64 `json:"current_balance"` // 当前余额
+	AvgDailyCost   float64 `json:"avg_daily_cost"`  // 平均每日支出（可通过历史数据计算得到）
+	PredictDays    int     `json:"predict_days"`    // 可支撑天数（系统根据 balance / avg_cost 推算）
+	UpdateTime     int64   `json:"update_time"`     // 更新时间戳
+}
+
+// RecordEntity 结构体，包含原始数据 + 时间信息 + 余额信息
 type RecordEntity struct {
 	ID        uint    `json:"id" bson:"_id"`
 	Title     string  `json:"title" bson:"title"`
@@ -23,11 +31,13 @@ type RecordEntity struct {
 	Vol2       string         `json:"vol2" bson:"vol2"`
 	Vol3       string         `json:"vol3" bson:"vol3"`
 	Vol4       string         `json:"vol4" bson:"vol4"`
-	Cost       int            `json:"cost" bson:"cost"`
+	Cost       int            `json:"cost" bson:"cost"` // 单日或一次性支出
 	Content    string         `json:"content" bson:"content"`
 	Coding     string         `json:"coding"`
 	Social     string         `json:"social"`
 	CreateTime int64          `json:"create_time"`
-	ModifyTime int64          `json:"modify_time"` // 修正 UpdateTime 命名
+	ModifyTime int64          `json:"modify_time"`
 	TimeInfo   RecordTimeInfo `json:"time_info"`
+
+	Balance *BalanceInfo `json:"balance,omitempty"` // 新增余额信息，可选字段
 }
