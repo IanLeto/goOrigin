@@ -7,7 +7,8 @@ type CreateIanRecordRequest struct {
 
 type CreateIanRecordRequestInfo struct {
 	Title     string  `json:"title"`
-	MorWeight float32 `json:"weight"`
+	MorWeight float32 `json:"mor_weight"`
+	NigWeight float32 `json:"nig_weight"`
 	IsFuck    bool    `json:"is_fuck"`
 	Vol1      string  `json:"vol1"`
 	Vol2      string  `json:"vol2"`
@@ -17,7 +18,6 @@ type CreateIanRecordRequestInfo struct {
 	Cost      int     `json:"cost"`
 	Coding    string  `json:"coding"`
 	Social    string  `json:"social"`
-	NigWeight float32 `json:"nigWeight"`
 }
 
 type CreateIanRecordResponse struct {

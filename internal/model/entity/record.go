@@ -23,7 +23,7 @@ type BalanceInfo struct {
 type RecordEntity struct {
 	ID        uint    `json:"id" bson:"_id"`
 	Title     string  `json:"title" bson:"title"`
-	MorWeight float32 `json:"weight" bson:"weight"`
+	MorWeight float32 `json:"mor_weight" bson:"weight"`
 	NigWeight float32 `json:"nig_weight" bson:"weight"`
 
 	IsFuck     bool           `json:"is_fuck"`

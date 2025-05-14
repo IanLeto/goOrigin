@@ -22,7 +22,7 @@ func CreateRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, 
 	)
 	recordEntity.Title = info.Title
 	recordEntity.MorWeight = info.MorWeight
-	recordEntity.MorWeight = info.NigWeight
+	recordEntity.NigWeight = info.NigWeight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
 	recordEntity.Vol3 = info.Vol3
@@ -54,6 +54,7 @@ func CreateFileRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (ui
 
 	recordEntity.Title = info.Title
 	recordEntity.MorWeight = info.MorWeight
+	recordEntity.NigWeight = info.NigWeight
 	recordEntity.Vol1 = info.Vol1
 	recordEntity.Vol2 = info.Vol2
 	recordEntity.Vol3 = info.Vol3
