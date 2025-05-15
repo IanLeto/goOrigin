@@ -240,9 +240,6 @@ var AggDataStage = func(done <-chan interface{}, data <-chan []byte) <-chan []by
 				// **更新聚合数据**
 				mu.Lock()
 				aggregated[log.TraceId] = entity.TransInfoEntity{
-					Cluster: log.SysName,
-					Channel: log.Trans.TransChannel,
-					PodName: log.ContainerPodID,
 					Project: log.SysName,
 				}
 				mu.Unlock()

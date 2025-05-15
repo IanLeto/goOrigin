@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"goOrigin/API/V1"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
@@ -406,56 +407,57 @@ func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (in
 		err         error
 	)
 
-	// 查找项目是否存在
+	// 1. 查找项目是否存在
 	err = db.Where("project = ?", req.Project).First(&projectInfo).Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("project not found: %s", err))
 		return nil, err
 	}
 
-	// 启动事务
+	// 2. 检查 TransType 是否已存在（避免重复）
+	var existing dao.EcampTransTypeTb
+	err = db.Where("trans_type = ? AND project = ?", req.TransType, req.Project).First(&existing).Error
+	if err == nil {
+		return nil, fmt.Errorf("交易类型 %s 已存在", req.TransType)
+	} else if err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	// 3. 构造交易类型对象
+	transType := dao.EcampTransTypeTb{
+		TransType:   req.TransType,
+		TransTypeCN: "", // 可根据业务补全
+		Project:     req.Project,
+		IsAlert:     false,
+		Dimension1:  req.Dimension1,
+		Dimension2:  req.Dimension2,
+	}
+
+	for code, codeCn := range req.ServiceCode {
+		transType.ReturnCodes = append(transType.ReturnCodes, dao.EcampServiceCodeTb{
+			TransType:    req.TransType,
+			ReturnCode:   code,
+			ReturnCodeCN: codeCn,
+			Project:      req.Project,
+			Status:       "active", // 默认状态，如果有需要可从 req 传入
+		})
+	}
+
+	// 4. 启动事务
 	tx := db.Begin()
 	if tx.Error != nil {
 		logger.Error(fmt.Sprintf("failed to begin tx: %s", tx.Error))
 		return nil, tx.Error
 	}
 
-	// 插入交易类型
-	for code, name := range req.TransType {
-		transType := &dao.EcampTransTypeTb{
-			TransType:   code,
-			TransTypeCN: name,
-			ProjectID:   uint(projectInfo.ID),
-			Dimension1:  req.Dimension1,
-			Dimension2:  req.Dimension2,
-		}
-
-		// 可根据需求选择是否允许重复 code（如唯一约束）
-		err = tx.Where("code = ? AND project_id = ?", code, projectInfo.ID).FirstOrCreate(transType).Error
-		if err != nil {
-			tx.Rollback()
-			logger.Error(fmt.Sprintf("failed to create trans type: %s", err))
-			return nil, err
-		}
-
-		// 插入对应的交易码
-		for svcCode, svcName := range req.ServiceCode {
-			svc := &dao.EcampServiceCodeTb{
-				ServiceCode:   svcCode,
-				ServiceCodeCN: svcName,
-				TransTypeID:   transType.ID,
-			}
-
-			err = tx.Create(svc).Error
-			if err != nil {
-				tx.Rollback()
-				logger.Error(fmt.Sprintf("failed to create service code: %s", err))
-				return nil, err
-			}
-		}
+	// 5. 插入交易类型 + 服务码
+	if err := tx.Create(&transType).Error; err != nil {
+		tx.Rollback()
+		logger.Error(fmt.Sprintf("failed to insert trans_type: %s", err))
+		return nil, err
 	}
 
-	// 提交事务
+	// 6. 提交事务
 	if err = tx.Commit().Error; err != nil {
 		logger.Error(fmt.Sprintf("failed to commit transaction: %s", err))
 		return nil, err

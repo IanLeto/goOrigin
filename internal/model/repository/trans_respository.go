@@ -5,49 +5,60 @@ import (
 	"goOrigin/internal/model/entity"
 )
 
-func ToServiceCodeDAOs(
-	entity *entity.TransInfoEntity,
-	projectID uint,
-	transTypeMap map[string]uint, // transTypeCode => TransTypeID
-) []*dao.EcampServiceCodeTb {
-	var results []*dao.EcampServiceCodeTb
+// 将 GORM 模型转换为业务结构体
+func ToTransInfoEntity(model *dao.EcampTransTypeTb) *entity.TransInfoEntity {
+	if model == nil {
+		return nil
+	}
 
-	for transCode, _ := range entity.TransType {
-		transTypeID, ok := transTypeMap[transCode]
-		if !ok {
-			continue // 跳过未找到交易类型 ID 的项
-		}
-		for svcCode, svcCN := range entity.ServiceCode {
-			results = append(results, &dao.EcampServiceCodeTb{
-				ServiceCode:   svcCode,
-				ServiceCodeCN: svcCN,
-				TransTypeID:   transTypeID,
-			})
+	// 默认只取第一个 ReturnCode
+	var returnCode *entity.ReturnCodeEntity
+	if len(model.ReturnCodes) > 0 {
+		rc := model.ReturnCodes[0] // 可根据需要调整逻辑
+		returnCode = &entity.ReturnCodeEntity{
+			ReturnCode:   rc.ReturnCode,
+			ReturnCodeCn: rc.ReturnCodeCN,
+			ProjectID:    rc.Project,
+			TransType:    rc.TransType,
+			Status:       rc.Status,
 		}
 	}
-	return results
+
+	return &entity.TransInfoEntity{
+		Cluster:    "", // cluster 信息未提供，可根据上下文设置
+		Project:    model.Project,
+		TransType:  model.TransType,
+		ReturnCode: returnCode,
+		Interval:   0, // interval 信息未存储于数据库，可后期扩展
+	}
 }
 
-func ToTransInfoEntityFromProject(
-	project *dao.EcampProjectInfoTb,
-	transTypes []dao.EcampTransTypeTb,
-) *entity.TransInfoEntity {
-	entity := &entity.TransInfoEntity{
-		TraceID:     "",
-		Cluster:     "",
-		PodName:     "",
-		Project:     project.Project,
-		TransType:   make(map[string]string),
-		ServiceCode: make(map[string]string),
+// 将业务结构体转换为 GORM 模型
+func ToEcampTransTypeTb(entity *entity.TransInfoEntity) *dao.EcampTransTypeTb {
+	if entity == nil {
+		return nil
 	}
 
-	for _, t := range transTypes {
-		entity.TransType[t.TransType] = t.TransTypeCN
-		for _, svc := range t.ServiceCodes {
-			entity.ServiceCode[svc.ServiceCode] = svc.ServiceCodeCN
-			// 只取第一条记录的 ProjectID/Cluster/PodName（假定相同）
+	model := &dao.EcampTransTypeTb{
+		TransType:   entity.TransType,
+		Project:     entity.Project,
+		TransTypeCN: "", // 如有需要可以补充
+		IsAlert:     false,
+		Dimension1:  "",
+		Dimension2:  "",
+	}
 
+	if entity.ReturnCode != nil {
+		model.ReturnCodes = []dao.EcampServiceCodeTb{
+			{
+				TransType:    entity.ReturnCode.TransType,
+				ReturnCode:   entity.ReturnCode.ReturnCode,
+				ReturnCodeCN: entity.ReturnCode.ReturnCodeCn,
+				Project:      entity.ReturnCode.ProjectID,
+				Status:       entity.ReturnCode.Status,
+			},
 		}
 	}
-	return entity
+
+	return model
 }

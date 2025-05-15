@@ -95,7 +95,7 @@ func (p *MetricProcessor) Process(ctx context.Context, input chan []byte, out ch
 		// 使用反射提取结构体字段作为 Prometheus 标签
 		labels := extractLabelsUsingReflection(spanInfo)
 
-		// 获取 ServiceCode
+		// 获取 ReturnCode
 		retCode, ok := labels["ret_code"]
 		if ok && utils.IncludeString(p.RetCodes, retCode) {
 			// 增加指标计数

@@ -46,8 +46,21 @@ func (m *MySQLConn) Migrate() error {
 
 func NewMysqlV2Conn(conf config.MySQLConfig) *MySQLConn {
 	client, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		conf.User, conf.Password, conf.Address, conf.DBName)), &gorm.Config{})
+		conf.User, conf.Password, conf.Address, conf.DBName)), &gorm.Config{
+		DisableAutomaticPing: true, // 可选，禁用自动ping
 
+	})
+	client.Debug().Session(&gorm.Session{
+		NewDB:                    true,
+		Initialized:              false,
+		SkipHooks:                false,
+		SkipDefaultTransaction:   false,
+		DisableNestedTransaction: false,
+		AllowGlobalUpdate:        false,
+		FullSaveAssociations:     false,
+		PropagateUnscoped:        false,
+		QueryFields:              false,
+	})
 	if err != nil {
 		logger.Sugar().Warnf("❌ MySQL 连接失败: %v", err)
 		return nil // ✅ 返回错误，而不是 `nil`
