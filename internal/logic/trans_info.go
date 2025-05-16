@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"goOrigin/API/V1"
+	"goOrigin/config"
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
@@ -402,13 +403,13 @@ ERR:
 
 func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (interface{}, error) {
 	var (
-		db          = mysql.GlobalMySQLConns[region].Client
-		projectInfo dao.EcampProjectInfoTb
+		db          = mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
+		projectInfo = dao.EcampProjectInfoTb{}
 		err         error
 	)
 
 	// 1. 查找项目是否存在
-	err = db.Where("project = ?", req.Project).First(&projectInfo).Error
+	err = db.Table(dao.TableNameEcampProjectInfoTb).Where("project = ?", req.Project).First(&projectInfo).Error
 	if err != nil {
 		logger.Error(fmt.Sprintf("project not found: %s", err))
 		return nil, err
