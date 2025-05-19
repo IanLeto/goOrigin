@@ -25,7 +25,7 @@ func CreateTransInfo(c *gin.Context) {
 		goto ERR
 	}
 
-	_, err = logic.CreateType(c, req.Region, req.CreateTransInfo)
+	err = logic.CreateType(c, req.Region, req.Items)
 	if err != nil {
 		logrus.Errorf("%s", err)
 		goto ERR

@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
 	"goOrigin/config"
-	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
+
+	"goOrigin/internal/dao/elastic"
+
 	"goOrigin/internal/model/entity"
 	"goOrigin/pkg/utils"
 	"strings"
@@ -401,68 +403,117 @@ ERR:
 	return nil, err
 }
 
-func CreateType(ctx context.Context, region string, req *V1.CreateTransInfo) (interface{}, error) {
-	var (
-		db          = mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig).Client
-		projectInfo = dao.EcampProjectInfoTb{}
-		err         error
-	)
+func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) error {
+	// 获取数据库连接
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
 
-	// 1. 查找项目是否存在
-	err = db.Table(dao.TableNameEcampProjectInfoTb).Where("project = ?", req.Project).First(&projectInfo).Error
-	if err != nil {
-		logger.Error(fmt.Sprintf("project not found: %s", err))
-		return nil, err
-	}
-
-	// 2. 检查 TransType 是否已存在（避免重复）
-	var existing dao.EcampTransTypeTb
-	err = db.Where("trans_type = ? AND project = ?", req.TransType, req.Project).First(&existing).Error
-	if err == nil {
-		return nil, fmt.Errorf("交易类型 %s 已存在", req.TransType)
-	} else if err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	// 3. 构造交易类型对象
-	transType := dao.EcampTransTypeTb{
-		TransType:   req.TransType,
-		TransTypeCN: "", // 可根据业务补全
-		Project:     req.Project,
-		IsAlert:     false,
-		Dimension1:  req.Dimension1,
-		Dimension2:  req.Dimension2,
-	}
-
-	for code, codeCn := range req.ServiceCode {
-		transType.ReturnCodes = append(transType.ReturnCodes, dao.EcampServiceCodeTb{
-			TransType:    req.TransType,
-			ReturnCode:   code,
-			ReturnCodeCN: codeCn,
-			Project:      req.Project,
-			Status:       "active", // 默认状态，如果有需要可从 req 传入
-		})
-	}
-
-	// 4. 启动事务
-	tx := db.Begin()
+	// 开启事务
+	tx := db.Client.Begin()
 	if tx.Error != nil {
-		logger.Error(fmt.Sprintf("failed to begin tx: %s", tx.Error))
-		return nil, tx.Error
+		logrus.Errorf("failed to begin transaction: %v", tx.Error)
+		return tx.Error
 	}
 
-	// 5. 插入交易类型 + 服务码
-	if err := tx.Create(&transType).Error; err != nil {
+	// 捕获异常，确保出错时回滚事务
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			logrus.Errorf("panic occurred during CreateType: %v", r)
+		}
+	}()
+
+	for _, req := range reqs {
+		// 1. 查询项目信息，确保存在
+		var projectInfo dao.EcampProjectInfoTb
+		if err := tx.Table(dao.TableNameEcampProjectInfoTb).
+			Where("project = ?", req.Project).
+			First(&projectInfo).Error; err != nil {
+			logrus.Errorf("project [%s] not found: %v", req.Project, err)
+			tx.Rollback()
+			return err
+		}
+
+		// 2. 检查是否已存在相同 trans_type + project
+		var existing dao.EcampTransTypeTb
+		if err := tx.Table(dao.TableNameEcampTransTypeTb).
+			Where("trans_type = ? AND project = ?", req.TransType, req.Project).
+			First(&existing).Error; err == nil {
+			logrus.Infof("trans_type [%s] for project [%s] already exists, skipping", req.TransType, req.Project)
+			continue
+		}
+
+		// 3. 插入交易类型记录
+		transType := &dao.EcampTransTypeTb{
+			TransType:   req.TransType,
+			TransTypeCN: "", // 可扩展字段
+			Project:     req.Project,
+			IsAlert:     false,
+			Dimension1:  req.Dimension1,
+			Dimension2:  req.Dimension2,
+		}
+
+		if err := tx.Table(dao.TableNameEcampTransTypeTb).Create(transType).Error; err != nil {
+			logrus.Errorf("failed to insert trans_type [%s]: %v", req.TransType, err)
+			tx.Rollback()
+			return err
+		}
+
+		// 4. 插入 return_code 记录
+		var returnCodes []dao.EcampReturnCodeTb
+		for code, cn := range req.ServiceCode {
+			returnCodes = append(returnCodes, dao.EcampReturnCodeTb{
+				TransType:    req.TransType,
+				ReturnCode:   code,
+				ReturnCodeCN: cn,
+				Project:      req.Project,
+				Status:       "active",
+			})
+		}
+
+		if len(returnCodes) > 0 {
+			if err := tx.Table(dao.TableNameEcampReturnCodeTb).
+				Create(&returnCodes).Error; err != nil {
+				logrus.Errorf("failed to insert return codes for trans_type [%s]: %v", req.TransType, err)
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		logrus.Errorf("commit transaction failed: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteTransType(ctx context.Context, region string, req *DeleteTransTypeReq) error {
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
+	tx := db.Client.Begin()
+	if tx.Error != nil {
+		logrus.Errorf("begin transaction failed: %v", tx.Error)
+		return tx.Error
+	}
+
+	// 删除返回码
+	if err := tx.Table(dao.TableNameEcampReturnCodeTb).
+		Where("project = ? AND trans_type = ?", req.Project, req.TransType).
+		Delete(&dao.EcampReturnCodeTb{}).Error; err != nil {
+		logrus.Errorf("delete return codes failed: %v", err)
 		tx.Rollback()
-		logger.Error(fmt.Sprintf("failed to insert trans_type: %s", err))
-		return nil, err
+		return err
 	}
 
-	// 6. 提交事务
-	if err = tx.Commit().Error; err != nil {
-		logger.Error(fmt.Sprintf("failed to commit transaction: %s", err))
-		return nil, err
+	// 删除交易类型
+	if err := tx.Table(dao.TableNameEcampTransTypeTb).
+		Where("project = ? AND trans_type = ?", req.Project, req.TransType).
+		Delete(&dao.EcampTransTypeTb{}).Error; err != nil {
+		logrus.Errorf("delete trans type failed: %v", err)
+		tx.Rollback()
+		return err
 	}
 
-	return "success", nil
+	return tx.Commit().Error
 }

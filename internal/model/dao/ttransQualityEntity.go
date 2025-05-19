@@ -21,17 +21,18 @@ func (*EcampProjectInfoTb) TableName() string {
 }
 
 type EcampTransTypeTb struct {
-	ID          uint                 `gorm:"primaryKey"`
-	TransType   string               `gorm:"size:50;not null"`                          // T001
-	TransTypeCN string               `gorm:"size:100"`                                  // 开户7
-	Project     string               `gorm:"size:255;not null"`                         // 改为字符串，与 TransInfoEntity 一致
-	ReturnCodes []EcampServiceCodeTb `gorm:"foreignKey:TransType;references:TransType"` // 通过字符串关联
+	ID        uint   `gorm:"primaryKey"`
+	TransType string `gorm:"size:50;not null;uniqueIndex"` // 加 uniqueIndex
+	// T001
+	TransTypeCN string              `gorm:"size:100"`                                  // 开户7
+	Project     string              `gorm:"size:255;not null"`                         // 改为字符串，与 TransInfoEntity 一致
+	ReturnCodes []EcampReturnCodeTb `gorm:"foreignKey:TransType;references:TransType"` // 通过字符串关联
 	IsAlert     bool
 	Dimension1  string `gorm:"size:100"` // 交易类型
 	Dimension2  string `gorm:"size:100"` // 交易渠道
 }
 
-type EcampServiceCodeTb struct {
+type EcampReturnCodeTb struct {
 	ID           uint   `gorm:"primaryKey;autoIncrement"`
 	TransType    string `gorm:"size:50;index"`    // 外键字段
 	ReturnCode   string `gorm:"size:50;not null"` // SC001
@@ -46,8 +47,8 @@ func (*EcampTransTypeTb) TableName() string {
 	return TableNameEcampTransTypeTb
 }
 
-const TableNameEcampServiceCodeTb = "ecamp_service_code_tb"
+const TableNameEcampReturnCodeTb = "ecamp_return_code_tb"
 
-func (*EcampServiceCodeTb) TableName() string {
-	return TableNameEcampServiceCodeTb
+func (*EcampReturnCodeTb) TableName() string {
+	return TableNameEcampReturnCodeTb
 }

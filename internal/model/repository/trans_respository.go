@@ -49,7 +49,7 @@ func ToEcampTransTypeTb(entity *entity.TransInfoEntity) *dao.EcampTransTypeTb {
 	}
 
 	if entity.ReturnCode != nil {
-		model.ReturnCodes = []dao.EcampServiceCodeTb{
+		model.ReturnCodes = []dao.EcampReturnCodeTb{
 			{
 				TransType:    entity.ReturnCode.TransType,
 				ReturnCode:   entity.ReturnCode.ReturnCode,

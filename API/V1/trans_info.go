@@ -3,7 +3,7 @@ package V1
 type SuccessRateReqInfo struct {
 }
 
-type BatchCreateTransInfoReq struct {
+type CreateTransInfoReq struct {
 	Region string            `json:"region"` // 所属区域，批量共用
 	Items  []CreateTransInfo `json:"items"`  // 多个交易类型
 }
@@ -18,7 +18,7 @@ type CreateTransInfo struct {
 	Dimension2  string            `json:"dimension2"` // 交易渠道
 }
 
-type CreateTransInfoReq struct {
+type CreateTransInfoReq2 struct {
 	*CreateTransInfo
 	Region string `json:"region"`
 }
