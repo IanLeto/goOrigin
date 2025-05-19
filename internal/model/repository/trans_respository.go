@@ -18,10 +18,11 @@ func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb) *entity.TransInfo
 	}
 
 	return &entity.TransInfoEntity{
-		Cluster:    "", // 可以从 ctx 或其他地方注入
 		Project:    transType.Project,
 		TransType:  transType.TransType,
 		ReturnCode: returnCodeEntities,
+		Dimension1: transType.Dimension1,
+		Dimension2: transType.Dimension2,
 		Interval:   0,
 	}
 }
@@ -34,10 +35,10 @@ func ToEcampTransTypeTb(entity *entity.TransInfoEntity) *dao.EcampTransTypeTb {
 	model := &dao.EcampTransTypeTb{
 		TransType:   entity.TransType,
 		Project:     entity.Project,
-		TransTypeCN: "", // 可补充
+		TransTypeCN: entity.TransTypeCn, // 可补充
 		IsAlert:     false,
-		Dimension1:  "",
-		Dimension2:  "",
+		Dimension1:  entity.Dimension1,
+		Dimension2:  entity.Dimension2,
 	}
 
 	for _, rc := range entity.ReturnCode {

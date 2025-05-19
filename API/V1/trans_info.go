@@ -42,13 +42,18 @@ type DeleteTransInfoReq struct {
 	TransType string `json:"trans_type"`
 }
 type GetTransInfoListReq struct {
-	Region    string `json:"region"`     // 区域
-	Project   string `json:"project"`    // 项目标识
-	TransType string `json:"trans_type"` // 可选，交易类型
+	Region    string `json:"region"`
+	Project   string `json:"project"`
+	TransType string `json:"trans_type"`
+	Page      int    `json:"page"`      // 当前页
+	PageSize  int    `json:"page_size"` // 每页数量
 }
 
 type GetTransInfoListResponse struct {
-	Items interface{} `json:"items"`
+	Items    interface{} `json:"items"`
+	Total    int64       `json:"total"`
+	Page     int         `json:"page"`
+	PageSize int         `json:"page_size"`
 }
 
 type UpdateTransInfoReq struct {

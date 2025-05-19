@@ -40,9 +40,10 @@ ERR:
 
 func GetTransInfoList(c *gin.Context) {
 	var (
-		req = &V1.GetTransInfoListReq{}      // 请求结构体
-		res = &V1.GetTransInfoListResponse{} // 响应结构体
-		err error
+		req   = &V1.GetTransInfoListReq{}      // 请求结构体
+		res   = &V1.GetTransInfoListResponse{} // 响应结构体
+		err   error
+		total int64
 	)
 	// 调用逻辑层查询函数
 	var list []*entity.TransInfoEntity
@@ -60,13 +61,16 @@ func GetTransInfoList(c *gin.Context) {
 		goto ERR
 	}
 
-	list, err = logic.QueryTransTypeList(c, req.Region, req.Project, req.TransType)
+	list, total, err = logic.QueryTransTypeList(c, req.Region, req.Project, req.TransType, req.Page, req.PageSize)
 	if err != nil {
-		logrus.Errorf("query trans info failed: %v", err)
+		logrus.Errorf("query logic failed: %v", err)
 		goto ERR
 	}
-	res.Items = list
 
+	res.Items = list
+	res.Total = total
+	res.Page = req.Page
+	res.PageSize = req.PageSize
 	V1.BuildResponse(c, V1.BuildInfo(res))
 	return
 

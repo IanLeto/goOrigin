@@ -6,7 +6,7 @@ const TableNameEcampProjectInfoTb = "ecamp_project_info_tb"
 
 // EcampProjectInfoTb mapped from table <ecamp_project_info_tb>
 type EcampProjectInfoTb struct {
-	ID        int32     `gorm:"column:id;type:int unsigned;primaryKey;autoIncrement:true" json:"id"`
+	*Meta
 	Project   string    `gorm:"column:project;type:varchar(253);not null;uniqueIndex:az_pod_proj_uniqe,priority:3" json:"project"`
 	ProjectCn string    `gorm:"column:project_cn;type:varchar(253);not null" json:"project_cn"`
 	Az        string    `gorm:"column:az;type:varchar(253);not null;uniqueIndex:az_pod_proj_uniqe,priority:1" json:"az"`
@@ -21,9 +21,8 @@ func (*EcampProjectInfoTb) TableName() string {
 }
 
 type EcampTransTypeTb struct {
-	ID        uint   `gorm:"primaryKey"`
-	TransType string `gorm:"size:50;not null;uniqueIndex"` // 加 uniqueIndex
-	// T001
+	*Meta
+	TransType   string              `gorm:"size:50;not null;uniqueIndex"`              // 加 uniqueIndex
 	TransTypeCN string              `gorm:"size:100"`                                  // 开户7
 	Project     string              `gorm:"size:255;not null"`                         // 改为字符串，与 TransInfoEntity 一致
 	ReturnCodes []EcampReturnCodeTb `gorm:"foreignKey:TransType;references:TransType"` // 通过字符串关联
@@ -33,7 +32,7 @@ type EcampTransTypeTb struct {
 }
 
 type EcampReturnCodeTb struct {
-	ID           uint   `gorm:"primaryKey;autoIncrement"`
+	*Meta
 	TransType    string `gorm:"size:50;index"`    // 外键字段
 	ReturnCode   string `gorm:"size:50;not null"` // SC001
 	ReturnCodeCN string `gorm:"size:100"`         // 开户成功

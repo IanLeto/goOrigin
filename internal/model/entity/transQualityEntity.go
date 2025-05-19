@@ -1,6 +1,8 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type ODAMetricEntity struct {
 	Interval time.Duration `json:"interval"`
@@ -46,11 +48,13 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 
 // TransInfoEntity 网关交易
 type TransInfoEntity struct {
-	Cluster    string              `json:"cluster"`
-	Project    string              `json:"project"`
-	TransType  string              `json:"trans_type"`
-	ReturnCode []*ReturnCodeEntity `json:"return_code"`
-	Interval   int                 `json:"interval"`
+	Project     string              `json:"project"`
+	TransType   string              `json:"trans_type"`
+	TransTypeCn string              `json:"trans_type_cn"`
+	ReturnCode  []*ReturnCodeEntity `json:"return_code"`
+	Interval    int                 `json:"interval"`
+	Dimension1  string              `json:"dimension_1"`
+	Dimension2  string              `json:"dimension_2"`
 }
 type ReturnCodeEntity struct {
 	ReturnCode   string `json:"return_code"`
