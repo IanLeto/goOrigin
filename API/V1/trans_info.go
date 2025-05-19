@@ -35,3 +35,38 @@ type FailedItem struct {
 	TransType string `json:"trans_type"`
 	Error     string `json:"error"`
 }
+
+type DeleteTransInfoReq struct {
+	Region    string `json:"region"`
+	Project   string `json:"project"`
+	TransType string `json:"trans_type"`
+}
+type GetTransInfoListReq struct {
+	Region    string `json:"region"`     // 区域
+	Project   string `json:"project"`    // 项目标识
+	TransType string `json:"trans_type"` // 可选，交易类型
+}
+
+type GetTransInfoListResponse struct {
+	Items interface{} `json:"items"`
+}
+
+type UpdateTransInfoReq struct {
+	Region string           `json:"region"`
+	Item   *UpdateTransInfo `json:"item"`
+}
+
+type UpdateTransInfo struct {
+	Project     string              `json:"project"`
+	TransType   string              `json:"trans_type"`
+	Interval    int                 `json:"interval"`
+	ReturnCodes []*UpdateReturnCode `json:"return_codes"`
+}
+
+type UpdateReturnCode struct {
+	ReturnCode   string `json:"return_code"`
+	ReturnCodeCn string `json:"return_code_cn"`
+	TransType    string `json:"trans_type"`
+	Project      string `json:"project"`
+	Status       string `json:"status"`
+}

@@ -10,6 +10,7 @@ import (
 	"goOrigin/config"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
+	"goOrigin/internal/model/repository"
 
 	"goOrigin/internal/dao/elastic"
 
@@ -489,30 +490,100 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 	return nil
 }
 
-func DeleteTransType(ctx context.Context, region string, req *DeleteTransTypeReq) error {
+func QueryTransTypeList(ctx context.Context, region string, project, transType string) ([]*entity.TransInfoEntity, error) {
 	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
-	tx := db.Client.Begin()
-	if tx.Error != nil {
-		logrus.Errorf("begin transaction failed: %v", tx.Error)
-		return tx.Error
+
+	var transTypeTbList []dao.EcampTransTypeTb
+
+	// 查询并预加载 return codes
+	query := db.Client.Debug().Debug().
+		Preload("ReturnCodes").
+		Table(dao.TableNameEcampTransTypeTb).
+		Where("project = ?", project)
+
+	if transType != "" {
+		query = query.Where("trans_type = ?", transType)
 	}
 
+	if err := query.Find(&transTypeTbList).Error; err != nil {
+		logrus.Errorf("query trans types failed: %v", err)
+		return nil, err
+	}
+
+	// 使用转换函数
+	var result []*entity.TransInfoEntity
+	for _, t := range transTypeTbList {
+		result = append(result, repository.ConvertToTransInfoEntity(&t))
+	}
+
+	return result, nil
+}
+
+func DeleteTransInfo(ctx context.Context, region, project, transType string) error {
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
+
+	tx := db.Client.Begin()
+
 	// 删除返回码
-	if err := tx.Table(dao.TableNameEcampReturnCodeTb).
-		Where("project = ? AND trans_type = ?", req.Project, req.TransType).
+	if err := tx.
+		Where("project = ? AND trans_type = ?", project, transType).
 		Delete(&dao.EcampReturnCodeTb{}).Error; err != nil {
-		logrus.Errorf("delete return codes failed: %v", err)
 		tx.Rollback()
 		return err
 	}
 
 	// 删除交易类型
-	if err := tx.Table(dao.TableNameEcampTransTypeTb).
-		Where("project = ? AND trans_type = ?", req.Project, req.TransType).
+	if err := tx.
+		Where("project = ? AND trans_type = ?", project, transType).
 		Delete(&dao.EcampTransTypeTb{}).Error; err != nil {
-		logrus.Errorf("delete trans type failed: %v", err)
 		tx.Rollback()
 		return err
+	}
+
+	return tx.Commit().Error
+}
+
+func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoEntity) error {
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
+
+	tx := db.Client.Begin()
+
+	// 1. 更新主表
+	if err := tx.Model(&dao.EcampTransTypeTb{}).
+		Where("project = ? AND trans_type = ?", item.Project, item.TransType).
+		Updates(map[string]interface{}{
+			"trans_type_cn": item.TransType, // 示例字段，如有中文名可替换
+			"dimension1":    "",             // 可补充
+			"dimension2":    "",
+		}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 2. 删除旧返回码
+	if err := tx.
+		Where("project = ? AND trans_type = ?", item.Project, item.TransType).
+		Delete(&dao.EcampReturnCodeTb{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// 3. 插入新返回码
+	var newCodes []dao.EcampReturnCodeTb
+	for _, rc := range item.ReturnCode {
+		newCodes = append(newCodes, dao.EcampReturnCodeTb{
+			TransType:    rc.TransType,
+			ReturnCode:   rc.ReturnCode,
+			ReturnCodeCN: rc.ReturnCodeCn,
+			Project:      rc.ProjectID,
+			Status:       rc.Status,
+		})
+	}
+	if len(newCodes) > 0 {
+		if err := tx.Create(&newCodes).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	return tx.Commit().Error

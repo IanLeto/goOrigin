@@ -101,6 +101,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	trasnGroup := g.Group("v1/trans")
 	{
 		trasnGroup.POST("", trans_type.CreateTransInfo)
+		trasnGroup.POST("list", trans_type.GetTransInfoList)
+		trasnGroup.DELETE("", trans_type.DeleteTransInfo)
+		trasnGroup.PATCH("", trans_type.UpdateTransInfo)
 	}
 
 	odav2Group := g.Group("v2/pub")

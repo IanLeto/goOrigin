@@ -46,11 +46,11 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 
 // TransInfoEntity 网关交易
 type TransInfoEntity struct {
-	Cluster    string            `json:"cluster"`
-	Project    string            `json:"project"`
-	TransType  string            `json:"trans_type"`
-	ReturnCode *ReturnCodeEntity `json:"return_code"`
-	Interval   int               `json:"interval"`
+	Cluster    string              `json:"cluster"`
+	Project    string              `json:"project"`
+	TransType  string              `json:"trans_type"`
+	ReturnCode []*ReturnCodeEntity `json:"return_code"`
+	Interval   int                 `json:"interval"`
 }
 type ReturnCodeEntity struct {
 	ReturnCode   string `json:"return_code"`
