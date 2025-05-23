@@ -63,3 +63,13 @@ type ReturnCodeEntity struct {
 	TransType    string `json:"trans_type"`
 	Status       string `json:"status"`
 }
+
+type TradeReturnCodeEntity struct {
+	UrlPath       string
+	SuccessCount  int
+	FailedCount   int
+	UnKnownCount  string
+	Total         string
+	TransTypeCn   string
+	ResponseCount string
+}

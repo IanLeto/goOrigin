@@ -21,6 +21,10 @@ import (
 	"strings"
 )
 
+func SearchTransInfo(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.TradeReturnCodeEntity, error) {
+	panic(1)
+}
+
 // OdaSuccessAndFailedRateMetric 返回成功和失败的比率
 func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
 	var (
@@ -37,9 +41,7 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 		totalTranslations      = map[string]interface{}{}
 		successfulTranslations = map[string]interface{}{}
 	)
-	var (
-		ret_code string = "aaaa"
-	)
+
 	var (
 		sort = []map[string]interface{}{
 			{
@@ -59,26 +61,11 @@ func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.Suc
 			}
 		}
 	)
+
 	if region != "" {
 		filterCallback(&filter, "region", strings.Split(region, ","))
 	}
-	// 聚合算成功率
-	if ret_code != "" {
-		totalTranslations = map[string]interface{}{
-			"filter": map[string]interface{}{
-				"value_count": map[string]interface{}{
-					"field": "ret_code.keyword",
-				},
-			},
-		}
-		successfulTranslations = map[string]interface{}{
-			"filter": map[string]interface{}{
-				"terms": map[string]interface{}{
-					"ret_code.keyword": []string{"0"},
-				},
-			},
-		}
-	}
+
 	aggs = map[string]interface{}{
 		"total_translations":      totalTranslations,
 		"successful_translations": successfulTranslations,
