@@ -57,126 +57,99 @@ type SpanTransTypeInfoEntity struct {
 }
 
 type KafkaLogEntity struct {
+	// === 链路标识 ===
 	Gid string `json:"ceb.trace.gid,omitempty"`
-
 	Lid string `json:"ceb.trace.lid,omitempty"`
-
 	Pid string `json:"ceb.trace.pid,omitempty"`
 
-	SysName string `json:"sysName,omitempty"`
+	// === 系统部署信息 ===
+	SysName         string `json:"sysName,omitempty"`           // 系统名
+	Unitcode        string `json:"unitcode,omitempty"`          // 单元编号
+	InstanceZone    string `json:"instanceZone,omitempty"`      // 实例区域
+	LocalApp        string `json:"local.app,omitempty"`         // 本地服务名
+	LocalClientIP   string `json:"local.client.ip,omitempty"`   // 本地客户端 IP
+	LocalClientPort int64  `json:"local.client.port,omitempty"` // 本地客户端端口
 
-	Unitcode     string `json:"unitcode,omitempty"`
-	InstanceZone string `json:"instanceZone,omitempty"`
+	// === 链路追踪与线程信息 ===
+	TraceId    string `json:"traceId,omitempty"`             // 链路 Trace ID
+	SpanID     string `json:"spanId,omitempty"`              // 当前调用 Span ID
+	SpanKind   string `json:"span.kind,omitempty"`           // Span 类型（client/server）
+	ThreadName string `json:"current.thread.name,omitempty"` // 当前线程名
 
-	Timestamp string `json:"timestamp,omitempty"`
+	// === 时间信息 ===
+	Timestamp   string `json:"timestamp,omitempty"`               // 原始时间戳字符串
+	Time        int64  `json:"time,omitempty"`                    // Unix 时间戳（毫秒）
+	TimesCostMs int64  `json:"times.cost.milliseconds,omitempty"` // 总耗时
 
-	LocalApp string `json:"local.app,omitempty"`
+	// === 业务标识 ===
+	BusinessId string `json:"businessId,omitempty"` // 业务 ID
 
-	TraceId string `json:"traceId,omitempty"`
+	// === 请求信息 ===
+	ReqURL             string `json:"request.url,omitempty"`          // 请求 URL
+	Method             string `json:"method,omitempty"`               // 请求方法
+	ReqParam           string `json:"req.parameter,omitempty"`        // 请求参数
+	ReqSizeBytes       int64  `json:"req.size.bytes,omitempty"`       // 请求字节大小
+	ReqSize            int64  `json:"req.size,omitempty"`             // 请求大小（冗余字段）
+	ReqSerializeTime   int64  `json:"req.serialize.time,omitempty"`   // 请求序列化时间
+	ReqDeserializeTime int64  `json:"req.deserialize.time,omitempty"` // 请求反序列化时间
 
-	SpanID string `json:"spanId,omitempty"`
+	// === 响应信息 ===
+	RespSizeBytes       int64  `json:"resp.size.bytes,omitempty"`       // 响应字节大小
+	RespSize            int64  `json:"resp.size,omitempty"`             // 响应大小（冗余字段）
+	RespSerializeTime   int64  `json:"resp.serialize.time,omitempty"`   // 响应序列化时间
+	RespDeserializeTime int64  `json:"resp.deserialize.time,omitempty"` // 响应反序列化时间
+	ResultCode          string `json:"result.code,omitempty"`           // 响应结果码
+	Error               string `json:"error,omitempty"`                 // 错误信息
 
-	BusinessId string `json:"businessId,omitempty"`
+	// === 数据库信息 ===
+	DbType           string `json:"db.type,omitempty"`                   // 数据库类型
+	DatabaseType     string `json:"database.type,omitempty"`             // 数据库类型（冗余）
+	DatabaseName     string `json:"database.name,omitempty"`             // 数据库名称
+	DatabaseEndpoint string `json:"database.endpoint,omitempty"`         // 数据库连接地址
+	Sql              string `json:"sql,omitempty"`                       // 执行 SQL
+	SqlParam         string `json:"sql.parameter,omitempty"`             // SQL 参数
+	ConnEstabSpan    string `json:"connection.establish.span,omitempty"` // 连接建立耗时
+	DbExecCost       string `json:"db.execute.cost,omitempty"`           // SQL 执行耗时
 
-	SpanKind string `json:"span.kind,omitempty"`
+	// === 网络信息 ===
+	RemoteHost  string `json:"remote.host,omitempty"`  // 远端主机
+	RemotePort  string `json:"remote.port,omitempty"`  // 远端端口
+	RemoteIP    string `json:"remote.ip,omitempty"`    // 远端 IP
+	RemotePodId string `json:"remote.podId,omitempty"` // 远端 Pod ID
+	RemoteApp   string `json:"remote.app,omitempty"`   // 远端 App 名称
 
-	ResultCode string `json:"result.code,omitempty"`
+	// === 协议与服务 ===
+	Protocol    string `json:"protocol,omitempty"`         // 通信协议
+	Service     string `json:"service,omitempty"`          // 服务名
+	MethodParam string `json:"method.parameter,omitempty"` // 方法参数
+	InvokeType  string `json:"invoke.type,omitempty"`      // 调用类型（sync/async）
 
-	ThreadName string `json:"current.thread.name,omitempty"`
+	// === 调用性能 ===
+	ClientElapseTime   int64 `json:"client.elapse.time,omitempty"`    // 客户端耗时
+	ClientConnTime     int64 `json:"client.conn.time,omitempty"`      // 客户端连接时间
+	BizImplTime        int64 `json:"biz.impl.time,omitempty"`         // 业务实现耗时
+	ServerPoolWaitTime int64 `json:"server.pool.wait.time,omitempty"` // 线程池等待时间
 
-	TimesCostMs int64 `json:"times.cost.milliseconds,omitempty"`
+	// === 时间阶段分析 ===
+	PhaseTimeCost         string `json:"phase.time.cost,omitempty"`          // 阶段耗时
+	SpecialTimeMark       string `json:"special.time.mark,omitempty"`        // 特殊时间标记
+	ServerPhaseTimeCost   string `json:"server.phase.time.cost,omitempty"`   // Server 阶段耗时
+	ServerSpecialTimeMark string `json:"server.special.time.mark,omitempty"` // Server 特殊时间标记
 
-	LogType string `json:"log.type,omitempty"`
+	// === 日志与消息 ===
+	LogType       string `json:"log.type,omitempty"`    // 日志类型
+	MessageId     string `json:"msg.id,omitempty"`      // 消息 ID
+	MessageTopic  string `json:"msg.topic,omitempty"`   // 消息 Topic
+	PoinMessageId string `json:"poin.msg.id,omitempty"` // 指向消息 ID
 
-	ContainerPodID string `json:"container.podId,omitempty"`
+	// === Baggage 扩展 ===
+	SysBaggage string            `json:"sys.baggage,omitempty"` // 系统透传字段
+	BizBaggage string            `json:"biz.baggage,omitempty"` // 业务透传字段
+	Baggage    string            `json:"baggage,omitempty"`     // 通用透传字段
+	SysExpand  map[string]string `json:"sys.expand,omitempty"`  // 系统扩展字段
 
-	Time int64 `json:"time,omitempty"`
-
-	ReqURL string `json:"request.url,omitempty"`
-
-	Method string `json:"method,omitempty"`
-
-	Error string `json:"error,omitempty"`
-
-	ReqSizeBytes int64 `json:"req.size.bytes,omitempty"`
-
-	ReqParam string `json:"req.parameter,omitempty"`
-
-	RespSizeBytes int64 `json:"resp.size.bytes,omitempty"`
-
-	RemoteHost string `json:"remote.host,omitempty"`
-
-	RemotePort string `json:"remote.port,omitempty"`
-
-	SysBaggage string `json:"sys.baggage,omitempty"`
-
-	BizBaggage string `json:"biz.baggage,omitempty"`
-
-	SysExpand map[string]string `json:"sys.expand,omitempty"`
-
-	DbType string `json:"db.type,omitempty"`
-
-	DatabaseName string `json:"database.name,omitempty"`
-
-	Sql string `json:"sql,omitempty"`
-
-	SqlParam string `json:"sql.parameter,omitempty"`
-
-	ConnEstabSpan string `json:"connection.establish.span,omitempty"`
-
-	DbExecCost string `json:"db.execute.cost,omitempty"`
-
-	DatabaseType string `json:"database.type,omitempty"`
-
-	DatabaseEndpoint string `json:"database.endpoint,omitempty"`
-
-	Protocol string `json:"protocol,omitempty"`
-
-	Service string `json:"service,omitempty"`
-
-	MethodParam string `json:"method.parameter,omitempty"`
-
-	InvokeType string `json:"invoke.type,omitempty"`
-
-	RouterRecord string `json:"router.record,omitempty"`
-
-	RemoteIP string `json:"remote.ip,omitempty"`
-
-	LocalClientIP string `json:"local.client.ip,omitempty"`
-
-	ReqSize int64 `json:"req.size,omitempty"`
-
-	RespSize int64 `json:"resp.size,omitempty"`
-
-	ClientElapseTime int64 `json:"client.elapse.time,omitempty"`
-
-	LocalClientPort int64 `json:"local.client.port,omitempty"`
-
-	Baggage string `json:"baggage,omitempty"`
-
-	MessageId     string `json:"msg.id,omitempty"`
-	MessageTopic  string `json:"msg.topic,omitempty"`
-	PoinMessageId string `json:"poin.msg.id,omitempty"`
-
-	BizImplTime         int64 `json:"biz.impl.time,omitempty"`
-	ClientConnTime      int64 `json:"client.conn.time,omitempty"`
-	ReqDeserializeTime  int64 `json:"req.deserialize.time,omitempty"`
-	ReqSerializeTime    int64 `json:"req.serialize.time,omitempty"`
-	RespDeserializeTime int64 `json:"resp.deserialize.time,omitempty"`
-	RespSerializeTime   int64 `json:"resp.serialize.time,omitempty"`
-	ServerPoolWaitTime  int64 `json:"server.pool.wait.time,omitempty"`
-
-	PhaseTimeCost string `json:"phase.time.cost,omitempty"`
-
-	SpecialTimeMark string `json:"special.time.mark,omitempty"`
-
-	ServerPhaseTimeCost string `json:"server.phase.time.cost,omitempty"`
-
-	ServerSpecialTimeMark string `json:"server.special.time.mark,omitempty"`
-
-	RemotePodId string `json:"remote.podId,omitempty"`
-
-	RemoteApp string `json:"remote.app,omitempty"`
-
-	Trans SpanTransTypeInfoEntity `json:"biz.expand"`
+	// === 自定义业务扩展 ===
+	RouterRecord string                  `json:"router.record,omitempty"` // 路由记录
+	Trans        SpanTransTypeInfoEntity `json:"biz.expand"`              // 跨服务扩展信息
+	ReturnCode   string                  `json:"return_code"`
 }

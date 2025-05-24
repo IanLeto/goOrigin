@@ -75,3 +75,13 @@ type UpdateReturnCode struct {
 	Project      string `json:"project"`
 	Status       string `json:"status"`
 }
+
+type CreateTradeReturnCodeRequest struct {
+	UrlPath       string `json:"url_path"`
+	SuccessCount  int    `json:"success_count"`
+	FailedCount   int    `json:"failed_count"`
+	UnKnownCount  string `json:"unknown_count"`
+	Total         string `json:"total"`
+	TransTypeCn   string `json:"trans_type_cn"`
+	ResponseCount string `json:"response_count"`
+}
