@@ -111,18 +111,30 @@ type SuccessRateResponse struct {
 	Items []*SuccessRateItem `json:"items"`
 }
 
+// 交易设置列表页面
+type TransTypeQueryReq struct {
+	Region   string `json:"region" form:"region"`
+	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
+	PageSize int    `json:"page_size" form:"page_size"` // 每页大小，默认 10
+	*TransTypeQueryInfo
+}
+
+type TransTypeQueryInfo struct {
+	Project    string   `json:"project" form:"project"`
+	Az         string   `json:"az"`
+	TransTypes []string `json:"trans_types" form:"trans_types"`
+}
+
+// 交易页面返回值
 type TransTypeResponse struct {
-	Items []*TransTypeItem `json:"items"`
+	Items    []*TransTypeItem `json:"items"`
+	Total    int              `json:"total"`     // 总条数
+	Page     int              `json:"page"`      // 当前页
+	PageSize int              `json:"page_size"` // 单页条数
 }
 
 type TransTypeItem struct {
 	TransType   string   `json:"trans_type"`
 	TransTypeCn string   `json:"trans_type_cn"`
 	ReturnCode  []string `json:"return_code"`
-}
-
-type TransTypeQueryInfo struct {
-	Project    string   `json:"project" form:"project"`
-	TransTypes []string `json:"trans_types" form:"trans_types"`
-	Region     string   `json:"region" form:"region"`
 }

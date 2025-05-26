@@ -768,12 +768,12 @@ func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoE
 	return tx.Commit().Error
 }
 
-func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, info *V1.TransTypeQueryInfo) (*entity.TransTypeResponseEntity, error) {
+func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1.TransTypeQueryInfo) (*entity.TransTypeResponseEntity, error) {
 	var (
-		conn         = elastic.GlobalEsConns[info.Region]
+		conn         = elastic.GlobalEsConns[region]
 		result       = &entity.TransTypeResponseEntity{}
 		transTypeMap = make(map[string]*entity.TransTypeEntity)
-		db           = mysql.GlobalMySQLConns[info.Region]
+		db           = mysql.GlobalMySQLConns[region]
 	)
 
 	// -----------------------------

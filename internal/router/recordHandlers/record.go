@@ -226,26 +226,62 @@ ERR:
 }
 func QueryTransTypeReturnCodes(c *gin.Context) {
 	var (
-		req  = &V1.TransTypeQueryInfo{}
+		req  = &V1.TransTypeQueryReq{}
 		resp *entity.TransTypeResponseEntity
 		err  error
 	)
 
-	// 解析请求参数
+	// ✅ 参数绑定
 	if err := c.ShouldBindQuery(req); err != nil {
 		V1.BuildErrResponse(c, V1.BuildErrInfo(1001, "参数解析失败"))
 		return
 	}
-	if req.Region == "" {
-		req.Region = "default"
+
+	// ✅ 设置默认分页
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 || req.PageSize > 100 {
+		req.PageSize = 10
 	}
 
-	// 调用逻辑层
-	resp, err = logic.QueryTransTypeWithReturnCodesInfo(c, req)
+	// ✅ 调用逻辑层（你后续会处理分页）
+	resp, err = logic.QueryTransTypeWithReturnCodesInfo(c, req.Region, req.TransTypeQueryInfo)
 	if err != nil {
 		V1.BuildErrResponse(c, V1.BuildErrInfo(1002, fmt.Sprintf("查询失败: %s", err)))
 		return
 	}
 
-	V1.BuildResponse(c, V1.BuildInfo(resp))
+	// ✅ 页面分页处理（由 service 层临时分页）
+	start := (req.Page - 1) * req.PageSize
+	end := start + req.PageSize
+
+	total := len(resp.Items)
+	if start > total {
+		start = total
+	}
+	if end > total {
+		end = total
+	}
+
+	pageItems := resp.Items[start:end]
+
+	// ✅ 构造返回体
+	var res = &V1.TransTypeResponse{
+		Items:    []*V1.TransTypeItem{},
+		Total:    total,
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	}
+
+	// ✅ 转换 entity → response item
+	for _, item := range pageItems {
+		res.Items = append(res.Items, &V1.TransTypeItem{
+			TransType:   item.TransType,
+			TransTypeCn: item.TransTypeCn,
+			ReturnCode:  item.ReturnCodes,
+		})
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
 }
