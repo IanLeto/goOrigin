@@ -25,8 +25,156 @@ func SearchTransInfo(ctx *gin.Context, region string, info *V1.SuccessRateReqInf
 	panic(1)
 }
 
+func SearchTransTypeSuccessStatsMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
+	var (
+		conn             = elastic.GlobalEsConns[region]
+		ret              = &entity.SpanEntity{}
+		err              error
+		esIndex          = "span"
+		projectAggResult = map[string]interface{}{}
+	)
+
+	// -----------------------------
+	// 1. 获取数据库连接并加载返回码配置
+	// -----------------------------
+	db := mysql.GlobalMySQLConns[region]
+	var returnCodes []dao.EcampReturnCodeTb
+
+	codeQuery := db.Client.Debug().Table("ecamp_return_code_tb")
+
+	// 可选查询条件（按项目或交易类型过滤）
+	//if info.Project != "" {
+	//	codeQuery = codeQuery.Where("project = ?", info.Project)
+	//}
+	//if len(info.TransTypes) > 0 {
+	//	codeQuery = codeQuery.Where("trans_type IN ?", info.TransTypes)
+	//}
+
+	err = codeQuery.Find(&returnCodes).Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("查询返回码配置失败: %v", err))
+		return nil, err
+	}
+
+	// 构建映射 map[transType][return_code] = status
+	returnCodeMap := make(map[string]map[string]string)
+	for _, rc := range returnCodes {
+		if _, ok := returnCodeMap[rc.TransType]; !ok {
+			returnCodeMap[rc.TransType] = make(map[string]string)
+		}
+		returnCodeMap[rc.TransType][rc.ReturnCode] = strings.ToLower(rc.Status)
+	}
+
+	// -----------------------------
+	// 2. 构建 Elasticsearch 查询
+	// -----------------------------
+	query := map[string]interface{}{
+		"size": 0,
+		"aggs": map[string]interface{}{
+			"by_transType": map[string]interface{}{
+				"terms": map[string]interface{}{
+					"field": "transType.keyword",
+					"size":  1000,
+				},
+				"aggs": map[string]interface{}{
+					"by_returnCode": map[string]interface{}{
+						"terms": map[string]interface{}{
+							"field": "return_code.keyword",
+							"size":  1000,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// -----------------------------
+	// 3. 执行 Elasticsearch 查询
+	// -----------------------------
+	value, err := conn.Search(esIndex, query)
+	if err != nil {
+		logger.Error(fmt.Sprintf("ES 查询失败: %s\nQuery: %s", err, func() string {
+			s, _ := json.Marshal(query)
+			return string(s)
+		}()))
+		return nil, err
+	}
+
+	err = json.Unmarshal(value, &projectAggResult)
+	if err != nil {
+		logger.Error(fmt.Sprintf("解析 ES 返回失败: %s", err))
+		return nil, err
+	}
+
+	// -----------------------------
+	// 4. 加载交易类型中文名称映射
+	// -----------------------------
+	var transTypes []dao.EcampTransTypeTb
+	typeQuery := db.Client.Debug().Table("ecamp_trans_type_tb")
+	//if info.Project != "" {
+	//	typeQuery = typeQuery.Where("project = ?", info.Project)
+	//}
+	err = typeQuery.Find(&transTypes).Error
+	if err != nil {
+		logger.Error(fmt.Sprintf("加载交易类型失败: %s", err))
+		return nil, err
+	}
+
+	transTypeCNMap := make(map[string]string)
+	for _, t := range transTypes {
+		transTypeCNMap[t.TransType] = t.TransTypeCN
+	}
+
+	// -----------------------------
+	// 5. 组装统计结果
+	// -----------------------------
+	aggregations := projectAggResult["aggregations"].(map[string]interface{})
+	transBuckets := aggregations["by_transType"].(map[string]interface{})["buckets"].([]interface{})
+
+	for _, bucket := range transBuckets {
+		b := bucket.(map[string]interface{})
+		transType := b["key"].(string)
+		returnBuckets := b["by_returnCode"].(map[string]interface{})["buckets"].([]interface{})
+
+		var (
+			successCount int64
+			failedCount  int64
+			unknownCount int64
+			total        int64
+		)
+
+		for _, rb := range returnBuckets {
+			r := rb.(map[string]interface{})
+			retCode := r["key"].(string)
+			count := int64(r["doc_count"].(float64))
+
+			status := returnCodeMap[transType][retCode]
+			switch status {
+			case "success":
+				successCount += count
+			case "failed":
+				failedCount += count
+			default:
+				unknownCount += count
+			}
+			total += count
+		}
+
+		ret.Stats = append(ret.Stats, entity.SpanDatEntity{
+			TransType:    transType,
+			TransTypeCN:  transTypeCNMap[transType],
+			SuccessCount: successCount,
+			FailedCount:  failedCount,
+			UnknownCount: unknownCount,
+			Total:        total,
+		})
+	}
+
+	return ret, nil
+}
+
 // OdaSuccessAndFailedRateMetric 返回成功和失败的比率
-func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
+func OdaSuccessAndFailedRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
 	var (
 		projectDocEntity = &entity.ProjectAggDocEntity{}
 		err              error
@@ -108,7 +256,7 @@ ERR:
 }
 
 // OdaSuccessCountAndFailedCountMetric 返回成功和失败的数量
-func OdaSuccessCountAndFailedCountMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
+func OdaSuccessCountAndFailedCountMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
 	var (
 		projectDocEntity = &entity.ProjectAggDocEntity{}
 		err              error
@@ -191,9 +339,9 @@ ERR:
 }
 
 // OdaRespRateMetric  返回响应率
-func OdaRespRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
+func OdaRespRateMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
 	var (
-		successRateEntity = &entity.SuccessRateEntity{}
+		successRateEntity = &entity.SpanEntity{}
 		err               error
 		conn              = elastic.GlobalEsConns[region]
 	)
@@ -312,9 +460,9 @@ ERR:
 }
 
 // OdaSuccessCountMetric 成功/失败/错误数
-func OdaSuccessCountMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SuccessRateEntity, error) {
+func OdaSuccessCountMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
 	var (
-		successRateEntity = &entity.SuccessRateEntity{}
+		successRateEntity = &entity.SpanEntity{}
 		err               error
 		conn              = elastic.GlobalEsConns[region]
 	)
@@ -618,4 +766,98 @@ func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoE
 	}
 
 	return tx.Commit().Error
+}
+
+func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, info *V1.TransTypeQueryInfo) (*entity.TransTypeResponseEntity, error) {
+	var (
+		conn         = elastic.GlobalEsConns[info.Region]
+		result       = &entity.TransTypeResponseEntity{}
+		transTypeMap = make(map[string]*entity.TransTypeEntity)
+		db           = mysql.GlobalMySQLConns[info.Region]
+	)
+
+	// -----------------------------
+	// Step 1: 查询 ES 聚合数据
+	// -----------------------------
+	query := map[string]interface{}{
+		"size": 0,
+		"aggs": map[string]interface{}{
+			"by_transType": map[string]interface{}{
+				"terms": map[string]interface{}{
+					"field": "transType.keyword",
+					"size":  1000,
+				},
+				"aggs": map[string]interface{}{
+					"by_return_code": map[string]interface{}{
+						"terms": map[string]interface{}{
+							"field": "return_code.keyword",
+							"size":  1000,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	raw, err := conn.Search("span", query)
+	if err != nil {
+		return nil, fmt.Errorf("ES 查询失败: %v", err)
+	}
+
+	var aggResult map[string]interface{}
+	err = json.Unmarshal(raw, &aggResult)
+	if err != nil {
+		return nil, fmt.Errorf("ES 结果解析失败: %v", err)
+	}
+
+	buckets := aggResult["aggregations"].(map[string]interface{})["by_transType"].(map[string]interface{})["buckets"].([]interface{})
+
+	for _, b := range buckets {
+		bucket := b.(map[string]interface{})
+		transType := bucket["key"].(string)
+		returnCodeBuckets := bucket["by_return_code"].(map[string]interface{})["buckets"].([]interface{})
+
+		entityItem := &entity.TransTypeEntity{
+			TransType:   transType,
+			ReturnCodes: []string{},
+		}
+
+		for _, rc := range returnCodeBuckets {
+			code := rc.(map[string]interface{})["key"].(string)
+			entityItem.ReturnCodes = append(entityItem.ReturnCodes, code)
+		}
+
+		transTypeMap[transType] = entityItem
+	}
+
+	// -----------------------------
+	// Step 2: 查询数据库中的中文名
+	// -----------------------------
+	var transTypeDBs []dao.EcampTransTypeTb
+	sql := db.Client.Debug().Model(&dao.EcampTransTypeTb{})
+	if info.Project != "" {
+		sql = sql.Where("project = ?", info.Project)
+	}
+	if len(info.TransTypes) > 0 {
+		sql = sql.Where("trans_type IN ?", info.TransTypes)
+	}
+	if err := sql.Find(&transTypeDBs).Error; err != nil {
+		return nil, fmt.Errorf("数据库查询失败: %v", err)
+	}
+
+	// 设置中文名
+	for _, t := range transTypeDBs {
+		if val, ok := transTypeMap[t.TransType]; ok {
+			val.TransTypeCn = t.TransTypeCN
+		}
+	}
+
+	// -----------------------------
+	// Step 3: 转换结果为列表
+	// -----------------------------
+	for _, v := range transTypeMap {
+		result.Items = append(result.Items, v)
+	}
+
+	return result, nil
 }

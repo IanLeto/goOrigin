@@ -172,3 +172,80 @@ func DeleteRecord(c *gin.Context) {
 ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("delete record failed: %s", err)))
 }
+
+func SearchSuccessRate(c *gin.Context) {
+	var (
+		res    = &V1.SuccessRateResponse{}
+		result *entity.SpanEntity
+		err    error
+	)
+
+	// 从请求中提取参数
+	region, _ := conv.String(c.Query("region"))
+	if region == "" {
+		region = "default"
+	}
+	project, _ := conv.String(c.Query("project"))
+	transTypes := c.QueryArray("trans_types")
+	startTime, _ := conv.Int64(c.Query("start_time"))
+	endTime, _ := conv.Int64(c.Query("end_time"))
+
+	// 构造参数结构体
+	reqInfo := &V1.SuccessRateReqInfo{
+		Project:    project,
+		TransTypes: transTypes,
+		StartTime:  startTime,
+		EndTime:    endTime,
+		Region:     region,
+	}
+
+	// 调用核心逻辑
+	result, err = logic.SearchTransTypeSuccessStatsMetric(c, region, reqInfo)
+	if err != nil {
+		goto ERR
+	}
+
+	// 数据格式转换为响应结构体 SuccessRateItem
+	for _, stat := range result.Stats {
+		res.Items = append(res.Items, &V1.SuccessRateItem{
+			TransType:     stat.TransType,
+			TransTypeCn:   stat.TransTypeCN,
+			SuccessCount:  int(stat.SuccessCount),
+			FailedCount:   int(stat.FailedCount),
+			UnknownCount:  int(stat.UnknownCount),
+			Total:         int(stat.Total),
+			ResponseCount: int(stat.Total), // 可自定义逻辑
+		})
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("query failed: %s", err)))
+}
+func QueryTransTypeReturnCodes(c *gin.Context) {
+	var (
+		req  = &V1.TransTypeQueryInfo{}
+		resp *entity.TransTypeResponseEntity
+		err  error
+	)
+
+	// 解析请求参数
+	if err := c.ShouldBindQuery(req); err != nil {
+		V1.BuildErrResponse(c, V1.BuildErrInfo(1001, "参数解析失败"))
+		return
+	}
+	if req.Region == "" {
+		req.Region = "default"
+	}
+
+	// 调用逻辑层
+	resp, err = logic.QueryTransTypeWithReturnCodesInfo(c, req)
+	if err != nil {
+		V1.BuildErrResponse(c, V1.BuildErrInfo(1002, fmt.Sprintf("查询失败: %s", err)))
+		return
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(resp))
+}

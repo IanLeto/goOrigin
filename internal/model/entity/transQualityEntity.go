@@ -29,7 +29,17 @@ type Indicator struct {
 	ResponseRate  int `json:"response_rate"`
 }
 
-type SuccessRateEntity struct {
+type SpanEntity struct {
+	Stats []SpanDatEntity `json:"stats"`
+}
+
+type SpanDatEntity struct {
+	TransType    string `json:"trans_type"`
+	TransTypeCN  string `json:"trans_type_cn"`
+	SuccessCount int64  `json:"success_count"`
+	FailedCount  int64  `json:"failed_count"`
+	UnknownCount int64  `json:"unknown_count"`
+	Total        int64  `json:"total"`
 }
 
 func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
@@ -72,4 +82,14 @@ type TradeReturnCodeEntity struct {
 	Total         string
 	TransTypeCn   string
 	ResponseCount string
+}
+
+type TransTypeEntity struct {
+	TransType   string   `json:"trans_type"`
+	TransTypeCn string   `json:"trans_type_cn"`
+	ReturnCodes []string `json:"return_codes"`
+}
+
+type TransTypeResponseEntity struct {
+	Items []*TransTypeEntity `json:"items"`
 }

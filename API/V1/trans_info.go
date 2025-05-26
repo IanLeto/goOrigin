@@ -1,8 +1,5 @@
 package V1
 
-type SuccessRateReqInfo struct {
-}
-
 type CreateTransInfoReq struct {
 	Region string            `json:"region"` // 所属区域，批量共用
 	Items  []CreateTransInfo `json:"items"`  // 多个交易类型
@@ -16,11 +13,6 @@ type CreateTransInfo struct {
 	Interval    int               `json:"interval"`
 	Dimension1  string            `json:"dimension1"` // 交易类型
 	Dimension2  string            `json:"dimension2"` // 交易渠道
-}
-
-type CreateTransInfoReq2 struct {
-	*CreateTransInfo
-	Region string `json:"region"`
 }
 
 type CreateTransInfoResponse struct {
@@ -84,4 +76,53 @@ type CreateTradeReturnCodeRequest struct {
 	Total         string `json:"total"`
 	TransTypeCn   string `json:"trans_type_cn"`
 	ResponseCount string `json:"response_count"`
+}
+
+// 搜索es 列表使用
+type SearchTradeReturnCodeRequest struct {
+	UrlPath       string `json:"url_path"`
+	SuccessCount  int    `json:"success_count"`
+	FailedCount   int    `json:"failed_count"`
+	UnKnownCount  int    `json:"unknown_count"`
+	Total         int    `json:"total"`
+	TransTypeCn   string `json:"trans_type_cn"`
+	ResponseCount int    `json:"response_count"`
+}
+
+type SuccessRateReqInfo struct {
+	Project    string   `form:"project" json:"project"`         // 项目标识
+	TransTypes []string `form:"trans_types" json:"trans_types"` // 交易类型列表
+	StartTime  int64    `form:"start_time" json:"start_time"`   // 开始时间（可扩展）
+	EndTime    int64    `form:"end_time" json:"end_time"`       // 结束时间
+	Region     string   `form:"region" json:"region"`           // 查询区域
+}
+
+type SuccessRateItem struct {
+	TransType     string `json:"trans_type"`
+	TransTypeCn   string `json:"trans_type_cn"`
+	SuccessCount  int    `json:"success_count"`
+	FailedCount   int    `json:"failed_count"`
+	UnknownCount  int    `json:"unknown_count"`
+	Total         int    `json:"total"`
+	ResponseCount int    `json:"response_count"`
+}
+
+type SuccessRateResponse struct {
+	Items []*SuccessRateItem `json:"items"`
+}
+
+type TransTypeResponse struct {
+	Items []*TransTypeItem `json:"items"`
+}
+
+type TransTypeItem struct {
+	TransType   string   `json:"trans_type"`
+	TransTypeCn string   `json:"trans_type_cn"`
+	ReturnCode  []string `json:"return_code"`
+}
+
+type TransTypeQueryInfo struct {
+	Project    string   `json:"project" form:"project"`
+	TransTypes []string `json:"trans_types" form:"trans_types"`
+	Region     string   `json:"region" form:"region"`
 }
