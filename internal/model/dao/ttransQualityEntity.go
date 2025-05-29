@@ -85,31 +85,3 @@ type AggUrlPathDoc struct {
 
 type AggUrlPathInfo struct {
 }
-
-func ConvertESAggToEcampAggUrlDocs(resp *ESAggResponse) []EcampAggUrlDoc {
-	if resp == nil {
-		return nil
-	}
-
-	var result []EcampAggUrlDoc
-
-	for _, urlBucket := range resp.Aggregations.ReqURLAgg.Buckets {
-		doc := EcampAggUrlDoc{
-			ReqURL:     urlBucket.Key,
-			TotalCount: urlBucket.DocCount,
-		}
-
-		var returnCodeAggs []EcampReturnCodeAggItem
-		for _, rcBucket := range urlBucket.ReturnCodeAgg.Buckets {
-			returnCodeAggs = append(returnCodeAggs, EcampReturnCodeAggItem{
-				ReturnCode: rcBucket.Key,
-				Count:      rcBucket.DocCount,
-			})
-		}
-
-		doc.ReturnCodeAgg = returnCodeAggs
-		result = append(result, doc)
-	}
-
-	return result
-}

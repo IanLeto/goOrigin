@@ -147,6 +147,29 @@ type SearchUrlPathWithReturnCodesInfo struct {
 	OrderBy    string   `json:"order_by"`
 }
 
+// 交易聚合查询接口
+type AggUrlPathWithReturnCodesReq struct {
+	Region   string `json:"region" form:"region"`
+	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
+	PageSize int    `json:"page_size" form:"page_size"` // 每页大小，默认 10
+	*SearchUrlPathWithReturnCodesInfo
+}
+
+type AggUrlPathWithReturnCodesInfo struct {
+	Project string `json:"project" form:"project"`
+	Az      string `json:"az"`
+
+	Svcname    string `json:"svcname"`
+	Dimension1 string `json:"dimension1"`
+	Dimension2 string `json:"dimension2"`
+	SourceIP   string `json:"sourceIP"`
+	TargetIP   string `json:"targetIP"`
+
+	StartTime int    `json:"start_time"`
+	EndTime   int    `json:"end_time"`
+	OrderBy   string `json:"order_by"`
+}
+
 // 交易页面返回值
 type SearchUrlPathWithReturnCodesInfoResponse struct {
 	Items    []interface{} `json:"items"`
