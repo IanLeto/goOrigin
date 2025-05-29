@@ -2,6 +2,7 @@ package trans_type
 
 import (
 	"fmt"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
@@ -160,4 +161,64 @@ func convertToEntity(item *V1.UpdateTransInfo) *entity.TransInfoEntity {
 		Interval:   item.Interval,
 		ReturnCode: codes,
 	}
+}
+
+func SearchTransTypeReturnCodes(c *gin.Context) {
+	var (
+		req    = &V1.SearchUrlPathWithReturnCodesReq{}
+		res    = &V1.SearchUrlPathWithReturnCodesInfoResponse{}
+		result []*entity.UrlPathAggEntity
+		err    error
+	)
+
+	// 获取查询参数
+	region, _ := conv.String(c.Query("region"))
+	if region == "" {
+		region = "win"
+	}
+	page, _ := conv.Int(c.Query("page"))
+	if page <= 0 {
+		page = 1
+	}
+	pageSize, _ := conv.Int(c.Query("page_size"))
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	// 构建请求参数
+	startTime, _ := conv.Int(c.Query("start_time"))
+	endTime, _ := conv.Int(c.Query("end_time"))
+
+	req.Region = region
+	req.Page = page
+	req.PageSize = pageSize
+	req.SearchUrlPathWithReturnCodesInfo = &V1.SearchUrlPathWithReturnCodesInfo{
+		Project:    c.Query("project"),
+		Az:         c.Query("az"),
+		TransTypes: c.QueryArray("trans_types"),
+		StartTime:  startTime,
+		EndTime:    endTime,
+		Keyword:    c.Query("keyword"),
+		OrderBy:    c.Query("order_by"),
+	}
+
+	// 执行查询
+	result, err = logic.SearchUrlPathWithReturnCode(c, region, req.SearchUrlPathWithReturnCodesInfo)
+	if err != nil {
+		goto ERR
+	}
+
+	// 构建响应
+	for _, record := range result {
+		res.Items = append(res.Items, record)
+	}
+	res.Total = len(result)
+	res.Page = page
+	res.PageSize = pageSize
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("search trans type return codes failed by %s", err)))
 }

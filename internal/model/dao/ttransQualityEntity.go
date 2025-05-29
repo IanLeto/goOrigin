@@ -51,3 +51,65 @@ const TableNameEcampReturnCodeTb = "ecamp_return_code_tb"
 func (*EcampReturnCodeTb) TableName() string {
 	return TableNameEcampReturnCodeTb
 }
+
+type ESAggResponse struct {
+	Aggregations struct {
+		ReqURLAgg struct {
+			Buckets []struct {
+				Key           string `json:"key"`       // 聚合键：request.url
+				DocCount      int64  `json:"doc_count"` // 当前 URL 的总文档数
+				ReturnCodeAgg struct {
+					Buckets []struct {
+						Key      string `json:"key"`       // 聚合键：return_code
+						DocCount int64  `json:"doc_count"` // 每个 return_code 的文档数
+					} `json:"buckets"`
+				} `json:"returnCodeAgg"` // 子聚合：return_code 聚合
+			} `json:"buckets"`
+		} `json:"reqUrlAgg"` // 顶层聚合：按 request.url 进行聚合
+	} `json:"aggregations"`
+}
+
+type EcampAggUrlDoc struct {
+	ReqURL        string                   `json:"req_url"`         // 请求路径
+	TotalCount    int64                    `json:"total_count"`     // 总调用次数7
+	ReturnCodeAgg []EcampReturnCodeAggItem `json:"return_code_agg"` // 每个 return_code 的调用次数
+}
+
+type EcampReturnCodeAggItem struct {
+	ReturnCode string `json:"return_code"` // 返回码
+	Count      int64  `json:"count"`       // 调用次数
+}
+
+type AggUrlPathDoc struct {
+}
+
+type AggUrlPathInfo struct {
+}
+
+func ConvertESAggToEcampAggUrlDocs(resp *ESAggResponse) []EcampAggUrlDoc {
+	if resp == nil {
+		return nil
+	}
+
+	var result []EcampAggUrlDoc
+
+	for _, urlBucket := range resp.Aggregations.ReqURLAgg.Buckets {
+		doc := EcampAggUrlDoc{
+			ReqURL:     urlBucket.Key,
+			TotalCount: urlBucket.DocCount,
+		}
+
+		var returnCodeAggs []EcampReturnCodeAggItem
+		for _, rcBucket := range urlBucket.ReturnCodeAgg.Buckets {
+			returnCodeAggs = append(returnCodeAggs, EcampReturnCodeAggItem{
+				ReturnCode: rcBucket.Key,
+				Count:      rcBucket.DocCount,
+			})
+		}
+
+		doc.ReturnCodeAgg = returnCodeAggs
+		result = append(result, doc)
+	}
+
+	return result
+}

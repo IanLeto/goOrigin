@@ -111,7 +111,7 @@ type SuccessRateResponse struct {
 	Items []*SuccessRateItem `json:"items"`
 }
 
-// 交易设置列表页面
+// 检索交易设置页列表
 type TransTypeQueryReq struct {
 	Region   string `json:"region" form:"region"`
 	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
@@ -123,6 +123,37 @@ type TransTypeQueryInfo struct {
 	Project    string   `json:"project" form:"project"`
 	Az         string   `json:"az"`
 	TransTypes []string `json:"trans_types" form:"trans_types"`
+	StartTime  int      `json:"start_time"`
+	EndTime    int      `json:"end_time"`
+	Keyword    string   `json:"keyword"`
+	OrderBy    string   `json:"order_by"`
+}
+
+// 检索交易设置页列表2
+type SearchUrlPathWithReturnCodesReq struct {
+	Region   string `json:"region" form:"region"`
+	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
+	PageSize int    `json:"page_size" form:"page_size"` // 每页大小，默认 10
+	*SearchUrlPathWithReturnCodesInfo
+}
+
+type SearchUrlPathWithReturnCodesInfo struct {
+	Project    string   `json:"project" form:"project"`
+	Az         string   `json:"az"`
+	TransTypes []string `json:"trans_types" form:"trans_types"`
+	StartTime  int      `json:"start_time"`
+	EndTime    int      `json:"end_time"`
+	Keyword    string   `json:"keyword"`
+	OrderBy    string   `json:"order_by"`
+}
+
+// 交易页面返回值
+type SearchUrlPathWithReturnCodesInfoResponse struct {
+	Items    []interface{} `json:"items"`
+	Total    int           `json:"total"`     // 总条数
+	Page     int           `json:"page"`      // 当前页
+	PageSize int           `json:"page_size"` // 单页条数
+
 }
 
 // 交易页面返回值
@@ -131,10 +162,25 @@ type TransTypeResponse struct {
 	Total    int              `json:"total"`     // 总条数
 	Page     int              `json:"page"`      // 当前页
 	PageSize int              `json:"page_size"` // 单页条数
+
 }
 
 type TransTypeItem struct {
 	TransType   string   `json:"trans_type"`
 	TransTypeCn string   `json:"trans_type_cn"`
 	ReturnCode  []string `json:"return_code"`
+}
+type TransTypeResponse2 struct {
+	Items    []*TransTypeItem2 `json:"items"`
+	Total    int               `json:"total"`     // 总条数
+	Page     int               `json:"page"`      // 当前页
+	PageSize int               `json:"page_size"` // 单页条数
+
+}
+
+type TransTypeItem2 struct {
+	UrlPath         string            `json:"url_path"`
+	UrlPathCN       string            `json:"url_path_cn"`
+	ReturnCode      map[string]string `json:"return_code"`
+	ReturnCodeCount map[string]int    `json:"return_code_count"`
 }

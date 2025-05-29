@@ -98,12 +98,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		nodev2Group.GET("/list", topoHandlers.ListNodes)
 	}
 
-	trasnGroup := g.Group("v1/trans")
+	transGroup := g.Group("v1/trans")
 	{
-		trasnGroup.POST("", trans_type.CreateTransInfo)
-		trasnGroup.POST("list", trans_type.GetTransInfoList)
-		trasnGroup.DELETE("", trans_type.DeleteTransInfo)
-		trasnGroup.PATCH("", trans_type.UpdateTransInfo)
+		transGroup.POST("", trans_type.CreateTransInfo)
+		//transGroup.POST("", trans_type.QueryTransTypeReturnCodes)
+		transGroup.POST("list", trans_type.GetTransInfoList)
+		transGroup.POST("Search", trans_type.SearchTransTypeReturnCodes)
+		transGroup.DELETE("", trans_type.DeleteTransInfo)
+		transGroup.PATCH("", trans_type.UpdateTransInfo)
 	}
 
 	odav2Group := g.Group("v2/pub")

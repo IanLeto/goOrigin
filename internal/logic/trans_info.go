@@ -861,3 +861,6 @@ func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1
 
 	return result, nil
 }
+func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+	panic(1)
+}

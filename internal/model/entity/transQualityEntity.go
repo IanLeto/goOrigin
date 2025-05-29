@@ -93,3 +93,10 @@ type TransTypeEntity struct {
 type TransTypeResponseEntity struct {
 	Items []*TransTypeEntity `json:"items"`
 }
+
+type UrlPathAggEntity struct {
+	UrlPath         string            `json:"url_path"`
+	UrlPathCN       string            `json:"url_path_cn"`
+	ReturnCode      map[string]string `json:"return_code"`
+	ReturnCodeCount map[string]int    `json:"return_code_count"`
+}
