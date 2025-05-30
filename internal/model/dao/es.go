@@ -1,6 +1,6 @@
 package dao
 
-type EsDoc struct {
+type ElasticSearchDoc struct {
 	Took     int  `json:"took"`
 	TimedOut bool `json:"timed_out"`
 	Shards   struct {

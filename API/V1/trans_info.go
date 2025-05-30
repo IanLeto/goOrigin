@@ -129,7 +129,7 @@ type TransTypeQueryInfo struct {
 	OrderBy    string   `json:"order_by"`
 }
 
-// 检索交易设置页列表2
+// SearchUrlPathWithReturnCodesReq 检索交易设置页列表2
 type SearchUrlPathWithReturnCodesReq struct {
 	Region   string `json:"region" form:"region"`
 	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
@@ -206,4 +206,28 @@ type TransTypeItem2 struct {
 	UrlPathCN       string            `json:"url_path_cn"`
 	ReturnCode      map[string]string `json:"return_code"`
 	ReturnCodeCount map[string]int    `json:"return_code_count"`
+}
+
+// 交易质量dashboard
+type TransDashboardHisgromReq struct {
+	Region    string `json:"region"`
+	Az        string `json:"az"`
+	Cluster   string `json:"cluster"`
+	StartTime int    `json:"start_time"`
+	EndTime   int    `json:"end_time"`
+}
+
+type TransDashboardHisgromRes struct {
+}
+
+// 交易质量指标req
+type TransDashboardHisgromMetricReq struct {
+	Region    string `json:"region"`
+	Az        string `json:"az"`
+	Cluster   string `json:"cluster"`
+	StartTime int    `json:"start_time"`
+	EndTime   int    `json:"end_time"`
+}
+
+type TransDashboardHisgromMetricRes struct {
 }

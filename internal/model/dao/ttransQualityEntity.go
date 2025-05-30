@@ -85,3 +85,27 @@ type AggUrlPathDoc struct {
 
 type AggUrlPathInfo struct {
 }
+
+type AggProjectUrlPathDoc struct {
+	Aggregation struct {
+		AggsByTime struct {
+			Buckets []AggsByTimeBucket `json:"buckets"`
+		} `json:"aggs_by_time"`
+	} `json:"aggregation"`
+}
+
+type AggsByTimeBucket struct {
+	Key          int64           `json:"key"`          // 时间戳（毫秒）
+	DocCount     int             `json:"doc_count"`    // 当前时间段的文档数
+	GroupByField GroupByFieldAgg `json:"group_by_url"` // 嵌套聚合结果（比如按 URL 聚合）
+}
+
+// GroupByFieldAgg 嵌套维度聚合结果结构（如按 URL、项目、返回码等聚合）
+type GroupByFieldAgg struct {
+	Buckets []GroupByFieldBucket `json:"buckets"`
+}
+
+type GroupByFieldBucket struct {
+	Key      string `json:"key"`       // URL、项目、返回码等
+	DocCount int    `json:"doc_count"` // 每个值的文档数
+}
