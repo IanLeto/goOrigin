@@ -81,9 +81,56 @@ type EcampReturnCodeAggItem struct {
 }
 
 type AggUrlPathDoc struct {
+	Took         int                    `json:"took"`
+	TimedOut     bool                   `json:"timed_out"`
+	Shards       AggUrlPathShards       `json:"_shards"`
+	Hits         AggUrlPathHits         `json:"hits"`
+	Aggregations AggUrlPathAggregations `json:"aggregations"`
+}
+
+type AggUrlPathShards struct {
+	Total      int `json:"total"`
+	Successful int `json:"successful"`
+	Skipped    int `json:"skipped"`
+	Failed     int `json:"failed"`
+}
+
+type AggUrlPathHits struct {
+	Total    AggUrlPathTotal `json:"total"`
+	MaxScore interface{}     `json:"max_score"`
+	Hits     []interface{}   `json:"hits"`
+}
+
+type AggUrlPathTotal struct {
+	Value    int    `json:"value"`
+	Relation string `json:"relation"`
+}
+
+type AggUrlPathAggregations struct {
+	ByTransType AggUrlPathByTransType `json:"by_transType"`
+}
+
+type AggUrlPathByTransType struct {
+	DocCountErrorUpperBound int              `json:"doc_count_error_upper_bound"`
+	SumOtherDocCount        int              `json:"sum_other_doc_count"`
+	Buckets                 []AggUrlPathInfo `json:"buckets"`
 }
 
 type AggUrlPathInfo struct {
+	Key          string                 `json:"key"`
+	DocCount     int                    `json:"doc_count"`
+	ByReturnCode AggUrlPathByReturnCode `json:"by_return_code"`
+}
+
+type AggUrlPathByReturnCode struct {
+	DocCountErrorUpperBound int                        `json:"doc_count_error_upper_bound"`
+	SumOtherDocCount        int                        `json:"sum_other_doc_count"`
+	Buckets                 []AggUrlPathReturnCodeInfo `json:"buckets"`
+}
+
+type AggUrlPathReturnCodeInfo struct {
+	Key      string `json:"key"`
+	DocCount int    `json:"doc_count"`
 }
 
 type AggProjectUrlPathDoc struct {

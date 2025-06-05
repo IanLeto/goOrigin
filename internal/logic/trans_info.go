@@ -13,6 +13,7 @@ import (
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/repository"
 	"gorm.io/gorm"
+	"sort"
 
 	"goOrigin/internal/dao/elastic"
 
@@ -861,6 +862,433 @@ func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1
 
 	return result, nil
 }
+func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+	var (
+		aggUrlPathDoc = &dao.AggUrlPathDoc{}
+		result        []*entity.UrlPathAggEntity
+		err           error
+		conn          = elastic.GlobalEsConns[region]
+	)
+	var (
+		query = map[string]interface{}{}
+		alias = "your-index-alias" // 需要替换为实际的索引别名
+		aggs  = map[string]interface{}{}
+	)
+	var (
+		byTransType  = map[string]interface{}{}
+		byReturnCode = map[string]interface{}{}
+	)
+	var (
+		mustConditions []map[string]interface{}
+		filterCallback = func(filter *[]map[string]interface{}, key string, value []string) {
+			if len(value) > 0 {
+				*filter = append(*filter, map[string]interface{}{
+					"terms": map[string]interface{}{
+						fmt.Sprintf("%s.keyword", key): value,
+					},
+				})
+			}
+		}
+	)
+
+	// 构建过滤条件
+	if info.Project != "" {
+		mustConditions = append(mustConditions, map[string]interface{}{
+			"term": map[string]interface{}{
+				"project.keyword": info.Project,
+			},
+		})
+	}
+
+	if info.Az != "" {
+		mustConditions = append(mustConditions, map[string]interface{}{
+			"term": map[string]interface{}{
+				"az.keyword": info.Az,
+			},
+		})
+	}
+
+	if len(info.TransTypes) > 0 {
+		filterCallback(&mustConditions, "trans_type", info.TransTypes)
+	}
+
+	if info.StartTime > 0 && info.EndTime > 0 {
+		mustConditions = append(mustConditions, map[string]interface{}{
+			"range": map[string]interface{}{
+				"timestamp": map[string]interface{}{
+					"gte": info.StartTime,
+					"lte": info.EndTime,
+				},
+			},
+		})
+	}
+
+	if info.Keyword != "" {
+		mustConditions = append(mustConditions, map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query":  info.Keyword,
+				"fields": []string{"trans_type", "url_path"},
+			},
+		})
+	}
+
+	// 构建聚合
+	byReturnCode = map[string]interface{}{
+		"terms": map[string]interface{}{
+			"field": "return_code.keyword",
+			"size":  100,
+		},
+	}
+
+	byTransType = map[string]interface{}{
+		"terms": map[string]interface{}{
+			"field": "trans_type.keyword",
+			"size":  1000,
+		},
+		"aggs": map[string]interface{}{
+			"by_return_code": byReturnCode,
+		},
+	}
+
+	aggs = map[string]interface{}{
+		"by_transType": byTransType,
+	}
+
+	// 构建查询
+	query = map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": mustConditions,
+			},
+		},
+		"aggs": aggs,
+		"size": 0,
+	}
+
+	// 添加排序
+	if info.OrderBy != "" {
+		query["sort"] = []map[string]interface{}{
+			{
+				info.OrderBy: map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		}
+	}
+
+	// 执行查询
+	value, err := conn.Search(alias, query)
+	if err != nil {
+		logger.Error(fmt.Sprintf("search url path failed %s: %s", err, func() string {
+			s, _ := json.Marshal(query)
+			return string(s)
+		}()))
+		goto ERR
+	}
+
+	// 转换结果
+	err = utils.JsonToStruct(value, aggUrlPathDoc)
+	if err != nil {
+		logger.Error(fmt.Sprintf("conv url path result failed %s: %s", err, func() string {
+			s, _ := json.Marshal(value)
+			return string(s)
+		}()))
+		goto ERR
+	}
+
+	// 处理聚合结果
+	for _, bucket := range aggUrlPathDoc.Aggregations.ByTransType.Buckets {
+		urlPathEntity := &entity.UrlPathAggEntity{
+			UrlPath:         bucket.Key,
+			UrlPathCN:       bucket.Key, // 这里可能需要转换逻辑
+			ReturnCode:      make(map[string]string),
+			ReturnCodeCount: make(map[string]int),
+		}
+
+		for _, codeBucket := range bucket.ByReturnCode.Buckets {
+			urlPathEntity.ReturnCode[codeBucket.Key] = codeBucket.Key
+			urlPathEntity.ReturnCodeCount[codeBucket.Key] = codeBucket.DocCount
+		}
+
+		result = append(result, urlPathEntity)
+	}
+
+	return result, nil
+
+ERR:
+	return nil, err
+}
+
 func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
-	panic(1)
+	// 模拟复杂的返回数据
+	mockData := []*entity.UrlPathAggEntity{
+		{
+			UrlPath:   "/api/v1/user/login",
+			UrlPathCN: "用户登录接口",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+				"AA201": "创建成功",
+				"DD400": "请求参数错误",
+				"DD401": "未授权",
+				"ZZ403": "禁止访问",
+				"SS404": "资源不存在",
+				"VV500": "服务器内部错误",
+				"VV502": "网关错误",
+				"VV503": "服务不可用",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 15678,
+				"AA201": 234,
+				"DD400": 1256,
+				"DD401": 890,
+				"ZZ403": 456,
+				"SS404": 234,
+				"VV500": 89,
+				"VV502": 23,
+				"VV503": 12,
+			},
+		},
+		{
+			UrlPath:   "/api/v2/order/create",
+			UrlPathCN: "订单创建接口",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+				"DD400": "请求参数错误",
+				"DD409": "资源冲突",
+				"DD429": "请求过于频繁",
+				"VV500": "服务器内部错误",
+				"VV504": "网关超时",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 98765,
+				"DD400": 3456,
+				"DD409": 567,
+				"DD429": 1234,
+				"VV500": 234,
+				"VV504": 45,
+			},
+		},
+		{
+			UrlPath:   "/api/v3/payment/process",
+			UrlPathCN: "支付处理接口",
+			ReturnCode: map[string]string{
+				"AA200": "支付成功",
+				"AA202": "处理中",
+				"DD400": "参数错误",
+				"DD402": "支付失败",
+				"VV500": "系统异常",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 45678,
+				"AA202": 12345,
+				"DD400": 789,
+				"DD402": 456,
+				"VV500": 123,
+			},
+		},
+		{
+			UrlPath:   "/admin/v1/dashboard",
+			UrlPathCN: "管理后台仪表盘",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+				"DD401": "未授权",
+				"ZZ403": "权限不足",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 5678,
+				"DD401": 234,
+				"ZZ403": 89,
+			},
+		},
+		{
+			UrlPath:   "/health/check",
+			UrlPathCN: "健康检查接口",
+			ReturnCode: map[string]string{
+				"AA200": "健康",
+				"VV503": "服务不可用",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 999999,
+				"VV503": 12,
+			},
+		},
+		{
+			UrlPath:   "/api/v4/product/search",
+			UrlPathCN: "商品搜索接口",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+				"AA204": "无内容",
+				"AA206": "部分内容",
+				"DD400": "搜索条件错误",
+				"DD408": "请求超时",
+				"DD413": "请求体过大",
+				"DD422": "无法处理的实体",
+				"VV500": "搜索引擎错误",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 87654,
+				"AA204": 5432,
+				"AA206": 1234,
+				"DD400": 876,
+				"DD408": 234,
+				"DD413": 56,
+				"DD422": 123,
+				"VV500": 45,
+			},
+		},
+		{
+			UrlPath:   "/websocket/connect",
+			UrlPathCN: "WebSocket连接",
+			ReturnCode: map[string]string{
+				"AA101": "切换协议",
+				"DD400": "错误的请求",
+				"DD426": "需要升级",
+				"VV500": "内部错误",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA101": 23456,
+				"DD400": 567,
+				"DD426": 123,
+				"VV500": 34,
+			},
+		},
+		{
+			UrlPath:   "/api/v5/file/upload",
+			UrlPathCN: "文件上传接口",
+			ReturnCode: map[string]string{
+				"AA200": "上传成功",
+				"AA201": "创建成功",
+				"DD400": "文件格式错误",
+				"DD413": "文件过大",
+				"DD415": "不支持的媒体类型",
+				"VV500": "存储服务错误",
+				"VV507": "存储空间不足",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 34567,
+				"AA201": 12345,
+				"DD400": 2345,
+				"DD413": 678,
+				"DD415": 345,
+				"VV500": 123,
+				"VV507": 23,
+			},
+		},
+		{
+			UrlPath:   "/batch/job/execute",
+			UrlPathCN: "批处理任务执行",
+			ReturnCode: map[string]string{
+				"AA200": "执行成功",
+				"AA202": "已接受，处理中",
+				"DD423": "资源锁定",
+				"DD424": "失败的依赖",
+				"VV500": "执行失败",
+				"VV504": "执行超时",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 8765,
+				"AA202": 4321,
+				"DD423": 234,
+				"DD424": 123,
+				"VV500": 56,
+				"VV504": 12,
+			},
+		},
+		{
+			UrlPath:   "/metrics/prometheus",
+			UrlPathCN: "监控指标接口",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 9999999,
+			},
+		},
+		{
+			UrlPath:   "/api/legacy/v0/deprecated",
+			UrlPathCN: "已废弃的旧接口",
+			ReturnCode: map[string]string{
+				"AA301": "永久重定向",
+				"AA308": "永久重定向(保持方法)",
+				"DD410": "已删除",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA301": 456,
+				"AA308": 234,
+				"DD410": 123,
+			},
+		},
+		{
+			UrlPath:   "/internal/debug/trace",
+			UrlPathCN: "内部调试追踪",
+			ReturnCode: map[string]string{
+				"AA200": "成功",
+				"DD401": "未授权",
+				"ZZ403": "禁止访问",
+				"DD405": "方法不允许",
+				"VV501": "未实现",
+				"VV511": "需要网络认证",
+			},
+			ReturnCodeCount: map[string]int{
+				"AA200": 123,
+				"DD401": 456,
+				"ZZ403": 789,
+				"DD405": 234,
+				"VV501": 56,
+				"VV511": 12,
+			},
+		},
+	}
+
+	// 根据查询条件过滤数据
+	var filteredData []*entity.UrlPathAggEntity
+
+	for _, item := range mockData {
+		// 如果有关键词过滤
+		if info.Keyword != "" {
+			if !strings.Contains(strings.ToLower(item.UrlPath), strings.ToLower(info.Keyword)) &&
+				!strings.Contains(strings.ToLower(item.UrlPathCN), strings.ToLower(info.Keyword)) {
+				continue
+			}
+		}
+
+		// 如果有URL路径过滤
+		if len(info.TransTypes) > 0 {
+			found := false
+			for _, transType := range info.TransTypes {
+				if item.UrlPath == transType {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+
+		filteredData = append(filteredData, item)
+	}
+
+	// 模拟分页（简单起见，这里只是截取数据）
+	if len(filteredData) == 0 {
+		return []*entity.UrlPathAggEntity{}, nil
+	}
+
+	// 根据OrderBy排序（简单示例）
+	if info.OrderBy == "doc_count" {
+		// 按总请求数排序
+		sort.Slice(filteredData, func(i, j int) bool {
+			totalI := 0
+			for _, count := range filteredData[i].ReturnCodeCount {
+				totalI += count
+			}
+			totalJ := 0
+			for _, count := range filteredData[j].ReturnCodeCount {
+				totalJ += count
+			}
+			return totalI > totalJ
+		})
+	}
+
+	return filteredData, nil
 }
