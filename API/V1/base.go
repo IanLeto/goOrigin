@@ -18,9 +18,9 @@ type BaseK8sRequestInfo struct {
 
 func BuildErrResponse(c *gin.Context, info *BaseErrResponseInfo) {
 	c.JSON(400, gin.H{
-		"Data":       nil,
-		"Message":    info.Message,
-		"ReturnCode": info.Code,
+		"Data":        nil,
+		"Message":     info.Message,
+		"ReturnCodes": info.Code,
 	})
 }
 

@@ -100,9 +100,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	transGroup := g.Group("v1/trans")
 	{
+		transGroup.POST("list", trans_type.GetTransInfoList)
 		transGroup.POST("", trans_type.CreateTransInfo)
 		//transGroup.POST("", trans_type.QueryTransTypeReturnCodes)
-		transGroup.POST("list", trans_type.GetTransInfoList)
 		transGroup.POST("search", trans_type.SearchTransTypeReturnCodes)
 		transGroup.POST("agg", trans_type.SearchTransTypeReturnCodes)
 		transGroup.DELETE("", trans_type.DeleteTransInfo)

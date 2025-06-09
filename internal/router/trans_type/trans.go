@@ -3,6 +3,7 @@ package trans_type
 import (
 	"fmt"
 	"github.com/cstockton/go-conv"
+	_ "github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"goOrigin/API/V1"
@@ -48,6 +49,8 @@ func GetTransInfoList(c *gin.Context) {
 	)
 	// 调用逻辑层查询函数
 	var list []*entity.TransInfoEntity
+	var aggs []*entity.UrlPathAggEntity
+	var reqInfo = &V1.SearchUrlPathWithReturnCodesInfo{}
 
 	// 设置默认 region
 	if req.Region == "" {
@@ -67,6 +70,14 @@ func GetTransInfoList(c *gin.Context) {
 		logrus.Errorf("query logic failed: %v", err)
 		goto ERR
 	}
+	reqInfo.Project = req.Project
+	reqInfo.TransTypes = []string{req.TransType}
+	reqInfo.StartTime = 0 // 可以根据实际需要设置
+	reqInfo.EndTime = 0   // 可以根据实际需要设置
+	//reqInfo.Keyword = req.Keyword
+	//reqInfo.OrderBy = req.OrderBy
+	aggs, err = logic.SearchUrlPathWithReturnCode(c, req.Region, reqInfo)
+	list = append(list, entity.ConvertUrlPathAggListToTransInfoList(aggs)...)
 
 	res.Items = list
 	res.Total = total
@@ -147,19 +158,18 @@ func convertToEntity(item *V1.UpdateTransInfo) *entity.TransInfoEntity {
 	var codes []*entity.ReturnCodeEntity
 	for _, rc := range item.ReturnCodes {
 		codes = append(codes, &entity.ReturnCodeEntity{
-			ReturnCode:   rc.ReturnCode,
-			ReturnCodeCn: rc.ReturnCodeCn,
-			TransType:    rc.TransType,
-			ProjectID:    rc.Project,
-			Status:       rc.Status,
+			ReturnCode: rc.ReturnCode,
+			TransType:  rc.TransType,
+			ProjectID:  rc.Project,
+			Status:     rc.Status,
 		})
 	}
 
 	return &entity.TransInfoEntity{
-		Project:    item.Project,
-		TransType:  item.TransType,
-		Interval:   item.Interval,
-		ReturnCode: codes,
+		Project:     item.Project,
+		TransType:   item.TransType,
+		Interval:    item.Interval,
+		ReturnCodes: codes,
 	}
 }
 

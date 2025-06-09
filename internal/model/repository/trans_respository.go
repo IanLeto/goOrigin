@@ -11,21 +11,20 @@ func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb) *entity.TransInfo
 	var returnCodeEntities []*entity.ReturnCodeEntity
 	for _, rc := range transType.ReturnCodes {
 		returnCodeEntities = append(returnCodeEntities, &entity.ReturnCodeEntity{
-			ReturnCode:   rc.ReturnCode,
-			ReturnCodeCn: rc.ReturnCodeCN,
-			ProjectID:    rc.Project,
-			TransType:    rc.TransType,
-			Status:       rc.Status,
+			ReturnCode: rc.ReturnCode,
+			ProjectID:  rc.Project,
+			TransType:  rc.TransType,
+			Status:     rc.Status,
 		})
 	}
 
 	return &entity.TransInfoEntity{
-		Project:    transType.Project,
-		TransType:  transType.TransType,
-		ReturnCode: returnCodeEntities,
-		Dimension1: transType.Dimension1,
-		Dimension2: transType.Dimension2,
-		Interval:   0,
+		Project:     transType.Project,
+		TransType:   transType.TransType,
+		ReturnCodes: returnCodeEntities,
+		Dimension1:  transType.Dimension1,
+		Dimension2:  transType.Dimension2,
+		Interval:    0,
 	}
 }
 
@@ -43,13 +42,12 @@ func ToEcampTransTypeTb(entity *entity.TransInfoEntity) *dao.EcampTransTypeTb {
 		Dimension2:  entity.Dimension2,
 	}
 
-	for _, rc := range entity.ReturnCode {
+	for _, rc := range entity.ReturnCodes {
 		returnCode := dao.EcampReturnCodeTb{
-			TransType:    rc.TransType,
-			ReturnCode:   rc.ReturnCode,
-			ReturnCodeCN: rc.ReturnCodeCn,
-			Project:      rc.ProjectID,
-			Status:       rc.Status,
+			TransType:  rc.TransType,
+			ReturnCode: rc.ReturnCode,
+			Project:    rc.ProjectID,
+			Status:     rc.Status,
 		}
 		model.ReturnCodes = append(model.ReturnCodes, returnCode)
 	}
@@ -75,7 +73,7 @@ func ToTransTypeCountEntity(doc *dao.EcampAggUrlDoc, transInfos []entity.TransIn
 	// 2. 构建 returnCode -> status 映射（success / failed / unknown）
 	returnCodeStatusMap := make(map[string]string)
 	if matchedTrans != nil {
-		for _, rc := range matchedTrans.ReturnCode {
+		for _, rc := range matchedTrans.ReturnCodes {
 			if rc != nil {
 				returnCodeStatusMap[rc.ReturnCode] = rc.Status
 			}
@@ -152,9 +150,8 @@ func ConvertToTransTypeResponse(
 		}
 
 		// 查找返回码对应的中文描述
-		for _, rc := range transInfo.ReturnCode {
+		for _, rc := range transInfo.ReturnCodes {
 			if rc.ReturnCode == returnCode {
-				urlReturnCodeMap[urlPath][returnCode] = rc.ReturnCodeCn
 				break
 			}
 		}

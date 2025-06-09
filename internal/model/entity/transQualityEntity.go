@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -56,24 +57,24 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 	return metric
 }
 
-// TransInfoEntity 网关交易
 type TransInfoEntity struct {
 	Project     string              `json:"project"`
-	TransType   string              `json:"trans_type"`
-	TransTypeCn string              `json:"trans_type_cn"`
-	ReturnCode  []*ReturnCodeEntity `json:"return_code"`
+	TransType   string              `json:"trans_type"`    // 等价于 url_path
+	TransTypeCn string              `json:"trans_type_cn"` // 等价于 url_path_cn
+	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`  // 改为复数，更清晰
 	Interval    int                 `json:"interval"`
 	Dimension1  string              `json:"dimension_1"`
 	Dimension2  string              `json:"dimension_2"`
 }
+
 type ReturnCodeEntity struct {
 	ReturnCode   string `json:"return_code"`
-	ReturnCodeCn string `json:"return_code_cn"`
+	ReturnCodeCn string `json:"return_code_cn"` // 恢复这个字段，用于存储中文描述
 	ProjectID    string `json:"project_id"`
 	TransType    string `json:"trans_type"`
 	Status       string `json:"status"`
+	Count        int    `json:"count"` // 新增：存储计数
 }
-
 type TradeReturnCodeEntity struct {
 	UrlPath       string
 	SuccessCount  int
@@ -95,8 +96,161 @@ type TransTypeResponseEntity struct {
 }
 
 type UrlPathAggEntity struct {
-	UrlPath         string            `json:"url_path"`
-	UrlPathCN       string            `json:"url_path_cn"`
-	ReturnCode      map[string]string `json:"return_code"`
-	ReturnCodeCount map[string]int    `json:"return_code_count"`
+	UrlPath         string            `json:"url_path"`          // 等价于 trans_type
+	UrlPathCN       string            `json:"url_path_cn"`       // 等价于 trans_type_cn
+	Project         string            `json:"project"`           // 新增：与TransInfoEntity对应
+	ReturnCode      map[string]string `json:"return_code"`       // key: return_code, value: return_code_cn
+	ReturnCodeCount map[string]int    `json:"return_code_count"` // key: return_code, value: count
+	Interval        int               `json:"interval"`          // 新增：与TransInfoEntity对应
+}
+
+// ToUrlPathAgg 修改后的转换函数，以TransInfoEntity的trans_type为主
+func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
+	urlPathAgg := &UrlPathAggEntity{
+		UrlPath:         t.TransType, // 使用TransInfoEntity的trans_type
+		UrlPathCN:       t.TransTypeCn,
+		Project:         t.Project,
+		ReturnCode:      make(map[string]string),
+		ReturnCodeCount: make(map[string]int),
+		Interval:        t.Interval,
+	}
+
+	// 转换ReturnCodes，确保trans_type一致性
+	for _, rc := range t.ReturnCodes {
+		// 忽略不匹配的trans_type数据
+		if rc.TransType != "" && rc.TransType != t.TransType {
+			// 可以选择记录日志或跳过
+			continue
+		}
+		urlPathAgg.ReturnCode[rc.ReturnCode] = rc.ReturnCodeCn
+		urlPathAgg.ReturnCodeCount[rc.ReturnCode] = rc.Count
+	}
+
+	return urlPathAgg
+}
+
+func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
+	transInfo := &TransInfoEntity{
+		Project:     u.Project,
+		TransType:   u.UrlPath, // 使用UrlPathAggEntity的url_path作为trans_type
+		TransTypeCn: u.UrlPathCN,
+		ReturnCodes: make([]*ReturnCodeEntity, 0, len(u.ReturnCode)),
+		Interval:    u.Interval,
+	}
+
+	// 确保所有ReturnCodeEntity的trans_type与主trans_type一致
+	for code, cnDesc := range u.ReturnCode {
+		count := 0
+		if c, ok := u.ReturnCodeCount[code]; ok {
+			count = c
+		}
+
+		rcEntity := &ReturnCodeEntity{
+			ReturnCode:   code,
+			ReturnCodeCn: cnDesc,
+			ProjectID:    u.Project,
+			TransType:    u.UrlPath, // 强制使用主trans_type
+			Status:       "active",
+			Count:        count,
+		}
+
+		transInfo.ReturnCodes = append(transInfo.ReturnCodes, rcEntity)
+	}
+
+	return transInfo
+}
+
+// 批量转换函数，支持合并相同trans_type的数据
+func ConvertTransInfoListToUrlPathAggList(transInfoList []*TransInfoEntity) []*UrlPathAggEntity {
+	// 使用map来合并相同trans_type的数据
+	mergedMap := make(map[string]*UrlPathAggEntity)
+
+	for _, ti := range transInfoList {
+		key := ti.TransType
+
+		if existing, ok := mergedMap[key]; ok {
+			// 合并return codes
+			for _, rc := range ti.ReturnCodes {
+				// 只处理trans_type匹配的数据
+				if rc.TransType == "" || rc.TransType == ti.TransType {
+					existing.ReturnCode[rc.ReturnCode] = rc.ReturnCodeCn
+					// 累加计数
+					existing.ReturnCodeCount[rc.ReturnCode] += rc.Count
+				}
+			}
+		} else {
+			// 新建
+			mergedMap[key] = ti.ToUrlPathAgg()
+		}
+	}
+
+	// 转换为数组
+	result := make([]*UrlPathAggEntity, 0, len(mergedMap))
+	for _, upa := range mergedMap {
+		result = append(result, upa)
+	}
+	return result
+}
+
+func ConvertUrlPathAggListToTransInfoList(urlPathAggList []*UrlPathAggEntity) []*TransInfoEntity {
+	// 使用map来去重，以url_path为唯一键
+	uniqueMap := make(map[string]*TransInfoEntity)
+
+	for _, upa := range urlPathAggList {
+		key := upa.UrlPath
+
+		if existing, ok := uniqueMap[key]; ok {
+			// 合并return codes（通常不应该发生，因为UrlPath应该是唯一的）
+			newReturnCodes := upa.ToTransInfo().ReturnCodes
+			for _, newRc := range newReturnCodes {
+				found := false
+				for _, existingRc := range existing.ReturnCodes {
+					if existingRc.ReturnCode == newRc.ReturnCode {
+						// 更新计数
+						existingRc.Count += newRc.Count
+						found = true
+						break
+					}
+				}
+				if !found {
+					existing.ReturnCodes = append(existing.ReturnCodes, newRc)
+				}
+			}
+		} else {
+			uniqueMap[key] = upa.ToTransInfo()
+		}
+	}
+
+	// 转换为数组
+	result := make([]*TransInfoEntity, 0, len(uniqueMap))
+	for _, ti := range uniqueMap {
+		result = append(result, ti)
+	}
+	return result
+}
+
+// 辅助函数：验证TransInfoEntity数据一致性
+func (t *TransInfoEntity) ValidateConsistency() []string {
+	var errors []string
+
+	for i, rc := range t.ReturnCodes {
+		if rc.TransType != "" && rc.TransType != t.TransType {
+			errors = append(errors, fmt.Sprintf(
+				"ReturnCode[%d]: trans_type不匹配 (期望: %s, 实际: %s)",
+				i, t.TransType, rc.TransType,
+			))
+		}
+	}
+
+	return errors
+}
+
+// 辅助函数：修复数据一致性
+func (t *TransInfoEntity) FixConsistency() {
+	for _, rc := range t.ReturnCodes {
+		rc.TransType = t.TransType
+		if rc.ProjectID == "" {
+			rc.ProjectID = t.Project
+		}
+	}
 }
