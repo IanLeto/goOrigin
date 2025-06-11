@@ -168,7 +168,6 @@ func convertToEntity(item *V1.UpdateTransInfo) *entity.TransInfoEntity {
 	return &entity.TransInfoEntity{
 		Project:     item.Project,
 		TransType:   item.TransType,
-		Interval:    item.Interval,
 		ReturnCodes: codes,
 	}
 }

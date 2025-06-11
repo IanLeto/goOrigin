@@ -62,7 +62,6 @@ type TransInfoEntity struct {
 	TransType   string              `json:"trans_type"`    // 等价于 url_path
 	TransTypeCn string              `json:"trans_type_cn"` // 等价于 url_path_cn
 	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`  // 改为复数，更清晰
-	Interval    int                 `json:"interval"`
 	Dimension1  string              `json:"dimension_1"`
 	Dimension2  string              `json:"dimension_2"`
 }
@@ -111,7 +110,6 @@ func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 		Project:         t.Project,
 		ReturnCode:      make(map[string]string),
 		ReturnCodeCount: make(map[string]int),
-		Interval:        t.Interval,
 	}
 
 	// 转换ReturnCodes，确保trans_type一致性
@@ -133,7 +131,6 @@ func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 		TransType:   u.UrlPath, // 使用UrlPathAggEntity的url_path作为trans_type
 		TransTypeCn: u.UrlPathCN,
 		ReturnCodes: make([]*ReturnCodeEntity, 0, len(u.ReturnCode)),
-		Interval:    u.Interval,
 	}
 
 	// 确保所有ReturnCodeEntity的trans_type与主trans_type一致

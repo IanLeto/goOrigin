@@ -24,7 +24,6 @@ func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb) *entity.TransInfo
 		ReturnCodes: returnCodeEntities,
 		Dimension1:  transType.Dimension1,
 		Dimension2:  transType.Dimension2,
-		Interval:    0,
 	}
 }
 
