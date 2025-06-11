@@ -68,12 +68,11 @@ type TransInfoEntity struct {
 }
 
 type ReturnCodeEntity struct {
-	ReturnCode   string `json:"return_code"`
-	ReturnCodeCn string `json:"return_code_cn"` // 恢复这个字段，用于存储中文描述
-	ProjectID    string `json:"project_id"`
-	TransType    string `json:"trans_type"`
-	Status       string `json:"status"`
-	Count        int    `json:"count"` // 新增：存储计数
+	ReturnCode string `json:"return_code"`
+	ProjectID  string `json:"project_id"`
+	TransType  string `json:"trans_type"`
+	Status     string `json:"status"`
+	Count      int    `json:"count"` // 新增：存储计数
 }
 type TradeReturnCodeEntity struct {
 	UrlPath       string
@@ -122,7 +121,6 @@ func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 			// 可以选择记录日志或跳过
 			continue
 		}
-		urlPathAgg.ReturnCode[rc.ReturnCode] = rc.ReturnCodeCn
 		urlPathAgg.ReturnCodeCount[rc.ReturnCode] = rc.Count
 	}
 
@@ -139,19 +137,18 @@ func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 	}
 
 	// 确保所有ReturnCodeEntity的trans_type与主trans_type一致
-	for code, cnDesc := range u.ReturnCode {
+	for code, _ := range u.ReturnCode {
 		count := 0
 		if c, ok := u.ReturnCodeCount[code]; ok {
 			count = c
 		}
 
 		rcEntity := &ReturnCodeEntity{
-			ReturnCode:   code,
-			ReturnCodeCn: cnDesc,
-			ProjectID:    u.Project,
-			TransType:    u.UrlPath, // 强制使用主trans_type
-			Status:       "active",
-			Count:        count,
+			ReturnCode: code,
+			ProjectID:  u.Project,
+			TransType:  u.UrlPath, // 强制使用主trans_type
+			Status:     "active",
+			Count:      count,
 		}
 
 		transInfo.ReturnCodes = append(transInfo.ReturnCodes, rcEntity)
@@ -173,7 +170,6 @@ func ConvertTransInfoListToUrlPathAggList(transInfoList []*TransInfoEntity) []*U
 			for _, rc := range ti.ReturnCodes {
 				// 只处理trans_type匹配的数据
 				if rc.TransType == "" || rc.TransType == ti.TransType {
-					existing.ReturnCode[rc.ReturnCode] = rc.ReturnCodeCn
 					// 累加计数
 					existing.ReturnCodeCount[rc.ReturnCode] += rc.Count
 				}

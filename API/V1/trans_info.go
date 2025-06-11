@@ -35,6 +35,7 @@ type DeleteTransInfoReq struct {
 }
 type GetTransInfoListReq struct {
 	Region    string `json:"region"`
+	Keyword   string `json:"keyword"`
 	Project   string `json:"project"`
 	TransType string `json:"trans_type"`
 	Page      int    `json:"page"`      // 当前页
@@ -61,11 +62,10 @@ type UpdateTransInfo struct {
 }
 
 type UpdateReturnCode struct {
-	ReturnCode   string `json:"return_code"`
-	ReturnCodeCn string `json:"return_code_cn"`
-	TransType    string `json:"trans_type"`
-	Project      string `json:"project"`
-	Status       string `json:"status"`
+	ReturnCode string `json:"return_code"`
+	TransType  string `json:"trans_type"`
+	Project    string `json:"project"`
+	Status     string `json:"status"`
 }
 
 type CreateTradeReturnCodeRequest struct {
@@ -78,7 +78,7 @@ type CreateTradeReturnCodeRequest struct {
 	ResponseCount string `json:"response_count"`
 }
 
-// 搜索es 列表使用
+// SearchTradeReturnCodeRequest 搜索es 列表使用
 type SearchTradeReturnCodeRequest struct {
 	UrlPath       string `json:"url_path"`
 	SuccessCount  int    `json:"success_count"`
@@ -111,7 +111,7 @@ type SuccessRateResponse struct {
 	Items []*SuccessRateItem `json:"items"`
 }
 
-// 检索交易设置页列表
+// TransTypeQueryReq 检索交易设置页列表
 type TransTypeQueryReq struct {
 	Region   string `json:"region" form:"region"`
 	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
@@ -126,7 +126,6 @@ type TransTypeQueryInfo struct {
 	StartTime  int      `json:"start_time"`
 	EndTime    int      `json:"end_time"`
 	Keyword    string   `json:"keyword"`
-	OrderBy    string   `json:"order_by"`
 }
 
 // SearchUrlPathWithReturnCodesReq 检索交易设置页列表2
