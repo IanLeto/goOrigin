@@ -149,7 +149,7 @@ ERR:
 	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("update failed: %s", err)))
 }
 
-// 🔁 转换函数：将 API 层结构体转换为 entity 层结构体
+// 转换函数：将 API 层结构体转换为 entity 层结构体
 func convertToEntity(item *V1.UpdateTransInfo) *entity.TransInfoEntity {
 	if item == nil {
 		return nil
