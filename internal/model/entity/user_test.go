@@ -15,13 +15,13 @@ type UserInfoSuite struct {
 	suite.Suite
 	token  string
 	user   entity.UserEntity
-	cpUser entity.CpaasUserEntity
+	cpUser entity.ZpaasUserEntity
 }
 
 func (s *UserInfoSuite) SetupTest() {
 	s.token = "eyJhbGciOiJub25lIn0.eyJpc3MiOiAiZGV4IiwgInN1YiI6ICIxMjM0NTY3ODkwIiwgIm5hbWUiOiAiaWFuIiwgImVtYWlsIjogImpvaG4uZG9lQGV4YW1wbGUuY29tIn0.signature"
 	s.user = entity.UserEntity{}
-	s.cpUser = entity.CpaasUserEntity{}
+	s.cpUser = entity.ZpaasUserEntity{}
 }
 
 // TestMarshal :

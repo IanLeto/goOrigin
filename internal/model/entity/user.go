@@ -113,11 +113,11 @@ func (u *UserEntity) ParseToken(token string) {
 	}
 }
 
-type CpaasUserEntity struct {
+type ZpaasUserEntity struct {
 	*UserEntity
 }
 
-func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error) {
+func (u *ZpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outter.SubjectAccessReviewRes, int, error) {
 	var (
 		err    error
 		result outter.SubjectAccessReviewRes
@@ -171,7 +171,7 @@ func (u *CpaasUserEntity) SubjectReview(req outter.SubjectAccessViewReq) (*outte
 
 }
 
-func (u *CpaasUserEntity) ToUserEntity(token, url string) EnvironmentUserEntity {
+func (u *ZpaasUserEntity) ToUserEntity(token, url string) EnvironmentUserEntity {
 	//TODO implement me
 	panic("implement me")
 }

@@ -74,8 +74,8 @@ func initializeMetrics() {
 		"trans_type":      "10ff1",
 		"trans_type_code": "0000",
 		"trans_channel":   "FF01",
-		"svc_name":        "cpaas",
-		"project_name":    "cpaas",
+		"svc_name":        "Zpaas",
+		"project_name":    "Zpaas",
 		"pod_name":        "iantest",
 	}
 

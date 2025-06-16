@@ -191,7 +191,7 @@ func SearchTransTypeReturnCodes(c *gin.Context) {
 	}
 	pageSize, _ := conv.Int(c.Query("page_size"))
 	if pageSize <= 0 {
-		pageSize = 10
+		pageSize = 107
 	}
 
 	// 构建请求参数
