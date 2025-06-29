@@ -61,7 +61,7 @@ type TransInfoEntity struct {
 	Project     string              `json:"project"`
 	TransType   string              `json:"trans_type"`    // 等价于 url_path
 	TransTypeCn string              `json:"trans_type_cn"` // 等价于 url_path_cn
-	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`  // 改为复数，更清晰
+	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`
 	Dimension1  string              `json:"dimension_1"`
 	Dimension2  string              `json:"dimension_2"`
 }
