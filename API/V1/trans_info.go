@@ -8,11 +8,11 @@ type CreateTransInfoReq struct {
 type CreateTransInfo struct {
 	Cluster     string            `json:"cluster"`
 	Project     string            `json:"project"`
-	TransType   string            `json:"trans_type"`
-	ServiceCode map[string]string `json:"service_code"` // return_code => return_code_cn
-	Interval    int               `json:"interval"`
-	Dimension1  string            `json:"dimension1"` // 交易类型
-	Dimension2  string            `json:"dimension2"` // 交易渠道
+	TransType   string            `json:"trans_type"`    // 交易url
+	TransTypeCN string            `json:"trans_type_cn"` // 交易url
+	ReturnCodes map[string]string `json:"return_codes"`  // 返回码设置
+	Threshold   int               `json:"threshold"`     // 响应计算指标使用的阈值
+	IsAlert     bool              `json:"is_alert"`      // 是否开启告警
 }
 
 type CreateTransInfoResponse struct {

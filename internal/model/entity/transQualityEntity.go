@@ -102,6 +102,9 @@ type UrlPathAggEntity struct {
 	Interval        int               `json:"interval"`          // 新增：与TransInfoEntity对应
 }
 
+type TradePubMessageEntity struct {
+}
+
 // ToUrlPathAgg 修改后的转换函数，以TransInfoEntity的trans_type为主
 func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 	urlPathAgg := &UrlPathAggEntity{

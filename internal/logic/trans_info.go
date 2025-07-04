@@ -588,8 +588,8 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 				TransTypeCN: "", // 可扩展字段
 				Project:     req.Project,
 				IsAlert:     false,
-				Dimension1:  req.Dimension1,
-				Dimension2:  req.Dimension2,
+				//Dimension1:  req.Dimension1,
+				//Dimension2:  req.Dimension2,
 			}
 
 			if err := tx.Table(dao.TableNameEcampTransTypeTb).Create(newTrans).Error; err != nil {
@@ -600,9 +600,9 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 		} else {
 			// 存在：更新字段
 			updateFields := map[string]interface{}{
-				"dimension1": req.Dimension1,
-				"dimension2": req.Dimension2,
-				"is_alert":   false,
+				//"dimension1": req.Dimension1,
+				//"dimension2": req.Dimension2,
+				"is_alert": false,
 			}
 
 			if err := tx.Table(dao.TableNameEcampTransTypeTb).
@@ -625,7 +625,7 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 
 		// 4. 插入新的 return_codes
 		var returnCodes []dao.EcampReturnCodeTb
-		for code, cn := range req.ServiceCode {
+		for code, cn := range req.ReturnCodes {
 			returnCodes = append(returnCodes, dao.EcampReturnCodeTb{
 				TransType:    req.TransType,
 				ReturnCode:   code,
