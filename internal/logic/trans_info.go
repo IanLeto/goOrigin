@@ -665,11 +665,13 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 	query := db.Client.
 		Debug().
 		Model(&dao.EcampTransTypeTb{}).
-		Preload("ReturnCodes").
-		Where("project = ?", project)
+		Preload("ReturnCodes")
 
 	if transType != "" {
 		query = query.Where("trans_type = ?", transType)
+	}
+	if project != "" {
+		query = query.Where("project = ?", project)
 	}
 
 	// 1. 查询总数
@@ -859,7 +861,7 @@ func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1
 
 	return result, nil
 }
-func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
+func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
 	var (
 		aggUrlPathDoc = &dao.AggUrlPathDoc{}
 		result        []*entity.TransInfoEntity
@@ -1005,7 +1007,7 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			urlPathEntity.ReturnCodeCount[codeBucket.Key] = codeBucket.DocCount
 		}
 
-		result = append(result, bucket)
+		//result = append(result, bucket)
 	}
 
 	return result, nil
@@ -1047,7 +1049,7 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 //	} `json:"aggregations"`
 //}
 
-func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
 	// 直接返回固定的mock数据，不做任何过滤或判断
 	mockData := []*entity.UrlPathAggEntity{
 		{
@@ -1338,6 +1340,6 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 			},
 		},
 	}
-
+	mockData = nil
 	return mockData, nil
 }
