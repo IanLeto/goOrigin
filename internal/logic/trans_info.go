@@ -859,21 +859,24 @@ func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1
 
 	return result, nil
 }
-func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
 	var (
 		aggUrlPathDoc = &dao.AggUrlPathDoc{}
-		result        []*entity.UrlPathAggEntity
+		result        []*entity.TransInfoEntity
 		err           error
 		conn          = elastic.GlobalEsConns[region]
 	)
 	var (
 		query = map[string]interface{}{}
-		alias = "your-index-alias" // 需要替换为实际的索引别名
+		alias = "span" // 根据您的查询示例，应该是 span
 		aggs  = map[string]interface{}{}
 	)
 	var (
-		byTransType  = map[string]interface{}{}
-		byReturnCode = map[string]interface{}{}
+		byUrlPath = map[string]interface{}{}
+		//byReturnCode = map[string]interface{}{}
+		byProject = map[string]interface{}{}
+		//byDimension1 = map[string]interface{}{}
+		//byDimension2 = map[string]interface{}{}
 	)
 	var (
 		mustConditions []map[string]interface{}
@@ -905,10 +908,12 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 		})
 	}
 
+	// 修正：使用 url_path 而不是 trans_type
 	if len(info.TransTypes) > 0 {
-		filterCallback(&mustConditions, "trans_type", info.TransTypes)
+		filterCallback(&mustConditions, "url_path", info.TransTypes)
 	}
 
+	// 时间范围过滤 - 这是常规参数，应该始终包含
 	if info.StartTime > 0 && info.EndTime > 0 {
 		mustConditions = append(mustConditions, map[string]interface{}{
 			"range": map[string]interface{}{
@@ -924,52 +929,45 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 		mustConditions = append(mustConditions, map[string]interface{}{
 			"multi_match": map[string]interface{}{
 				"query":  info.Keyword,
-				"fields": []string{"trans_type", "url_path"},
+				"fields": []string{"url_path", "trans_type"}, // 同时搜索两个字段
 			},
 		})
 	}
 
-	// 构建聚合
-	byReturnCode = map[string]interface{}{
+	// 主聚合：按 url_path
+	byUrlPath = map[string]interface{}{
 		"terms": map[string]interface{}{
-			"field": "return_code.keyword",
+			"field": "url_path.keyword", // 修正：使用 url_path
 			"size":  100,
 		},
-	}
-
-	byTransType = map[string]interface{}{
-		"terms": map[string]interface{}{
-			"field": "trans_type.keyword",
-			"size":  1000,
-		},
 		"aggs": map[string]interface{}{
-			"by_return_code": byReturnCode,
+			"by_project": byProject,
 		},
 	}
 
 	aggs = map[string]interface{}{
-		"by_transType": byTransType,
+		"by_url_path": byUrlPath,
 	}
 
 	// 构建查询
-	query = map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"must": mustConditions,
-			},
-		},
-		"aggs": aggs,
-		"size": 0,
-	}
-
-	// 添加排序
-	if info.OrderBy != "" {
-		query["sort"] = []map[string]interface{}{
-			{
-				info.OrderBy: map[string]interface{}{
-					"order": "desc",
+	if len(mustConditions) > 0 {
+		query = map[string]interface{}{
+			"query": map[string]interface{}{
+				"bool": map[string]interface{}{
+					"must": mustConditions,
 				},
 			},
+			"aggs": aggs,
+			"size": 0,
+		}
+	} else {
+		// 如果没有过滤条件，使用 match_all
+		query = map[string]interface{}{
+			"query": map[string]interface{}{
+				"match_all": map[string]interface{}{},
+			},
+			"aggs": aggs,
+			"size": 0,
 		}
 	}
 
@@ -980,7 +978,7 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 			s, _ := json.Marshal(query)
 			return string(s)
 		}()))
-		goto ERR
+		return nil, err
 	}
 
 	// 转换结果
@@ -990,14 +988,14 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 			s, _ := json.Marshal(value)
 			return string(s)
 		}()))
-		goto ERR
+		return nil, err
 	}
 
 	// 处理聚合结果
 	for _, bucket := range aggUrlPathDoc.Aggregations.ByTransType.Buckets {
 		urlPathEntity := &entity.UrlPathAggEntity{
-			UrlPath:         bucket.Key,
-			UrlPathCN:       bucket.Key, // 这里可能需要转换逻辑
+			TransType: bucket.Key,
+
 			ReturnCode:      make(map[string]string),
 			ReturnCodeCount: make(map[string]int),
 		}
@@ -1007,22 +1005,55 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 			urlPathEntity.ReturnCodeCount[codeBucket.Key] = codeBucket.DocCount
 		}
 
-		result = append(result, urlPathEntity)
+		result = append(result, bucket)
 	}
 
 	return result, nil
-
-ERR:
-	return nil, err
 }
 
-func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+//// 相应的 DAO 结构体也需要更新
+//type AggUrlPathDoc struct {
+//	Aggregations struct {
+//		ByUrlPath struct {
+//			Buckets []struct {
+//				Key      string `json:"key"`
+//				DocCount int    `json:"doc_count"`
+//				ByProject struct {
+//					Buckets []struct {
+//						Key      string `json:"key"`
+//						DocCount int    `json:"doc_count"`
+//						ByDimension1 struct {
+//							Buckets []struct {
+//								Key      string `json:"key"`
+//								DocCount int    `json:"doc_count"`
+//								ByDimension2 struct {
+//									Buckets []struct {
+//										Key      string `json:"key"`
+//										DocCount int    `json:"doc_count"`
+//										ByReturnCode struct {
+//											Buckets []struct {
+//												Key      string `json:"key"`
+//												DocCount int    `json:"doc_count"`
+//											} `json:"buckets"`
+//										} `json:"by_return_code"`
+//									} `json:"buckets"`
+//								} `json:"by_dimension_2"`
+//							} `json:"buckets"`
+//						} `json:"by_dimension_1"`
+//					} `json:"buckets"`
+//				} `json:"by_project"`
+//			} `json:"buckets"`
+//		} `json:"by_url_path"`
+//	} `json:"aggregations"`
+//}
+
+func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
 	// 直接返回固定的mock数据，不做任何过滤或判断
 	mockData := []*entity.UrlPathAggEntity{
 		{
-			UrlPath:   "/api/v1/user/login",
-			UrlPathCN: "用户登录接口",
-			Project:   "user-service",
+			TransType:   "/api/v1/user/login",
+			TransTypeCN: "用户登录接口",
+			Project:     "user-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 				"AA201": "创建成功",
@@ -1047,9 +1078,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/v2/order/create",
-			UrlPathCN: "订单创建接口",
-			Project:   "order-service",
+			TransType:   "/api/v2/order/create",
+			TransTypeCN: "订单创建接口",
+			Project:     "order-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 				"DD400": "请求参数错误",
@@ -1068,9 +1099,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/v3/payment/process",
-			UrlPathCN: "支付处理接口",
-			Project:   "payment-service",
+			TransType:   "/api/v3/payment/process",
+			TransTypeCN: "支付处理接口",
+			Project:     "payment-service",
 			ReturnCode: map[string]string{
 				"AA200": "支付成功",
 				"AA202": "处理中",
@@ -1087,9 +1118,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/admin/v1/dashboard",
-			UrlPathCN: "管理后台仪表盘",
-			Project:   "admin-service",
+			TransType:   "/admin/v1/dashboard",
+			TransTypeCN: "管理后台仪表盘",
+			Project:     "admin-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 				"DD401": "未授权",
@@ -1102,9 +1133,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/health/check",
-			UrlPathCN: "健康检查接口",
-			Project:   "monitor-service",
+			TransType:   "/health/check",
+			TransTypeCN: "健康检查接口",
+			Project:     "monitor-service",
 			ReturnCode: map[string]string{
 				"AA200": "健康",
 				"VV503": "服务不可用",
@@ -1115,9 +1146,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/v4/product/search",
-			UrlPathCN: "商品搜索接口",
-			Project:   "product-service",
+			TransType:   "/api/v4/product/search",
+			TransTypeCN: "商品搜索接口",
+			Project:     "product-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 				"AA204": "无内容",
@@ -1140,9 +1171,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/websocket/connect",
-			UrlPathCN: "WebSocket连接",
-			Project:   "websocket-service",
+			TransType:   "/websocket/connect",
+			TransTypeCN: "WebSocket连接",
+			Project:     "websocket-service",
 			ReturnCode: map[string]string{
 				"AA101": "切换协议",
 				"DD400": "错误的请求",
@@ -1157,9 +1188,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/v5/file/upload",
-			UrlPathCN: "文件上传接口",
-			Project:   "file-service",
+			TransType:   "/api/v5/file/upload",
+			TransTypeCN: "文件上传接口",
+			Project:     "file-service",
 			ReturnCode: map[string]string{
 				"AA200": "上传成功",
 				"AA201": "创建成功",
@@ -1180,9 +1211,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/batch/job/execute",
-			UrlPathCN: "批处理任务执行",
-			Project:   "batch-service",
+			TransType:   "/batch/job/execute",
+			TransTypeCN: "批处理任务执行",
+			Project:     "batch-service",
 			ReturnCode: map[string]string{
 				"AA200": "执行成功",
 				"AA202": "已接受，处理中",
@@ -1201,9 +1232,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/metrics/prometheus",
-			UrlPathCN: "监控指标接口",
-			Project:   "monitor-service",
+			TransType:   "/metrics/prometheus",
+			TransTypeCN: "监控指标接口",
+			Project:     "monitor-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 			},
@@ -1212,9 +1243,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/legacy/v0/deprecated",
-			UrlPathCN: "已废弃的旧接口",
-			Project:   "legacy-service",
+			TransType:   "/api/legacy/v0/deprecated",
+			TransTypeCN: "已废弃的旧接口",
+			Project:     "legacy-service",
 			ReturnCode: map[string]string{
 				"AA301": "永久重定向",
 				"AA308": "永久重定向(保持方法)",
@@ -1227,9 +1258,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/internal/debug/trace",
-			UrlPathCN: "内部调试追踪",
-			Project:   "debug-service",
+			TransType:   "/internal/debug/trace",
+			TransTypeCN: "内部调试追踪",
+			Project:     "debug-service",
 			ReturnCode: map[string]string{
 				"AA200": "成功",
 				"DD401": "未授权",
@@ -1248,9 +1279,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/graphql/query",
-			UrlPathCN: "GraphQL查询接口",
-			Project:   "graphql-service",
+			TransType:   "/graphql/query",
+			TransTypeCN: "GraphQL查询接口",
+			Project:     "graphql-service",
 			ReturnCode: map[string]string{
 				"AA200": "查询成功",
 				"DD400": "查询语法错误",
@@ -1267,9 +1298,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/api/v6/stream/video",
-			UrlPathCN: "视频流媒体接口",
-			Project:   "stream-service",
+			TransType:   "/api/v6/stream/video",
+			TransTypeCN: "视频流媒体接口",
+			Project:     "stream-service",
 			ReturnCode: map[string]string{
 				"AA200": "流传输成功",
 				"AA206": "部分内容",
@@ -1288,9 +1319,9 @@ func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.Searc
 			},
 		},
 		{
-			UrlPath:   "/oauth2/token",
-			UrlPathCN: "OAuth2令牌接口",
-			Project:   "auth-service",
+			TransType:   "/oauth2/token",
+			TransTypeCN: "OAuth2令牌接口",
+			Project:     "auth-service",
 			ReturnCode: map[string]string{
 				"AA200": "令牌颁发成功",
 				"DD400": "无效的授权请求",

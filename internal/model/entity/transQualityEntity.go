@@ -94,8 +94,8 @@ type TransTypeResponseEntity struct {
 }
 
 type UrlPathAggEntity struct {
-	UrlPath         string            `json:"url_path"`          // 等价于 trans_type
-	UrlPathCN       string            `json:"url_path_cn"`       // 等价于 trans_type_cn
+	TransType       string            `json:"trans_type"`        // 等价于 trans_type
+	TransTypeCN     string            `json:"trans_type_cn"`     // 等价于 trans_type_cn
 	Project         string            `json:"project"`           // 新增：与TransInfoEntity对应
 	ReturnCode      map[string]string `json:"return_code"`       // key: return_code, value: return_code_cn
 	ReturnCodeCount map[string]int    `json:"return_code_count"` // key: return_code, value: count
@@ -108,8 +108,8 @@ type TradePubMessageEntity struct {
 // ToUrlPathAgg 修改后的转换函数，以TransInfoEntity的trans_type为主
 func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 	urlPathAgg := &UrlPathAggEntity{
-		UrlPath:         t.TransType, // 使用TransInfoEntity的trans_type
-		UrlPathCN:       t.TransTypeCn,
+		TransType:       t.TransType, // 使用TransInfoEntity的trans_type
+		TransTypeCN:     t.TransTypeCn,
 		Project:         t.Project,
 		ReturnCode:      make(map[string]string),
 		ReturnCodeCount: make(map[string]int),
@@ -131,8 +131,8 @@ func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 	transInfo := &TransInfoEntity{
 		Project:     u.Project,
-		TransType:   u.UrlPath, // 使用UrlPathAggEntity的url_path作为trans_type
-		TransTypeCn: u.UrlPathCN,
+		TransType:   u.TransType, // 使用UrlPathAggEntity的url_path作为trans_type
+		TransTypeCn: u.TransTypeCN,
 		ReturnCodes: make([]*ReturnCodeEntity, 0, len(u.ReturnCode)),
 	}
 
@@ -146,7 +146,7 @@ func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 		rcEntity := &ReturnCodeEntity{
 			ReturnCode: code,
 			ProjectID:  u.Project,
-			TransType:  u.UrlPath, // 强制使用主trans_type
+			TransType:  u.TransType, // 强制使用主trans_type
 			Status:     "active",
 			Count:      count,
 		}
@@ -193,7 +193,7 @@ func ConvertUrlPathAggListToTransInfoList(urlPathAggList []*UrlPathAggEntity) []
 	uniqueMap := make(map[string]*TransInfoEntity)
 
 	for _, upa := range urlPathAggList {
-		key := upa.UrlPath
+		key := upa.TransType
 
 		if existing, ok := uniqueMap[key]; ok {
 			// 合并return codes（通常不应该发生，因为UrlPath应该是唯一的）
