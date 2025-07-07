@@ -57,13 +57,14 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 	return metric
 }
 
+// 修改后的实体结构体
 type TransInfoEntity struct {
 	Project     string              `json:"project"`
 	TransType   string              `json:"trans_type"`    // 等价于 url_path
 	TransTypeCn string              `json:"trans_type_cn"` // 等价于 url_path_cn
 	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`
-	Dimension1  string              `json:"dimension_1"`
-	Dimension2  string              `json:"dimension_2"`
+	IsAlert     bool                `json:"is_alert"`
+	Threshold   int                 `json:"threshold"` // 新增阈值字段
 }
 
 type ReturnCodeEntity struct {
@@ -71,8 +72,9 @@ type ReturnCodeEntity struct {
 	ProjectID  string `json:"project_id"`
 	TransType  string `json:"trans_type"`
 	Status     string `json:"status"`
-	Count      int    `json:"count"` // 新增：存储计数
+	Count      int    `json:"count"` // 存储计数
 }
+
 type TradeReturnCodeEntity struct {
 	UrlPath       string
 	SuccessCount  int

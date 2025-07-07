@@ -26,9 +26,9 @@ func BuildErrResponse(c *gin.Context, info *BaseErrResponseInfo) {
 
 func BuildResponse(c *gin.Context, info *BaseResponseInfo) {
 	c.JSON(200, gin.H{
-		"Data":      info.Data,
-		"Message":   info.Message,
-		"TransType": 200,
+		"Data":    info.Data,
+		"Message": info.Message,
+		"Code":    200,
 	})
 }
 

@@ -14,7 +14,7 @@ import (
 func CreateTransInfo(c *gin.Context) {
 	var (
 		req = &V1.CreateTransInfoReq{}
-		res = &V1.CreateTransInfoResponse{}
+		res = &V1.CreateTransInfoRes{}
 		err error
 	)
 	if req.Region == "" {

@@ -5,23 +5,27 @@ type CreateTransInfoReq struct {
 	Items  []CreateTransInfo `json:"items"`  // 多个交易类型
 }
 
+// CreateTransInfo 请求结构体也需要更新
 type CreateTransInfo struct {
-	Cluster     string            `json:"cluster"`
-	Project     string            `json:"project"`
-	TransType   string            `json:"trans_type"`    // 交易url
-	TransTypeCN string            `json:"trans_type_cn"` // 交易url
-	ReturnCodes map[string]string `json:"return_codes"`  // 返回码设置
-	Threshold   int               `json:"threshold"`     // 响应计算指标使用的阈值
-	IsAlert     bool              `json:"is_alert"`      // 是否开启告警
+	Project     string           `json:"project" binding:"required"`
+	TransType   string           `json:"trans_type" binding:"required"`
+	TransTypeCN string           `json:"trans_type_cn"`
+	ReturnCodes []ReturnCodeInfo `json:"return_codes"`
+	IsAlert     bool             `json:"is_alert"`
+	Threshold   int              `json:"threshold"`
 }
 
-type CreateTransInfoResponse struct {
+type ReturnCodeInfo struct {
+	ReturnCode string `json:"return_code" binding:"required"`
+	Status     string `json:"status"`
+}
+type CreateTransInfoRes struct {
 	Id uint `json:"id"`
 }
 
-type BatchCreateTransInfoResponse struct {
-	Success []CreateTransInfoResponse `json:"success"` // 成功记录
-	Failed  []FailedItem              `json:"failed"`  // 失败记录
+type BatchCreateTransInfoRes struct {
+	Success []CreateTransInfoRes `json:"success"` // 成功记录
+	Failed  []FailedItem         `json:"failed"`  // 失败记录
 }
 type FailedItem struct {
 	TransType string `json:"trans_type"`

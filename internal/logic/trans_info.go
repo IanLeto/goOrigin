@@ -12,11 +12,10 @@ import (
 	"goOrigin/internal/dao/elastic"
 	"goOrigin/internal/dao/mysql"
 	"goOrigin/internal/model/dao"
-	"goOrigin/internal/model/repository"
-	"gorm.io/gorm"
-
 	"goOrigin/internal/model/entity"
+	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/utils"
+	"gorm.io/gorm"
 	"strings"
 )
 
@@ -566,7 +565,7 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 			First(&projectInfo).Error; err != nil {
 			logrus.Errorf("project [%s] not found: %v", req.Project, err)
 			tx.Rollback()
-			return err
+			return fmt.Errorf("project %s not found: %w", req.Project, err)
 		}
 
 		// 2. 查询是否存在该 trans_type + project
@@ -578,31 +577,34 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorf("query existing trans_type [%s] failed: %v", req.TransType, err)
 			tx.Rollback()
-			return err
+			return fmt.Errorf("query trans_type failed: %w", err)
 		}
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 不存在：插入交易类型
 			newTrans := &dao.EcampTransTypeTb{
 				TransType:   req.TransType,
-				TransTypeCN: "", // 可扩展字段
+				TransTypeCN: req.TransTypeCN,
 				Project:     req.Project,
-				IsAlert:     false,
-				//Dimension1:  req.Dimension1,
-				//Dimension2:  req.Dimension2,
+				IsAlert:     req.IsAlert,
+				Threshold:   req.Threshold, // 新增阈值字段
 			}
 
 			if err := tx.Table(dao.TableNameEcampTransTypeTb).Create(newTrans).Error; err != nil {
 				logrus.Errorf("failed to insert trans_type [%s]: %v", req.TransType, err)
 				tx.Rollback()
-				return err
+				return fmt.Errorf("insert trans_type failed: %w", err)
 			}
 		} else {
 			// 存在：更新字段
 			updateFields := map[string]interface{}{
-				//"dimension1": req.Dimension1,
-				//"dimension2": req.Dimension2,
-				"is_alert": false,
+				"is_alert":  req.IsAlert,
+				"threshold": req.Threshold, // 更新阈值
+			}
+
+			// 只更新非空字段
+			if req.TransTypeCN != "" {
+				updateFields["trans_type_cn"] = req.TransTypeCN
 			}
 
 			if err := tx.Table(dao.TableNameEcampTransTypeTb).
@@ -610,7 +612,7 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 				Updates(updateFields).Error; err != nil {
 				logrus.Errorf("failed to update trans_type [%s]: %v", req.TransType, err)
 				tx.Rollback()
-				return err
+				return fmt.Errorf("update trans_type failed: %w", err)
 			}
 		}
 
@@ -620,27 +622,42 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 			Delete(&dao.EcampReturnCodeTb{}).Error; err != nil {
 			logrus.Errorf("failed to delete return codes for trans_type [%s]: %v", req.TransType, err)
 			tx.Rollback()
-			return err
+			return fmt.Errorf("delete return codes failed: %w", err)
 		}
 
 		// 4. 插入新的 return_codes
-		var returnCodes []dao.EcampReturnCodeTb
-		for code, cn := range req.ReturnCodes {
-			returnCodes = append(returnCodes, dao.EcampReturnCodeTb{
-				TransType:    req.TransType,
-				ReturnCode:   code,
-				ReturnCodeCN: cn,
-				Project:      req.Project,
-				Status:       "active",
-			})
-		}
+		if len(req.ReturnCodes) > 0 {
+			var returnCodes []dao.EcampReturnCodeTb
 
-		if len(returnCodes) > 0 {
-			if err := tx.Table(dao.TableNameEcampReturnCodeTb).
-				Create(&returnCodes).Error; err != nil {
-				logrus.Errorf("failed to insert return codes for trans_type [%s]: %v", req.TransType, err)
-				tx.Rollback()
-				return err
+			// 使用 map 去重，避免重复的 return_code
+			uniqueCodes := make(map[string]dao.EcampReturnCodeTb)
+
+			for _, rc := range req.ReturnCodes {
+				// 注意：EcampReturnCodeTb 已经移除了 ReturnCodeCN 字段
+				uniqueCodes[rc.ReturnCode] = dao.EcampReturnCodeTb{
+					TransType:  req.TransType,
+					ReturnCode: rc.ReturnCode,
+					Project:    req.Project,
+					Status:     rc.Status,
+				}
+			}
+
+			// 转换为数组
+			for _, rc := range uniqueCodes {
+				// 如果 Status 为空，设置默认值
+				if rc.Status == "" {
+					rc.Status = "active"
+				}
+				returnCodes = append(returnCodes, rc)
+			}
+
+			if len(returnCodes) > 0 {
+				if err := tx.Table(dao.TableNameEcampReturnCodeTb).
+					CreateInBatches(&returnCodes, 100).Error; err != nil {
+					logrus.Errorf("failed to insert return codes for trans_type [%s]: %v", req.TransType, err)
+					tx.Rollback()
+					return fmt.Errorf("insert return codes failed: %w", err)
+				}
 			}
 		}
 	}
@@ -648,9 +665,10 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 	// 提交事务
 	if err := tx.Commit().Error; err != nil {
 		logrus.Errorf("commit transaction failed: %v", err)
-		return err
+		return fmt.Errorf("commit transaction failed: %w", err)
 	}
 
+	logrus.Infof("successfully created/updated %d trans types", len(reqs))
 	return nil
 }
 
@@ -662,10 +680,10 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 		total           int64
 	)
 
+	// 构建查询
 	query := db.Client.
 		Debug().
-		Model(&dao.EcampTransTypeTb{}).
-		Preload("ReturnCodes")
+		Model(&dao.EcampTransTypeTb{})
 
 	if transType != "" {
 		query = query.Where("trans_type = ?", transType)
@@ -690,15 +708,59 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 		return nil, 0, err
 	}
 
-	// 3. 转换为 entity
+	// 3. 批量查询所有相关的 ReturnCodes（使用子查询）
+	var returnCodes []dao.EcampReturnCodeTb
+	if len(transTypeTbList) > 0 {
+		// 收集所有的 transType 和 project
+		type pair struct {
+			TransType string
+			Project   string
+		}
+		var pairs []pair
+		for _, t := range transTypeTbList {
+			pairs = append(pairs, pair{TransType: t.TransType, Project: t.Project})
+		}
+
+		// 使用原生SQL构建更高效的查询
+		subQuery := db.Client.
+			Table(dao.TableNameEcampReturnCodeTb).
+			Where("(trans_type, project) IN ?", pairs)
+
+		if err := subQuery.Find(&returnCodes).Error; err != nil {
+			// 如果数据库不支持元组IN查询，使用备用方案
+			var transTypes []string
+			var projects []string
+			for _, t := range transTypeTbList {
+				transTypes = append(transTypes, t.TransType)
+				projects = append(projects, t.Project)
+			}
+
+			if err := db.Client.
+				Table(dao.TableNameEcampReturnCodeTb).
+				Where("trans_type IN ? AND project IN ?", transTypes, projects).
+				Find(&returnCodes).Error; err != nil {
+				logrus.Errorf("query return codes failed: %v", err)
+				return nil, 0, err
+			}
+		}
+	}
+
+	// 4. 构建 returnCodes map
+	returnCodesMap := make(map[string][]dao.EcampReturnCodeTb)
+	for _, rc := range returnCodes {
+		key := fmt.Sprintf("%s_%s", rc.TransType, rc.Project)
+		returnCodesMap[key] = append(returnCodesMap[key], rc)
+	}
+
+	// 5. 转换为 entity
 	var result []*entity.TransInfoEntity
 	for _, t := range transTypeTbList {
-		result = append(result, repository.ConvertToTransInfoEntity(&t))
+		key := fmt.Sprintf("%s_%s", t.TransType, t.Project)
+		result = append(result, repository.ConvertToTransInfoEntity(&t, returnCodesMap[key]))
 	}
 
 	return result, total, nil
 }
-
 func DeleteTransInfo(ctx context.Context, region, project, transType string) error {
 	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
 

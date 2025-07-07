@@ -22,22 +22,19 @@ func (*EcampProjectInfoTb) TableName() string {
 
 type EcampTransTypeTb struct {
 	*Meta
-	TransType   string              `gorm:"size:50;not null;uniqueIndex"`              // 加 uniqueIndex
-	TransTypeCN string              `gorm:"size:100"`                                  // 开户7
-	Project     string              `gorm:"size:255;not null"`                         // 改为字符串，与 TransInfoEntity 一致
-	ReturnCodes []EcampReturnCodeTb `gorm:"foreignKey:TransType;references:TransType"` // 通过字符串关联
-	IsAlert     bool
-	Dimension1  string `gorm:"size:100"` // 交易类型
-	Dimension2  string `gorm:"size:100"` // 交易渠道
+	TransType   string `gorm:"size:50;not null;uniqueIndex:trans_proj_unique,priority:1" json:"trans_type"`
+	TransTypeCN string `gorm:"size:100" json:"trans_type_cn"`                                             // 开户7
+	Project     string `gorm:"size:255;not null;uniqueIndex:trans_proj_unique,priority:2" json:"project"` // 组合唯一索引
+	IsAlert     bool   `gorm:"default:false" json:"is_alert"`
+	Threshold   int    `gorm:"default:0" json:"threshold"` // 新增阈值字段
 }
 
 type EcampReturnCodeTb struct {
 	*Meta
-	TransType    string `gorm:"size:50;index"`    // 外键字段
-	ReturnCode   string `gorm:"size:50;not null"` // SC001
-	ReturnCodeCN string `gorm:"size:100"`         // 开户成功
-	Project      string `gorm:"size:255"`         // 与 ReturnCodeEntity.ProjectID 匹配
-	Status       string `gorm:"size:50"`
+	TransType  string `gorm:"size:50;not null;index:idx_trans_proj,priority:1" json:"trans_type"`
+	ReturnCode string `gorm:"size:50;not null;index:idx_trans_proj,priority:3" json:"return_code"`
+	Project    string `gorm:"size:255;not null;index:idx_trans_proj,priority:2" json:"project"`
+	Status     string `gorm:"size:50;default:'active'" json:"status"`
 }
 
 const TableNameEcampTransTypeTb = "ecamp_trans_info_tb"

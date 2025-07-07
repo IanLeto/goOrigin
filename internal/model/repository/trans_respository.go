@@ -1,58 +1,106 @@
 package repository
 
 import (
+	"fmt"
 	"goOrigin/API/V1"
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"strconv"
 )
 
-func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb) *entity.TransInfoEntity {
+func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb, returnCodes []dao.EcampReturnCodeTb) *entity.TransInfoEntity {
 	var returnCodeEntities []*entity.ReturnCodeEntity
-	for _, rc := range transType.ReturnCodes {
+
+	// 由于移除了外键，需要手动传入关联的 return codes
+	for _, rc := range returnCodes {
 		returnCodeEntities = append(returnCodeEntities, &entity.ReturnCodeEntity{
 			ReturnCode: rc.ReturnCode,
 			ProjectID:  rc.Project,
 			TransType:  rc.TransType,
 			Status:     rc.Status,
+			Count:      0, // 如果需要从其他地方获取count，可以在这里设置
 		})
 	}
 
 	return &entity.TransInfoEntity{
 		Project:     transType.Project,
 		TransType:   transType.TransType,
+		TransTypeCn: transType.TransTypeCN,
 		ReturnCodes: returnCodeEntities,
-		Dimension1:  transType.Dimension1,
-		Dimension2:  transType.Dimension2,
+		IsAlert:     transType.IsAlert,
+		Threshold:   transType.Threshold,
 	}
 }
 
-func ToEcampTransTypeTb(entity *entity.TransInfoEntity) *dao.EcampTransTypeTb {
-	if entity == nil {
-		return nil
+// 批量转换函数（处理多个TransType）
+func ConvertToTransInfoEntities(transTypes []dao.EcampTransTypeTb, returnCodesMap map[string][]dao.EcampReturnCodeTb) []*entity.TransInfoEntity {
+	var result []*entity.TransInfoEntity
+
+	for _, transType := range transTypes {
+		// 使用 transType + project 作为key查找对应的return codes
+		key := fmt.Sprintf("%s_%s", transType.TransType, transType.Project)
+		returnCodes := returnCodesMap[key]
+
+		result = append(result, ConvertToTransInfoEntity(&transType, returnCodes))
 	}
 
-	model := &dao.EcampTransTypeTb{
-		TransType:   entity.TransType,
-		Project:     entity.Project,
-		TransTypeCN: entity.TransTypeCn, // 可补充
-		IsAlert:     false,
-		Dimension1:  entity.Dimension1,
-		Dimension2:  entity.Dimension2,
-	}
-
-	for _, rc := range entity.ReturnCodes {
-		returnCode := dao.EcampReturnCodeTb{
-			TransType:  rc.TransType,
-			ReturnCode: rc.ReturnCode,
-			Project:    rc.ProjectID,
-			Status:     rc.Status,
-		}
-		model.ReturnCodes = append(model.ReturnCodes, returnCode)
-	}
-
-	return model
+	return result
 }
+
+//// 辅助函数：查询TransType及其关联的ReturnCodes
+//func GetTransTypeWithReturnCodes(db *gorm.DB, transType string, project string) (*entity.TransInfoEntity, error) {
+//	var trans dao.EcampTransTypeTb
+//	var returnCodes []dao.EcampReturnCodeTb
+//
+//	// 查询 TransType
+//	if err := db.Table(dao.TableNameEcampTransTypeTb).
+//		Where("trans_type = ? AND project = ?", transType, project).
+//		First(&trans).Error; err != nil {
+//		return nil, err
+//	}
+//
+//	// 查询关联的 ReturnCodes
+//	if err := db.Table(dao.TableNameEcampReturnCodeTb).
+//		Where("trans_type = ? AND project = ?", transType, project).
+//		Find(&returnCodes).Error; err != nil {
+//		return nil, err
+//	}
+//
+//	return ConvertToTransInfoEntity(&trans, returnCodes), nil
+//}
+
+// 批量查询函数
+//func GetAllTransTypesWithReturnCodes(db *gorm.DB, project string) ([]*entity.TransInfoEntity, error) {
+//	var transTypes []dao.EcampTransTypeTb
+//	var returnCodes []dao.EcampReturnCodeTb
+//
+//	// 查询所有 TransTypes
+//	query := db.Table(dao.TableNameEcampTransTypeTb)
+//	if project != "" {
+//		query = query.Where("project = ?", project)
+//	}
+//	if err := query.Find(&transTypes).Error; err != nil {
+//		return nil, err
+//	}
+//
+//	// 查询所有 ReturnCodes
+//	rcQuery := db.Table(dao.TableNameEcampReturnCodeTb)
+//	if project != "" {
+//		rcQuery = rcQuery.Where("project = ?", project)
+//	}
+//	if err := rcQuery.Find(&returnCodes).Error; err != nil {
+//		return nil, err
+//	}
+//
+//	// 构建 returnCodes map
+//	returnCodesMap := make(map[string][]dao.EcampReturnCodeTb)
+//	for _, rc := range returnCodes {
+//		key := fmt.Sprintf("%s_%s", rc.TransType, rc.Project)
+//		returnCodesMap[key] = append(returnCodesMap[key], rc)
+//	}
+//
+//	return ConvertToTransInfoEntities(transTypes, returnCodesMap), nil
+//}
 
 // ToTransTypeCountEntity 按照文档和表结构，计算成功率情况
 func ToTransTypeCountEntity(doc *dao.EcampAggUrlDoc, transInfos []entity.TransInfoEntity) *entity.TradeReturnCodeEntity {
