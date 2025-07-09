@@ -131,11 +131,10 @@ type AggUrlPathWithReturnCodesInfo struct {
 	Project string `json:"project" form:"project"`
 	Az      string `json:"az"`
 
-	Svcname    string `json:"svcname"`
-	Dimension1 string `json:"dimension1"`
-	Dimension2 string `json:"dimension2"`
-	SourceIP   string `json:"sourceIP"`
-	TargetIP   string `json:"targetIP"`
+	Svcname string `json:"svcname"`
+
+	SourceIP string `json:"sourceIP"`
+	TargetIP string `json:"targetIP"`
 
 	StartTime int    `json:"start_time"`
 	EndTime   int    `json:"end_time"`
