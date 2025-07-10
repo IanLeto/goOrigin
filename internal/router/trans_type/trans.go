@@ -9,6 +9,7 @@ import (
 	"goOrigin/API/V1"
 	"goOrigin/internal/logic"
 	"goOrigin/internal/model/entity"
+	"time"
 )
 
 func CreateTransInfo(c *gin.Context) {
@@ -42,52 +43,118 @@ ERR:
 
 func GetTransInfoList(c *gin.Context) {
 	var (
-		req   = &V1.GetTransInfoListReq{}      // 请求结构体
-		res   = &V1.GetTransInfoListResponse{} // 响应结构体
+		req   = &V1.SearchTransInfoReq{} // 请求结构体
+		res   = &V1.SearchTransInfoRes{} // 响应结构体
 		err   error
 		total int64
 	)
-	// 调用逻辑层查询函数
-	var list []*entity.TransInfoEntity
-	var aggs []*entity.UrlPathAggEntity
-	var reqInfo = &V1.SearchUrlPathWithReturnCodesInfo{}
-
-	// 设置默认 region
-	if req.Region == "" {
-		c.Set("region", "win")
-	} else {
-		c.Set("region", req.Region)
-	}
 
 	// 绑定 JSON 请求体
 	if err = c.ShouldBindJSON(&req); err != nil {
 		logrus.Errorf("failed to bind JSON: %v", err)
-		goto ERR
+		V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("invalid request: %s", err)))
+		return
 	}
 
-	list, total, err = logic.QueryTransTypeList(c, req.Region, req.Project, req.TransType, req.Page, req.PageSize)
+	// 设置默认值
+	if req.Region == "" {
+		req.Region = "win"
+	}
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 20
+	}
+
+	// 解析时间参数
+	var startTime, endTime *time.Time
+	if req.StartTime != "" {
+		t, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
+		if err != nil {
+			V1.BuildErrResponse(c, V1.BuildErrInfo(0, "invalid start_time format, should be: 2006-01-02 15:04:05"))
+			return
+		}
+		startTime = &t
+	}
+	if req.EndTime != "" {
+		t, err := time.Parse("2006-01-02 15:04:05", req.EndTime)
+		if err != nil {
+			V1.BuildErrResponse(c, V1.BuildErrInfo(0, "invalid end_time format, should be: 2006-01-02 15:04:05"))
+			return
+		}
+		endTime = &t
+	}
+
+	// 设置 region 到 context
+	c.Set("region", req.Region)
+
+	// 调用带时间参数的查询函数
+	list, total, err := logic.SearchTransInfo(c, req.Region, req.Project, req.TransType, startTime, endTime, req.Page, req.PageSize)
 	if err != nil {
 		logrus.Errorf("query logic failed: %v", err)
-		goto ERR
+		V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("query trans info failed: %s", err)))
+		return
 	}
-	reqInfo.Project = req.Project
-	reqInfo.TransTypes = []string{req.TransType}
-	reqInfo.StartTime = 0 // 可以根据实际需要设置
-	reqInfo.EndTime = 0   // 可以根据实际需要设置
-	//reqInfo.Keyword = req.Keyword
-	//reqInfo.OrderBy = req.OrderBy
-	aggs, err = logic.SearchUrlPathWithReturnCode(c, req.Region, reqInfo)
-	list = append(list, entity.ConvertUrlPathAggListToTransInfoList(aggs)...)
 
+	// 处理聚合查询
+	if req.TransType != "" || req.Project != "" {
+		// 转换时间为时间戳（如果 SearchUrlPathWithReturnCode 需要时间戳）
+		var startTimestamp, endTimestamp int64
+		if startTime != nil {
+			startTimestamp = startTime.Unix()
+		}
+		if endTime != nil {
+			endTimestamp = endTime.Unix()
+		}
+
+		reqInfo := &V1.SearchUrlPathWithReturnCodesInfo{
+			Project:    req.Project,
+			TransTypes: []string{},
+			StartTime:  startTimestamp,
+			EndTime:    endTimestamp,
+		}
+
+		if req.TransType != "" {
+			reqInfo.TransTypes = []string{req.TransType}
+		}
+
+		aggs, err := logic.SearchUrlPathWithReturnCode(c, req.Region, reqInfo)
+		if err != nil {
+			logrus.Warnf("search url path with return code failed: %v", err)
+		} else if len(aggs) > 0 {
+			// 合并聚合结果（带去重）
+			mergeAggregationResults(list, aggs, &total)
+		}
+	}
+
+	// 构建响应
 	res.Items = list
 	res.Total = total
 	res.Page = req.Page
 	res.PageSize = req.PageSize
-	V1.BuildResponse(c, V1.BuildInfo(res))
-	return
 
-ERR:
-	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("query trans info failed: %s", err)))
+	V1.BuildResponse(c, V1.BuildInfo(res))
+}
+
+// 辅助函数：合并聚合结果
+func mergeAggregationResults(list []*entity.TransInfoEntity, aggs []*entity.UrlPathAggEntity, total *int64) {
+	// 创建已存在项的映射
+	existingMap := make(map[string]bool)
+	for _, item := range list {
+		key := fmt.Sprintf("%s_%s", item.Project, item.TransType)
+		existingMap[key] = true
+	}
+
+	// 转换并添加不重复的聚合结果
+	aggList := entity.ConvertUrlPathAggListToTransInfoList(aggs)
+	for _, aggItem := range aggList {
+		key := fmt.Sprintf("%s_%s", aggItem.Project, aggItem.TransType)
+		if !existingMap[key] {
+			list = append(list, aggItem)
+			*total++
+		}
+	}
 }
 
 func DeleteTransInfo(c *gin.Context) {
@@ -160,7 +227,7 @@ func convertToEntity(item *V1.UpdateTransInfo) *entity.TransInfoEntity {
 		codes = append(codes, &entity.ReturnCodeEntity{
 			ReturnCode: rc.ReturnCode,
 			TransType:  rc.TransType,
-			ProjectID:  rc.Project,
+			Project:    rc.Project,
 			Status:     rc.Status,
 		})
 	}
@@ -195,8 +262,8 @@ func SearchTransTypeReturnCodes(c *gin.Context) {
 	}
 
 	// 构建请求参数
-	startTime, _ := conv.Int(c.Query("start_time"))
-	endTime, _ := conv.Int(c.Query("end_time"))
+	startTime, _ := conv.Int64(c.Query("start_time"))
+	endTime, _ := conv.Int64(c.Query("end_time"))
 
 	req.Region = region
 	req.Page = page

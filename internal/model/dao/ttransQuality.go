@@ -22,19 +22,23 @@ func (*EcampProjectInfoTb) TableName() string {
 
 type EcampTransTypeTb struct {
 	*Meta
-	TransType   string `gorm:"size:50;not null;uniqueIndex:trans_proj_unique,priority:1" json:"trans_type"`
-	TransTypeCN string `gorm:"size:100" json:"trans_type_cn"`                                             // 开户7
-	Project     string `gorm:"size:255;not null;uniqueIndex:trans_proj_unique,priority:2" json:"project"` // 组合唯一索引
-	IsAlert     bool   `gorm:"default:false" json:"is_alert"`
-	Threshold   int    `gorm:"default:0" json:"threshold"` // 新增阈值字段
+	TransType   string    `gorm:"size:50;not null;uniqueIndex:trans_proj_unique,priority:1" json:"trans_type"`
+	TransTypeCN string    `gorm:"size:100" json:"trans_type_cn"`                                             // 开户7
+	Project     string    `gorm:"size:255;not null;uniqueIndex:trans_proj_unique,priority:2" json:"project"` // 组合唯一索引
+	IsAlert     bool      `gorm:"default:false" json:"is_alert"`
+	Threshold   int       `gorm:"default:0" json:"threshold"` // 新增阈值字段
+	CreatedAt   time.Time `gorm:"column:created_at;type:datetime(3);not null" json:"created_at"`
+	UpdatedAt   time.Time `gorm:"column:updated_at;type:datetime(3);not null" json:"updated_at"`
 }
 
 type EcampReturnCodeTb struct {
 	*Meta
-	TransType  string `gorm:"size:50;not null;index:idx_trans_proj,priority:1" json:"trans_type"`
-	ReturnCode string `gorm:"size:50;not null;index:idx_trans_proj,priority:3" json:"return_code"`
-	Project    string `gorm:"size:255;not null;index:idx_trans_proj,priority:2" json:"project"`
-	Status     string `gorm:"size:50;default:'active'" json:"status"`
+	TransType  string    `gorm:"size:50;not null;index:idx_trans_proj,priority:1" json:"trans_type"`
+	ReturnCode string    `gorm:"size:50;not null;index:idx_trans_proj,priority:3" json:"return_code"`
+	Project    string    `gorm:"size:255;not null;index:idx_trans_proj,priority:2" json:"project"`
+	Status     string    `gorm:"size:50;default:'active'" json:"status"`
+	CreatedAt  time.Time `gorm:"column:created_at;type:datetime(3);not null" json:"created_at"`
+	UpdatedAt  time.Time `gorm:"column:updated_at;type:datetime(3);not null" json:"updated_at"`
 }
 
 const TableNameEcampTransTypeTb = "ecamp_trans_info_tb"

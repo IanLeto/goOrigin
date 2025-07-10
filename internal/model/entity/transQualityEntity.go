@@ -57,7 +57,7 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 	return metric
 }
 
-// 修改后的实体结构体
+// TransInfoEntity 修改后的实体结构体
 type TransInfoEntity struct {
 	Project     string              `json:"project"`
 	TransType   string              `json:"trans_type"`    // 等价于 url_path
@@ -69,7 +69,7 @@ type TransInfoEntity struct {
 
 type ReturnCodeEntity struct {
 	ReturnCode string `json:"return_code"`
-	ProjectID  string `json:"project_id"`
+	Project    string `json:"project"`
 	TransType  string `json:"trans_type"`
 	Status     string `json:"status"`
 	Count      int    `json:"count"` // 存储计数
@@ -147,7 +147,7 @@ func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 
 		rcEntity := &ReturnCodeEntity{
 			ReturnCode: code,
-			ProjectID:  u.Project,
+			Project:    u.Project,
 			TransType:  u.TransType, // 强制使用主trans_type
 			Status:     "active",
 			Count:      count,
@@ -247,8 +247,8 @@ func (t *TransInfoEntity) ValidateConsistency() []string {
 func (t *TransInfoEntity) FixConsistency() {
 	for _, rc := range t.ReturnCodes {
 		rc.TransType = t.TransType
-		if rc.ProjectID == "" {
-			rc.ProjectID = t.Project
+		if rc.Project == "" {
+			rc.Project = t.Project
 		}
 	}
 }

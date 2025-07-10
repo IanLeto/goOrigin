@@ -7,18 +7,14 @@ type CreateTransInfoReq struct {
 
 // CreateTransInfo 请求结构体也需要更新
 type CreateTransInfo struct {
-	Project     string           `json:"project" binding:"required"`
-	TransType   string           `json:"trans_type" binding:"required"`
-	TransTypeCN string           `json:"trans_type_cn"`
-	ReturnCodes []ReturnCodeInfo `json:"return_codes"`
-	IsAlert     bool             `json:"is_alert"`
-	Threshold   int              `json:"threshold"`
+	Project     string            `json:"project" binding:"required"`
+	TransType   string            `json:"trans_type" binding:"required"`
+	TransTypeCN string            `json:"trans_type_cn"`
+	ReturnCodes map[string]string `json:"return_codes"`
+	IsAlert     bool              `json:"is_alert"`
+	Threshold   int               `json:"threshold"`
 }
 
-type ReturnCodeInfo struct {
-	ReturnCode string `json:"return_code" binding:"required"`
-	Status     string `json:"status"`
-}
 type CreateTransInfoRes struct {
 	Id uint `json:"id"`
 }
@@ -37,16 +33,18 @@ type DeleteTransInfoReq struct {
 	Project   string `json:"project"`
 	TransType string `json:"trans_type"`
 }
-type GetTransInfoListReq struct {
+type SearchTransInfoReq struct {
 	Region    string `json:"region"`
 	Keyword   string `json:"keyword"`
 	Project   string `json:"project"`
 	TransType string `json:"trans_type"`
-	Page      int    `json:"page"`      // 当前页
-	PageSize  int    `json:"page_size"` // 每页数量
+	StartTime string `json:"start_time"` // 格式: 2006-01-02 15:04:05
+	EndTime   string `json:"end_time"`   // 格式: 2006-01-02 15:04:05
+	Page      int    `json:"page"`       // 当前页
+	PageSize  int    `json:"page_size"`  // 每页数量
 }
 
-type GetTransInfoListResponse struct {
+type SearchTransInfoRes struct {
 	Items    interface{} `json:"items"`
 	Total    int64       `json:"total"`
 	Page     int         `json:"page"`
@@ -72,27 +70,6 @@ type UpdateReturnCode struct {
 	Status     string `json:"status"`
 }
 
-type CreateTradeReturnCodeRequest struct {
-	UrlPath       string `json:"url_path"`
-	SuccessCount  int    `json:"success_count"`
-	FailedCount   int    `json:"failed_count"`
-	UnKnownCount  string `json:"unknown_count"`
-	Total         string `json:"total"`
-	TransTypeCn   string `json:"trans_type_cn"`
-	ResponseCount string `json:"response_count"`
-}
-
-// SearchTradeReturnCodeRequest 搜索es 列表使用
-type SearchTradeReturnCodeRequest struct {
-	UrlPath       string `json:"url_path"`
-	SuccessCount  int    `json:"success_count"`
-	FailedCount   int    `json:"failed_count"`
-	UnKnownCount  int    `json:"unknown_count"`
-	Total         int    `json:"total"`
-	TransTypeCn   string `json:"trans_type_cn"`
-	ResponseCount int    `json:"response_count"`
-}
-
 type SuccessRateReqInfo struct {
 	Project    string   `form:"project" json:"project"`         // 项目标识
 	TransTypes []string `form:"trans_types" json:"trans_types"` // 交易类型列表
@@ -113,14 +90,6 @@ type SuccessRateItem struct {
 
 type SuccessRateResponse struct {
 	Items []*SuccessRateItem `json:"items"`
-}
-
-// TransTypeQueryReq 检索交易设置页列表
-type TransTypeQueryReq struct {
-	Region   string `json:"region" form:"region"`
-	Page     int    `json:"page" form:"page"`           // 当前页码，从 1 开始
-	PageSize int    `json:"page_size" form:"page_size"` // 每页大小，默认 10
-	*TransTypeQueryInfo
 }
 
 type TransTypeQueryInfo struct {
@@ -144,8 +113,8 @@ type SearchUrlPathWithReturnCodesInfo struct {
 	Project    string   `json:"project" form:"project"`
 	Az         string   `json:"az"`
 	TransTypes []string `json:"trans_types" form:"trans_types"`
-	StartTime  int      `json:"start_time"`
-	EndTime    int      `json:"end_time"`
+	StartTime  int64    `json:"start_time"`
+	EndTime    int64    `json:"end_time"`
 	Keyword    string   `json:"keyword"`
 	OrderBy    string   `json:"order_by"`
 }

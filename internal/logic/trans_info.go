@@ -16,12 +16,10 @@ import (
 	"goOrigin/internal/model/repository"
 	"goOrigin/pkg/utils"
 	"gorm.io/gorm"
+	"sort"
 	"strings"
+	"time"
 )
-
-func SearchTransInfo(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.TradeReturnCodeEntity, error) {
-	panic(1)
-}
 
 func SearchTransTypeSuccessStatsMetric(ctx *gin.Context, region string, info *V1.SuccessRateReqInfo) (*entity.SpanEntity, error) {
 	var (
@@ -625,29 +623,35 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 			return fmt.Errorf("delete return codes failed: %w", err)
 		}
 
-		// 4. 插入新的 return_codes
 		if len(req.ReturnCodes) > 0 {
 			var returnCodes []dao.EcampReturnCodeTb
 
-			// 使用 map 去重，避免重复的 return_code
+			// 使用 map 去重
 			uniqueCodes := make(map[string]dao.EcampReturnCodeTb)
 
-			for _, rc := range req.ReturnCodes {
-				// 注意：EcampReturnCodeTb 已经移除了 ReturnCodeCN 字段
-				uniqueCodes[rc.ReturnCode] = dao.EcampReturnCodeTb{
+			// 为了保证顺序的一致性，先对key进行排序
+			var keys []string
+			for code := range req.ReturnCodes {
+				keys = append(keys, code)
+			}
+			sort.Strings(keys)
+
+			for _, code := range keys {
+				status := req.ReturnCodes[code]
+				if status == "" {
+					status = "success" // 默认状态
+				}
+
+				uniqueCodes[code] = dao.EcampReturnCodeTb{
 					TransType:  req.TransType,
-					ReturnCode: rc.ReturnCode,
+					ReturnCode: code,
 					Project:    req.Project,
-					Status:     rc.Status,
+					Status:     status,
 				}
 			}
 
 			// 转换为数组
 			for _, rc := range uniqueCodes {
-				// 如果 Status 为空，设置默认值
-				if rc.Status == "" {
-					rc.Status = "active"
-				}
 				returnCodes = append(returnCodes, rc)
 			}
 
@@ -672,7 +676,7 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 	return nil
 }
 
-func QueryTransTypeList(ctx context.Context, region, project, transType string, page, pageSize int) ([]*entity.TransInfoEntity, int64, error) {
+func SearchTransInfo(ctx context.Context, region, project, transType string, startTime, endTime *time.Time, page, pageSize int) ([]*entity.TransInfoEntity, int64, error) {
 	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
 
 	var (
@@ -685,6 +689,7 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 		Debug().
 		Model(&dao.EcampTransTypeTb{})
 
+	// 添加查询条件
 	if transType != "" {
 		query = query.Where("trans_type = ?", transType)
 	}
@@ -692,67 +697,43 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 		query = query.Where("project = ?", project)
 	}
 
+	// 时间筛选逻辑
+	if startTime != nil {
+		query = query.Where("created_at >= ?", *startTime)
+	}
+	if endTime != nil {
+		query = query.Where("created_at <= ?", *endTime)
+	}
+
 	// 1. 查询总数
 	if err := query.Count(&total).Error; err != nil {
 		logrus.Errorf("count query failed: %v", err)
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("count query failed: %w", err)
+	}
+
+	// 如果没有数据，直接返回
+	if total == 0 {
+		return []*entity.TransInfoEntity{}, 0, nil
 	}
 
 	// 2. 分页查询数据
 	offset := (page - 1) * pageSize
 	if err := query.
+		Order("created_at DESC"). // 按创建时间倒序
 		Limit(pageSize).
 		Offset(offset).
 		Find(&transTypeTbList).Error; err != nil {
 		logrus.Errorf("query data failed: %v", err)
+		return nil, 0, fmt.Errorf("query data failed: %w", err)
+	}
+
+	// 3. 批量查询所有相关的 ReturnCodes
+	returnCodesMap, err := getReturnCodesMap(db.Client, transTypeTbList)
+	if err != nil {
 		return nil, 0, err
 	}
 
-	// 3. 批量查询所有相关的 ReturnCodes（使用子查询）
-	var returnCodes []dao.EcampReturnCodeTb
-	if len(transTypeTbList) > 0 {
-		// 收集所有的 transType 和 project
-		type pair struct {
-			TransType string
-			Project   string
-		}
-		var pairs []pair
-		for _, t := range transTypeTbList {
-			pairs = append(pairs, pair{TransType: t.TransType, Project: t.Project})
-		}
-
-		// 使用原生SQL构建更高效的查询
-		subQuery := db.Client.
-			Table(dao.TableNameEcampReturnCodeTb).
-			Where("(trans_type, project) IN ?", pairs)
-
-		if err := subQuery.Find(&returnCodes).Error; err != nil {
-			// 如果数据库不支持元组IN查询，使用备用方案
-			var transTypes []string
-			var projects []string
-			for _, t := range transTypeTbList {
-				transTypes = append(transTypes, t.TransType)
-				projects = append(projects, t.Project)
-			}
-
-			if err := db.Client.
-				Table(dao.TableNameEcampReturnCodeTb).
-				Where("trans_type IN ? AND project IN ?", transTypes, projects).
-				Find(&returnCodes).Error; err != nil {
-				logrus.Errorf("query return codes failed: %v", err)
-				return nil, 0, err
-			}
-		}
-	}
-
-	// 4. 构建 returnCodes map
-	returnCodesMap := make(map[string][]dao.EcampReturnCodeTb)
-	for _, rc := range returnCodes {
-		key := fmt.Sprintf("%s_%s", rc.TransType, rc.Project)
-		returnCodesMap[key] = append(returnCodesMap[key], rc)
-	}
-
-	// 5. 转换为 entity
+	// 4. 转换为 entity
 	var result []*entity.TransInfoEntity
 	for _, t := range transTypeTbList {
 		key := fmt.Sprintf("%s_%s", t.TransType, t.Project)
@@ -760,6 +741,40 @@ func QueryTransTypeList(ctx context.Context, region, project, transType string, 
 	}
 
 	return result, total, nil
+}
+
+// 抽取 ReturnCodes 查询逻辑
+func getReturnCodesMap(db *gorm.DB, transTypeTbList []dao.EcampTransTypeTb) (map[string][]dao.EcampReturnCodeTb, error) {
+	returnCodesMap := make(map[string][]dao.EcampReturnCodeTb)
+
+	if len(transTypeTbList) == 0 {
+		return returnCodesMap, nil
+	}
+
+	var returnCodes []dao.EcampReturnCodeTb
+
+	// 方案1：使用 OR 条件组合（更兼容）
+	tx := db.Table(dao.TableNameEcampReturnCodeTb)
+	for i, t := range transTypeTbList {
+		if i == 0 {
+			tx = tx.Where("(trans_type = ? AND project = ?)", t.TransType, t.Project)
+		} else {
+			tx = tx.Or("(trans_type = ? AND project = ?)", t.TransType, t.Project)
+		}
+	}
+
+	if err := tx.Find(&returnCodes).Error; err != nil {
+		logrus.Errorf("query return codes failed: %v", err)
+		return nil, fmt.Errorf("query return codes failed: %w", err)
+	}
+
+	// 构建 map
+	for _, rc := range returnCodes {
+		key := fmt.Sprintf("%s_%s", rc.TransType, rc.Project)
+		returnCodesMap[key] = append(returnCodesMap[key], rc)
+	}
+
+	return returnCodesMap, nil
 }
 func DeleteTransInfo(ctx context.Context, region, project, transType string) error {
 	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
@@ -816,7 +831,7 @@ func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoE
 		newCodes = append(newCodes, dao.EcampReturnCodeTb{
 			TransType:  rc.TransType,
 			ReturnCode: rc.ReturnCode,
-			Project:    rc.ProjectID,
+			Project:    rc.Project,
 			Status:     rc.Status,
 		})
 	}
@@ -830,99 +845,6 @@ func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoE
 	return tx.Commit().Error
 }
 
-func QueryTransTypeWithReturnCodesInfo(ctx *gin.Context, region string, info *V1.TransTypeQueryInfo) (*entity.TransTypeResponseEntity, error) {
-	var (
-		conn         = elastic.GlobalEsConns[region]
-		result       = &entity.TransTypeResponseEntity{}
-		transTypeMap = make(map[string]*entity.TransTypeEntity)
-		db           = mysql.GlobalMySQLConns[region]
-	)
-
-	// -----------------------------
-	// Step 1: 查询 ES 聚合数据
-	// -----------------------------
-	query := map[string]interface{}{
-		"size": 0,
-		"aggs": map[string]interface{}{
-			"by_transType": map[string]interface{}{
-				"terms": map[string]interface{}{
-					"field": "transType.keyword",
-					"size":  1000,
-				},
-				"aggs": map[string]interface{}{
-					"by_return_code": map[string]interface{}{
-						"terms": map[string]interface{}{
-							"field": "return_code.keyword",
-							"size":  1000,
-						},
-					},
-				},
-			},
-		},
-	}
-
-	raw, err := conn.Search("span", query)
-	if err != nil {
-		return nil, fmt.Errorf("ES 查询失败: %v", err)
-	}
-
-	var aggResult map[string]interface{}
-	err = json.Unmarshal(raw, &aggResult)
-	if err != nil {
-		return nil, fmt.Errorf("ES 结果解析失败: %v", err)
-	}
-
-	buckets := aggResult["aggregations"].(map[string]interface{})["by_transType"].(map[string]interface{})["buckets"].([]interface{})
-
-	for _, b := range buckets {
-		bucket := b.(map[string]interface{})
-		transType := bucket["key"].(string)
-		returnCodeBuckets := bucket["by_return_code"].(map[string]interface{})["buckets"].([]interface{})
-
-		entityItem := &entity.TransTypeEntity{
-			TransType:   transType,
-			ReturnCodes: []string{},
-		}
-
-		for _, rc := range returnCodeBuckets {
-			code := rc.(map[string]interface{})["key"].(string)
-			entityItem.ReturnCodes = append(entityItem.ReturnCodes, code)
-		}
-
-		transTypeMap[transType] = entityItem
-	}
-
-	// -----------------------------
-	// Step 2: 查询数据库中的中文名
-	// -----------------------------
-	var transTypeDBs []dao.EcampTransTypeTb
-	sql := db.Client.Debug().Model(&dao.EcampTransTypeTb{})
-	if info.Project != "" {
-		sql = sql.Where("project = ?", info.Project)
-	}
-	if len(info.TransTypes) > 0 {
-		sql = sql.Where("trans_type IN ?", info.TransTypes)
-	}
-	if err := sql.Find(&transTypeDBs).Error; err != nil {
-		return nil, fmt.Errorf("数据库查询失败: %v", err)
-	}
-
-	// 设置中文名
-	for _, t := range transTypeDBs {
-		if val, ok := transTypeMap[t.TransType]; ok {
-			val.TransTypeCn = t.TransTypeCN
-		}
-	}
-
-	// -----------------------------
-	// Step 3: 转换结果为列表
-	// -----------------------------
-	for _, v := range transTypeMap {
-		result.Items = append(result.Items, v)
-	}
-
-	return result, nil
-}
 func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
 	var (
 		aggUrlPathDoc = &dao.AggUrlPathDoc{}

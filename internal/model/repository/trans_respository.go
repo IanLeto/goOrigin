@@ -15,7 +15,7 @@ func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb, returnCodes []dao
 	for _, rc := range returnCodes {
 		returnCodeEntities = append(returnCodeEntities, &entity.ReturnCodeEntity{
 			ReturnCode: rc.ReturnCode,
-			ProjectID:  rc.Project,
+			Project:    rc.Project,
 			TransType:  rc.TransType,
 			Status:     rc.Status,
 			Count:      0, // 如果需要从其他地方获取count，可以在这里设置
