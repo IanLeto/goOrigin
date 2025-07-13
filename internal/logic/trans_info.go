@@ -997,42 +997,6 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 	return result, nil
 }
 
-//// 相应的 DAO 结构体也需要更新
-//type AggUrlPathDoc struct {
-//	Aggregations struct {
-//		ByUrlPath struct {
-//			Buckets []struct {
-//				Key      string `json:"key"`
-//				DocCount int    `json:"doc_count"`
-//				ByProject struct {
-//					Buckets []struct {
-//						Key      string `json:"key"`
-//						DocCount int    `json:"doc_count"`
-//						ByDimension1 struct {
-//							Buckets []struct {
-//								Key      string `json:"key"`
-//								DocCount int    `json:"doc_count"`
-//								ByDimension2 struct {
-//									Buckets []struct {
-//										Key      string `json:"key"`
-//										DocCount int    `json:"doc_count"`
-//										ByReturnCode struct {
-//											Buckets []struct {
-//												Key      string `json:"key"`
-//												DocCount int    `json:"doc_count"`
-//											} `json:"buckets"`
-//										} `json:"by_return_code"`
-//									} `json:"buckets"`
-//								} `json:"by_dimension_2"`
-//							} `json:"buckets"`
-//						} `json:"by_dimension_1"`
-//					} `json:"buckets"`
-//				} `json:"by_project"`
-//			} `json:"buckets"`
-//		} `json:"by_url_path"`
-//	} `json:"aggregations"`
-//}
-
 func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
 	// 直接返回固定的mock数据，不做任何过滤或判断
 	mockData := []*entity.UrlPathAggEntity{
