@@ -90,7 +90,7 @@ func GetTransInfoList(c *gin.Context) {
 	c.Set("region", req.Region)
 
 	// 调用带时间参数的查询函数
-	list, total, err := logic.SearchTransInfo(c, req.Region, req.Project, req.TransType, startTime, endTime, req.Page, req.PageSize)
+	list, total, err := logic.SelectTransInfo(c, req.Region, req.Project, req.TransType, startTime, endTime, req.Page, req.PageSize)
 	if err != nil {
 		logrus.Errorf("query logic failed: %v", err)
 		V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("query trans info failed: %s", err)))

@@ -676,7 +676,7 @@ func CreateType(ctx context.Context, region string, reqs []V1.CreateTransInfo) e
 	return nil
 }
 
-func SearchTransInfo(ctx context.Context, region, project, transType string, startTime, endTime *time.Time, page, pageSize int) ([]*entity.TransInfoEntity, int64, error) {
+func SelectTransInfo(ctx context.Context, region, project, transType string, startTime, endTime *time.Time, page, pageSize int) ([]*entity.TransInfoEntity, int64, error) {
 	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
 
 	var (

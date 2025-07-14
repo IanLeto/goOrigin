@@ -252,3 +252,11 @@ func (t *TransInfoEntity) FixConsistency() {
 		}
 	}
 }
+
+type TransTypeCNEntity struct {
+	SysName         string `json:"sys_name"`         // 系统名称代码
+	ServiceName     string `json:"service_name"`     // 服务名称代码
+	InterfaceEnname string `json:"interface_enname"` // 接口英文名称
+	InterfaceName   string `json:"interface_name"`   // 接口中文名称
+
+}
