@@ -43,8 +43,8 @@ ERR:
 
 func GetTransInfoList(c *gin.Context) {
 	var (
-		req   = &V1.SearchTransInfoReq{} // 请求结构体
-		res   = &V1.SearchTransInfoRes{} // 响应结构体
+		req   = &V1.SearchTransInfoReq{}
+		res   = &V1.SearchTransInfoRes{}
 		err   error
 		total int64
 	)
@@ -99,7 +99,7 @@ func GetTransInfoList(c *gin.Context) {
 
 	// 处理聚合查询
 	if req.TransType != "" || req.Project != "" {
-		// 转换时间为时间戳（如果 SearchUrlPathWithReturnCode 需要时间戳）
+		// 转换时间为时间戳
 		var startTimestamp, endTimestamp int64
 		if startTime != nil {
 			startTimestamp = startTime.Unix()
@@ -128,6 +128,20 @@ func GetTransInfoList(c *gin.Context) {
 		}
 	}
 
+	// 收集所有唯一的 url 和 project 组合
+	uniqueKeys := collectUniqueTransTypes(list)
+
+	// 批量查询所有交易类型的中文名称
+	if len(uniqueKeys) > 0 {
+		cnMap, err := logic.BatchSelectTransTypeCN(c, req.Region, uniqueKeys)
+		if err != nil {
+			logrus.Warnf("batch select trans type cn failed: %v", err)
+		} else {
+			// 填充中文名称到结果列表
+			fillTransTypeCN(list, cnMap)
+		}
+	}
+
 	// 构建响应
 	res.Items = list
 	res.Total = total
@@ -137,21 +151,62 @@ func GetTransInfoList(c *gin.Context) {
 	V1.BuildResponse(c, V1.BuildInfo(res))
 }
 
-// 辅助函数：合并聚合结果
-func mergeAggregationResults(list []*entity.TransInfoEntity, aggs []*entity.UrlPathAggEntity, total *int64) {
-	// 创建已存在项的映射
-	existingMap := make(map[string]bool)
+// collectUniqueTransTypes 收集所有唯一的 trans_type 和 project 组合
+func collectUniqueTransTypes(list []*entity.TransInfoEntity) []entity.TransTypeKey {
+	uniqueMap := make(map[string]entity.TransTypeKey)
+
 	for _, item := range list {
-		key := fmt.Sprintf("%s_%s", item.Project, item.TransType)
-		existingMap[key] = true
+		key := fmt.Sprintf("%s_%s", item.TransType, item.Project)
+		if _, exists := uniqueMap[key]; !exists {
+			uniqueMap[key] = entity.TransTypeKey{
+				TransType: item.TransType,
+				Project:   item.Project,
+			}
+		}
 	}
 
-	// 转换并添加不重复的聚合结果
-	aggList := entity.ConvertUrlPathAggListToTransInfoList(aggs)
-	for _, aggItem := range aggList {
-		key := fmt.Sprintf("%s_%s", aggItem.Project, aggItem.TransType)
-		if !existingMap[key] {
-			list = append(list, aggItem)
+	// 转换为数组
+	var result []entity.TransTypeKey
+	for _, v := range uniqueMap {
+		result = append(result, v)
+	}
+
+	return result
+}
+
+// fillTransTypeCN 填充中文名称到结果列表
+func fillTransTypeCN(list []*entity.TransInfoEntity, cnMap map[string][]string) {
+	for _, item := range list {
+		key := fmt.Sprintf("%s_%s", item.TransType, item.Project)
+		if cnNames, exists := cnMap[key]; exists {
+			item.TransTypeCn = cnNames
+		} else if item.TransTypeCn == nil {
+			// 如果没有找到且当前为nil，初始化为空数组
+			item.TransTypeCn = []string{}
+		}
+	}
+}
+
+// mergeAggregationResults 合并聚合结果
+func mergeAggregationResults(list []*entity.TransInfoEntity, aggs []*entity.TransInfoEntity, total *int64) {
+	existingMap := make(map[string]*entity.TransInfoEntity)
+
+	// 将现有列表转换为map
+	for _, item := range list {
+		key := fmt.Sprintf("%s_%s", item.TransType, item.Project)
+		existingMap[key] = item
+	}
+
+	// 合并聚合结果
+	for _, agg := range aggs {
+		key := fmt.Sprintf("%s_%s", agg.TransType, agg.Project)
+
+		if existing, exists := existingMap[key]; exists {
+			// 更新现有项的 return_codes
+			existing.ReturnCodes = agg.ReturnCodes
+		} else {
+			// 添加新项
+			list = append(list, agg)
 			*total++
 		}
 	}
@@ -243,7 +298,7 @@ func SearchTransTypeReturnCodes(c *gin.Context) {
 	var (
 		req    = &V1.SearchUrlPathWithReturnCodesReq{}
 		res    = &V1.SearchUrlPathWithReturnCodesInfoResponse{}
-		result []*entity.UrlPathAggEntity
+		result []*entity.TransInfoEntity
 		err    error
 	)
 

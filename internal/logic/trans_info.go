@@ -719,7 +719,7 @@ func SelectTransInfo(ctx context.Context, region, project, transType string, sta
 	// 2. 分页查询数据
 	offset := (page - 1) * pageSize
 	if err := query.
-		Order("created_at DESC"). // 按创建时间倒序
+		Order("created_at DESC").
 		Limit(pageSize).
 		Offset(offset).
 		Find(&transTypeTbList).Error; err != nil {
@@ -733,14 +733,80 @@ func SelectTransInfo(ctx context.Context, region, project, transType string, sta
 		return nil, 0, err
 	}
 
-	// 4. 转换为 entity
+	// 4. 转换为 entity（不再查询中文名称）
 	var result []*entity.TransInfoEntity
 	for _, t := range transTypeTbList {
 		key := fmt.Sprintf("%s_%s", t.TransType, t.Project)
-		result = append(result, repository.ConvertToTransInfoEntity(&t, returnCodesMap[key]))
+		entity := repository.ConvertToTransInfoEntity(&t, returnCodesMap[key])
+		// 初始化 TransTypeCn 为空数组
+		entity.TransTypeCn = []string{}
+		result = append(result, entity)
 	}
 
 	return result, total, nil
+}
+
+// BatchSelectTransTypeCN 批量查询交易类型的中文名称
+func BatchSelectTransTypeCN(ctx context.Context, region string, keys []entity.TransTypeKey) (map[string][]string, error) {
+	if len(keys) == 0 {
+		return make(map[string][]string), nil
+	}
+
+	db := mysql.NewMysqlV2Conn(config.ConfV2.Env[region].MysqlSQLConfig)
+
+	// 构建查询条件
+	var conditions []string
+	var args []interface{}
+
+	for _, key := range keys {
+		conditions = append(conditions, "(url = ? AND sys_name = ?)")
+		args = append(args, key.TransType, key.Project)
+	}
+
+	// 构建完整的 WHERE 子句
+	whereClause := strings.Join(conditions, " OR ")
+
+	// 查询数据
+	var cnRecords []dao.EcampTransTypeCNTb
+	if err := db.Client.
+		Debug().
+		Model(&dao.EcampTransTypeCNTb{}).
+		Where(whereClause, args...).
+		Find(&cnRecords).Error; err != nil {
+		logrus.Errorf("batch query trans type cn failed: %v", err)
+		return nil, fmt.Errorf("batch query trans type cn failed: %w", err)
+	}
+
+	// 构建结果映射：{url}_{sys_name} -> []interface_name
+	resultMap := make(map[string][]string)
+
+	// 先初始化所有key对应的空数组
+	for _, key := range keys {
+		mapKey := fmt.Sprintf("%s_%s", key.TransType, key.Project)
+		resultMap[mapKey] = []string{}
+	}
+
+	// 填充查询到的数据
+	for _, record := range cnRecords {
+		mapKey := fmt.Sprintf("%s_%s", record.Url, record.SysName)
+
+		// 避免重复添加
+		found := false
+		for _, existingName := range resultMap[mapKey] {
+			if existingName == record.InterfaceName {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			resultMap[mapKey] = append(resultMap[mapKey], record.InterfaceName)
+		}
+	}
+
+	logrus.Infof("BatchSelectTransTypeCN: 查询 %d 个组合，返回 %d 条记录", len(keys), len(cnRecords))
+
+	return resultMap, nil
 }
 
 // 抽取 ReturnCodes 查询逻辑
@@ -845,7 +911,7 @@ func UpdateTransInfo(ctx context.Context, region string, item *entity.TransInfoE
 	return tx.Commit().Error
 }
 
-func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
+func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.TransInfoEntity, error) {
 	var (
 		aggUrlPathDoc = &dao.AggUrlPathDoc{}
 		result        []*entity.TransInfoEntity
@@ -997,297 +1063,297 @@ func SearchUrlPathWithReturnCode2(ctx *gin.Context, region string, info *V1.Sear
 	return result, nil
 }
 
-func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
-	// 直接返回固定的mock数据，不做任何过滤或判断
-	mockData := []*entity.UrlPathAggEntity{
-		{
-			TransType:   "/api/v1/user/login",
-			TransTypeCN: "用户登录接口",
-			Project:     "user-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-				"AA201": "创建成功",
-				"DD400": "请求参数错误",
-				"DD401": "未授权",
-				"ZZ403": "禁止访问",
-				"SS404": "资源不存在",
-				"VV500": "服务器内部错误",
-				"VV502": "网关错误",
-				"VV503": "服务不可用",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 15678,
-				"AA201": 234,
-				"DD400": 1256,
-				"DD401": 890,
-				"ZZ403": 456,
-				"SS404": 234,
-				"VV500": 89,
-				"VV502": 23,
-				"VV503": 12,
-			},
-		},
-		{
-			TransType:   "/api/v2/order/create",
-			TransTypeCN: "订单创建接口",
-			Project:     "order-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-				"DD400": "请求参数错误",
-				"DD409": "资源冲突",
-				"DD429": "请求过于频繁",
-				"VV500": "服务器内部错误",
-				"VV504": "网关超时",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 98765,
-				"DD400": 3456,
-				"DD409": 567,
-				"DD429": 1234,
-				"VV500": 234,
-				"VV504": 45,
-			},
-		},
-		{
-			TransType:   "/api/v3/payment/process",
-			TransTypeCN: "支付处理接口",
-			Project:     "payment-service",
-			ReturnCode: map[string]string{
-				"AA200": "支付成功",
-				"AA202": "处理中",
-				"DD400": "参数错误",
-				"DD402": "支付失败",
-				"VV500": "系统异常",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 45678,
-				"AA202": 12345,
-				"DD400": 789,
-				"DD402": 456,
-				"VV500": 123,
-			},
-		},
-		{
-			TransType:   "/admin/v1/dashboard",
-			TransTypeCN: "管理后台仪表盘",
-			Project:     "admin-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-				"DD401": "未授权",
-				"ZZ403": "权限不足",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 5678,
-				"DD401": 234,
-				"ZZ403": 89,
-			},
-		},
-		{
-			TransType:   "/health/check",
-			TransTypeCN: "健康检查接口",
-			Project:     "monitor-service",
-			ReturnCode: map[string]string{
-				"AA200": "健康",
-				"VV503": "服务不可用",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 999999,
-				"VV503": 12,
-			},
-		},
-		{
-			TransType:   "/api/v4/product/search",
-			TransTypeCN: "商品搜索接口",
-			Project:     "product-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-				"AA204": "无内容",
-				"AA206": "部分内容",
-				"DD400": "搜索条件错误",
-				"DD408": "请求超时",
-				"DD413": "请求体过大",
-				"DD422": "无法处理的实体",
-				"VV500": "搜索引擎错误",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 87654,
-				"AA204": 5432,
-				"AA206": 1234,
-				"DD400": 876,
-				"DD408": 234,
-				"DD413": 56,
-				"DD422": 123,
-				"VV500": 45,
-			},
-		},
-		{
-			TransType:   "/websocket/connect",
-			TransTypeCN: "WebSocket连接",
-			Project:     "websocket-service",
-			ReturnCode: map[string]string{
-				"AA101": "切换协议",
-				"DD400": "错误的请求",
-				"DD426": "需要升级",
-				"VV500": "内部错误",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA101": 23456,
-				"DD400": 567,
-				"DD426": 123,
-				"VV500": 34,
-			},
-		},
-		{
-			TransType:   "/api/v5/file/upload",
-			TransTypeCN: "文件上传接口",
-			Project:     "file-service",
-			ReturnCode: map[string]string{
-				"AA200": "上传成功",
-				"AA201": "创建成功",
-				"DD400": "文件格式错误",
-				"DD413": "文件过大",
-				"DD415": "不支持的媒体类型",
-				"VV500": "存储服务错误",
-				"VV507": "存储空间不足",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 34567,
-				"AA201": 12345,
-				"DD400": 2345,
-				"DD413": 678,
-				"DD415": 345,
-				"VV500": 123,
-				"VV507": 23,
-			},
-		},
-		{
-			TransType:   "/batch/job/execute",
-			TransTypeCN: "批处理任务执行",
-			Project:     "batch-service",
-			ReturnCode: map[string]string{
-				"AA200": "执行成功",
-				"AA202": "已接受，处理中",
-				"DD423": "资源锁定",
-				"DD424": "失败的依赖",
-				"VV500": "执行失败",
-				"VV504": "执行超时",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 8765,
-				"AA202": 4321,
-				"DD423": 234,
-				"DD424": 123,
-				"VV500": 56,
-				"VV504": 12,
-			},
-		},
-		{
-			TransType:   "/metrics/prometheus",
-			TransTypeCN: "监控指标接口",
-			Project:     "monitor-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 9999999,
-			},
-		},
-		{
-			TransType:   "/api/legacy/v0/deprecated",
-			TransTypeCN: "已废弃的旧接口",
-			Project:     "legacy-service",
-			ReturnCode: map[string]string{
-				"AA301": "永久重定向",
-				"AA308": "永久重定向(保持方法)",
-				"DD410": "已删除",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA301": 456,
-				"AA308": 234,
-				"DD410": 123,
-			},
-		},
-		{
-			TransType:   "/internal/debug/trace",
-			TransTypeCN: "内部调试追踪",
-			Project:     "debug-service",
-			ReturnCode: map[string]string{
-				"AA200": "成功",
-				"DD401": "未授权",
-				"ZZ403": "禁止访问",
-				"DD405": "方法不允许",
-				"VV501": "未实现",
-				"VV511": "需要网络认证",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 123,
-				"DD401": 456,
-				"ZZ403": 789,
-				"DD405": 234,
-				"VV501": 56,
-				"VV511": 12,
-			},
-		},
-		{
-			TransType:   "/graphql/query",
-			TransTypeCN: "GraphQL查询接口",
-			Project:     "graphql-service",
-			ReturnCode: map[string]string{
-				"AA200": "查询成功",
-				"DD400": "查询语法错误",
-				"DD401": "未授权",
-				"DD429": "查询过于频繁",
-				"VV500": "解析器错误",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 56789,
-				"DD400": 1234,
-				"DD401": 567,
-				"DD429": 234,
-				"VV500": 89,
-			},
-		},
-		{
-			TransType:   "/api/v6/stream/video",
-			TransTypeCN: "视频流媒体接口",
-			Project:     "stream-service",
-			ReturnCode: map[string]string{
-				"AA200": "流传输成功",
-				"AA206": "部分内容",
-				"DD400": "无效的范围请求",
-				"DD416": "请求范围不满足",
-				"VV500": "流媒体服务错误",
-				"VV504": "流超时",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 123456,
-				"AA206": 98765,
-				"DD400": 2345,
-				"DD416": 678,
-				"VV500": 345,
-				"VV504": 123,
-			},
-		},
-		{
-			TransType:   "/oauth2/token",
-			TransTypeCN: "OAuth2令牌接口",
-			Project:     "auth-service",
-			ReturnCode: map[string]string{
-				"AA200": "令牌颁发成功",
-				"DD400": "无效的授权请求",
-				"DD401": "客户端认证失败",
-				"DD403": "禁止的授权范围",
-				"VV500": "认证服务错误",
-			},
-			ReturnCodeCount: map[string]int{
-				"AA200": 678901,
-				"DD400": 12345,
-				"DD401": 6789,
-				"DD403": 1234,
-				"VV500": 567,
-			},
-		},
-	}
-	mockData = nil
-	return mockData, nil
-}
+//func SearchUrlPathWithReturnCode(ctx *gin.Context, region string, info *V1.SearchUrlPathWithReturnCodesInfo) ([]*entity.UrlPathAggEntity, error) {
+//	// 直接返回固定的mock数据，不做任何过滤或判断
+//	mockData := []*entity.UrlPathAggEntity{
+//		{
+//			TransType:   "/api/v1/user/login",
+//			TransTypeCN: "用户登录接口",
+//			Project:     "user-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//				"AA201": "创建成功",
+//				"DD400": "请求参数错误",
+//				"DD401": "未授权",
+//				"ZZ403": "禁止访问",
+//				"SS404": "资源不存在",
+//				"VV500": "服务器内部错误",
+//				"VV502": "网关错误",
+//				"VV503": "服务不可用",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 15678,
+//				"AA201": 234,
+//				"DD400": 1256,
+//				"DD401": 890,
+//				"ZZ403": 456,
+//				"SS404": 234,
+//				"VV500": 89,
+//				"VV502": 23,
+//				"VV503": 12,
+//			},
+//		},
+//		{
+//			TransType:   "/api/v2/order/create",
+//			TransTypeCN: "订单创建接口",
+//			Project:     "order-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//				"DD400": "请求参数错误",
+//				"DD409": "资源冲突",
+//				"DD429": "请求过于频繁",
+//				"VV500": "服务器内部错误",
+//				"VV504": "网关超时",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 98765,
+//				"DD400": 3456,
+//				"DD409": 567,
+//				"DD429": 1234,
+//				"VV500": 234,
+//				"VV504": 45,
+//			},
+//		},
+//		{
+//			TransType:   "/api/v3/payment/process",
+//			TransTypeCN: "支付处理接口",
+//			Project:     "payment-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "支付成功",
+//				"AA202": "处理中",
+//				"DD400": "参数错误",
+//				"DD402": "支付失败",
+//				"VV500": "系统异常",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 45678,
+//				"AA202": 12345,
+//				"DD400": 789,
+//				"DD402": 456,
+//				"VV500": 123,
+//			},
+//		},
+//		{
+//			TransType:   "/admin/v1/dashboard",
+//			TransTypeCN: "管理后台仪表盘",
+//			Project:     "admin-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//				"DD401": "未授权",
+//				"ZZ403": "权限不足",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 5678,
+//				"DD401": 234,
+//				"ZZ403": 89,
+//			},
+//		},
+//		{
+//			TransType:   "/health/check",
+//			TransTypeCN: "健康检查接口",
+//			Project:     "monitor-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "健康",
+//				"VV503": "服务不可用",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 999999,
+//				"VV503": 12,
+//			},
+//		},
+//		{
+//			TransType:   "/api/v4/product/search",
+//			TransTypeCN: "商品搜索接口",
+//			Project:     "product-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//				"AA204": "无内容",
+//				"AA206": "部分内容",
+//				"DD400": "搜索条件错误",
+//				"DD408": "请求超时",
+//				"DD413": "请求体过大",
+//				"DD422": "无法处理的实体",
+//				"VV500": "搜索引擎错误",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 87654,
+//				"AA204": 5432,
+//				"AA206": 1234,
+//				"DD400": 876,
+//				"DD408": 234,
+//				"DD413": 56,
+//				"DD422": 123,
+//				"VV500": 45,
+//			},
+//		},
+//		{
+//			TransType:   "/websocket/connect",
+//			TransTypeCN: "WebSocket连接",
+//			Project:     "websocket-service",
+//			ReturnCode: map[string]string{
+//				"AA101": "切换协议",
+//				"DD400": "错误的请求",
+//				"DD426": "需要升级",
+//				"VV500": "内部错误",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA101": 23456,
+//				"DD400": 567,
+//				"DD426": 123,
+//				"VV500": 34,
+//			},
+//		},
+//		{
+//			TransType:   "/api/v5/file/upload",
+//			TransTypeCN: "文件上传接口",
+//			Project:     "file-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "上传成功",
+//				"AA201": "创建成功",
+//				"DD400": "文件格式错误",
+//				"DD413": "文件过大",
+//				"DD415": "不支持的媒体类型",
+//				"VV500": "存储服务错误",
+//				"VV507": "存储空间不足",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 34567,
+//				"AA201": 12345,
+//				"DD400": 2345,
+//				"DD413": 678,
+//				"DD415": 345,
+//				"VV500": 123,
+//				"VV507": 23,
+//			},
+//		},
+//		{
+//			TransType:   "/batch/job/execute",
+//			TransTypeCN: "批处理任务执行",
+//			Project:     "batch-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "执行成功",
+//				"AA202": "已接受，处理中",
+//				"DD423": "资源锁定",
+//				"DD424": "失败的依赖",
+//				"VV500": "执行失败",
+//				"VV504": "执行超时",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 8765,
+//				"AA202": 4321,
+//				"DD423": 234,
+//				"DD424": 123,
+//				"VV500": 56,
+//				"VV504": 12,
+//			},
+//		},
+//		{
+//			TransType:   "/metrics/prometheus",
+//			TransTypeCN: "监控指标接口",
+//			Project:     "monitor-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 9999999,
+//			},
+//		},
+//		{
+//			TransType:   "/api/legacy/v0/deprecated",
+//			TransTypeCN: "已废弃的旧接口",
+//			Project:     "legacy-service",
+//			ReturnCode: map[string]string{
+//				"AA301": "永久重定向",
+//				"AA308": "永久重定向(保持方法)",
+//				"DD410": "已删除",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA301": 456,
+//				"AA308": 234,
+//				"DD410": 123,
+//			},
+//		},
+//		{
+//			TransType:   "/internal/debug/trace",
+//			TransTypeCN: "内部调试追踪",
+//			Project:     "debug-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "成功",
+//				"DD401": "未授权",
+//				"ZZ403": "禁止访问",
+//				"DD405": "方法不允许",
+//				"VV501": "未实现",
+//				"VV511": "需要网络认证",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 123,
+//				"DD401": 456,
+//				"ZZ403": 789,
+//				"DD405": 234,
+//				"VV501": 56,
+//				"VV511": 12,
+//			},
+//		},
+//		{
+//			TransType:   "/graphql/query",
+//			TransTypeCN: "GraphQL查询接口",
+//			Project:     "graphql-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "查询成功",
+//				"DD400": "查询语法错误",
+//				"DD401": "未授权",
+//				"DD429": "查询过于频繁",
+//				"VV500": "解析器错误",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 56789,
+//				"DD400": 1234,
+//				"DD401": 567,
+//				"DD429": 234,
+//				"VV500": 89,
+//			},
+//		},
+//		{
+//			TransType:   "/api/v6/stream/video",
+//			TransTypeCN: "视频流媒体接口",
+//			Project:     "stream-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "流传输成功",
+//				"AA206": "部分内容",
+//				"DD400": "无效的范围请求",
+//				"DD416": "请求范围不满足",
+//				"VV500": "流媒体服务错误",
+//				"VV504": "流超时",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 123456,
+//				"AA206": 98765,
+//				"DD400": 2345,
+//				"DD416": 678,
+//				"VV500": 345,
+//				"VV504": 123,
+//			},
+//		},
+//		{
+//			TransType:   "/oauth2/token",
+//			TransTypeCN: "OAuth2令牌接口",
+//			Project:     "auth-service",
+//			ReturnCode: map[string]string{
+//				"AA200": "令牌颁发成功",
+//				"DD400": "无效的授权请求",
+//				"DD401": "客户端认证失败",
+//				"DD403": "禁止的授权范围",
+//				"VV500": "认证服务错误",
+//			},
+//			ReturnCodeCount: map[string]int{
+//				"AA200": 678901,
+//				"DD400": 12345,
+//				"DD401": 6789,
+//				"DD403": 1234,
+//				"VV500": 567,
+//			},
+//		},
+//	}
+//	mockData = nil
+//	return mockData, nil
+//}

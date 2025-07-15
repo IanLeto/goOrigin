@@ -61,12 +61,11 @@ func ConvertLogToMetric(log *KafkaLogEntity) ODAMetricEntity {
 type TransInfoEntity struct {
 	Project     string              `json:"project"`
 	TransType   string              `json:"trans_type"`    // 等价于 url_path
-	TransTypeCn string              `json:"trans_type_cn"` // 等价于 url_path_cn
+	TransTypeCn []string            `json:"trans_type_cn"` // 改为数组，存储多个中文名称
 	ReturnCodes []*ReturnCodeEntity `json:"return_codes"`
 	IsAlert     bool                `json:"is_alert"`
-	Threshold   int                 `json:"threshold"` // 新增阈值字段
+	Threshold   int                 `json:"threshold"`
 }
-
 type ReturnCodeEntity struct {
 	ReturnCode string `json:"return_code"`
 	Project    string `json:"project"`
@@ -107,11 +106,16 @@ type UrlPathAggEntity struct {
 type TradePubMessageEntity struct {
 }
 
+// TransTypeKey 用于查询的键值对
+type TransTypeKey struct {
+	TransType string `json:"trans_type"`
+	Project   string `json:"project"`
+}
+
 // ToUrlPathAgg 修改后的转换函数，以TransInfoEntity的trans_type为主
 func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 	urlPathAgg := &UrlPathAggEntity{
 		TransType:       t.TransType, // 使用TransInfoEntity的trans_type
-		TransTypeCN:     t.TransTypeCn,
 		Project:         t.Project,
 		ReturnCode:      make(map[string]string),
 		ReturnCodeCount: make(map[string]int),
@@ -132,9 +136,9 @@ func (t *TransInfoEntity) ToUrlPathAgg() *UrlPathAggEntity {
 
 func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 	transInfo := &TransInfoEntity{
-		Project:     u.Project,
-		TransType:   u.TransType, // 使用UrlPathAggEntity的url_path作为trans_type
-		TransTypeCn: u.TransTypeCN,
+		Project:   u.Project,
+		TransType: u.TransType, // 使用UrlPathAggEntity的url_path作为trans_type
+		//TransTypeCn: u.TransTypeCN,
 		ReturnCodes: make([]*ReturnCodeEntity, 0, len(u.ReturnCode)),
 	}
 
@@ -157,37 +161,6 @@ func (u *UrlPathAggEntity) ToTransInfo() *TransInfoEntity {
 	}
 
 	return transInfo
-}
-
-// 批量转换函数，支持合并相同trans_type的数据
-func ConvertTransInfoListToUrlPathAggList(transInfoList []*TransInfoEntity) []*UrlPathAggEntity {
-	// 使用map来合并相同trans_type的数据
-	mergedMap := make(map[string]*UrlPathAggEntity)
-
-	for _, ti := range transInfoList {
-		key := ti.TransType
-
-		if existing, ok := mergedMap[key]; ok {
-			// 合并return codes
-			for _, rc := range ti.ReturnCodes {
-				// 只处理trans_type匹配的数据
-				if rc.TransType == "" || rc.TransType == ti.TransType {
-					// 累加计数
-					existing.ReturnCodeCount[rc.ReturnCode] += rc.Count
-				}
-			}
-		} else {
-			// 新建
-			mergedMap[key] = ti.ToUrlPathAgg()
-		}
-	}
-
-	// 转换为数组
-	result := make([]*UrlPathAggEntity, 0, len(mergedMap))
-	for _, upa := range mergedMap {
-		result = append(result, upa)
-	}
-	return result
 }
 
 func ConvertUrlPathAggListToTransInfoList(urlPathAggList []*UrlPathAggEntity) []*TransInfoEntity {

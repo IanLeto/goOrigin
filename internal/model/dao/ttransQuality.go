@@ -41,22 +41,23 @@ type EcampReturnCodeTb struct {
 	UpdatedAt  time.Time `gorm:"column:updated_at;type:datetime(3);not null" json:"updated_at"`
 }
 
-// EcampTransTypeTb 表结构体（简化版）
+// EcampTransTypeCNTb  表结构体（简化版）
 type EcampTransTypeCNTb struct {
 	*Meta
-	SysName         string    `gorm:"size:100;not null" json:"sys_name"`         // 系统名称代码
+	SysName         string    `gorm:"size:100;not null" json:"sys_name"`         // 系统名称代码（相当于project）
 	ServiceName     string    `gorm:"size:100;not null" json:"service_name"`     // 服务名称代码
 	InterfaceEnname string    `gorm:"size:255;not null" json:"interface_enname"` // 接口英文名称
 	InterfaceName   string    `gorm:"size:255;not null" json:"interface_name"`   // 接口中文名称
+	Url             string    `gorm:"size:255;not null" json:"url"`              // URL（相当于trans_type）
 	CreatedAt       time.Time `gorm:"type:datetime(3);not null" json:"created_at"`
 	UpdatedAt       time.Time `gorm:"type:datetime(3);not null" json:"updated_at"`
 }
 
-// TableName 指定表名
+// TableNameEcampTransTypeCNTb TableName 指定表名
 const TableNameEcampTransTypeCNTb = "ecamp_trans_infoCN_tb"
 
 func (*EcampTransTypeCNTb) TableName() string {
-	return TableNameEcampTransTypeTb
+	return TableNameEcampTransTypeCNTb
 }
 
 const TableNameEcampTransTypeTb = "ecamp_trans_info_tb"

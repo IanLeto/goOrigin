@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"goOrigin/API/V1"
 	"goOrigin/internal/model/dao"
 	"goOrigin/internal/model/entity"
 	"strconv"
@@ -11,21 +10,20 @@ import (
 func ConvertToTransInfoEntity(transType *dao.EcampTransTypeTb, returnCodes []dao.EcampReturnCodeTb) *entity.TransInfoEntity {
 	var returnCodeEntities []*entity.ReturnCodeEntity
 
-	// 由于移除了外键，需要手动传入关联的 return codes
 	for _, rc := range returnCodes {
 		returnCodeEntities = append(returnCodeEntities, &entity.ReturnCodeEntity{
 			ReturnCode: rc.ReturnCode,
 			Project:    rc.Project,
 			TransType:  rc.TransType,
 			Status:     rc.Status,
-			Count:      0, // 如果需要从其他地方获取count，可以在这里设置
+			Count:      0,
 		})
 	}
 
 	return &entity.TransInfoEntity{
 		Project:     transType.Project,
 		TransType:   transType.TransType,
-		TransTypeCn: transType.TransTypeCN,
+		TransTypeCn: []string{}, // 初始化为空数组，后续会在查询中填充
 		ReturnCodes: returnCodeEntities,
 		IsAlert:     transType.IsAlert,
 		Threshold:   transType.Threshold,
@@ -159,83 +157,4 @@ func ToTransTypeCountEntity(doc *dao.EcampAggUrlDoc, transInfos []entity.TransIn
 		Total:         strconv.Itoa(total),
 		ResponseCount: strconv.Itoa(int(doc.TotalCount)),
 	}
-}
-
-// ConvertToTransTypeResponse 将ES查询结果和配置信息转换为响应格式
-func ConvertToTransTypeResponse(
-	kafkaLogs []*entity.KafkaLogEntity,
-	transInfoMap map[string]*entity.TransInfoEntity, // key: trans_type
-	page, pageSize int,
-) *V1.TransTypeResponse2 {
-	// 用于去重和聚合相同URL的返回码
-	urlReturnCodeMap := make(map[string]map[string]string)
-	urlCnNameMap := make(map[string]string)
-
-	// 遍历ES数据
-	for _, log := range kafkaLogs {
-		// 获取URL路径和返回码
-		urlPath := log.ReqURL
-		returnCode := log.ReturnCode
-
-		if urlPath == "" || returnCode == "" {
-			continue
-		}
-
-		// 从Trans扩展信息中获取trans_type
-		transType := log.Trans.TransType // 假设SpanTransTypeInfoEntity有TransType字段
-
-		// 查找对应的配置信息
-		transInfo, exists := transInfoMap[transType]
-		if !exists {
-			continue
-		}
-
-		// 初始化URL的返回码map
-		if _, ok := urlReturnCodeMap[urlPath]; !ok {
-			urlReturnCodeMap[urlPath] = make(map[string]string)
-			urlCnNameMap[urlPath] = transInfo.TransTypeCn
-		}
-
-		// 查找返回码对应的中文描述
-		for _, rc := range transInfo.ReturnCodes {
-			if rc.ReturnCode == returnCode {
-				break
-			}
-		}
-	}
-
-	// 转换为最终响应格式
-	items := make([]*V1.TransTypeItem2, 0, len(urlReturnCodeMap))
-	for urlPath, returnCodeMap := range urlReturnCodeMap {
-		item := &V1.TransTypeItem2{
-			UrlPath:    urlPath,
-			UrlPathCN:  urlCnNameMap[urlPath],
-			ReturnCode: returnCodeMap,
-		}
-		items = append(items, item)
-	}
-
-	// 计算分页
-	total := len(items)
-	start := (page - 1) * pageSize
-	end := start + pageSize
-
-	if start > total {
-		start = total
-	}
-	if end > total {
-		end = total
-	}
-
-	// 返回分页后的数据
-	return &V1.TransTypeResponse2{
-		Items:    items[start:end],
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
-	}
-}
-
-func ToUrlPathAggEntity(record *dao.AggUrlPathDoc) *entity.UrlPathAggEntity {
-	panic(1)
 }
