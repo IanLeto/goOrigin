@@ -1,0 +1,40 @@
+{
+  "id": "3jidaf",
+  "formula": "实际的查询语句",
+  "resultType": "vector",
+  "result": [
+    {
+      "metric": {
+        "pod": "nginx-7848d4b86f-2zvpt",
+        "pod_ip": "10.244.1.23",
+        "host_ip": "192.168.1.101"
+      },
+      "value": [
+        1699185600,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "pod": "nginx-7848d4b86f-9xlvn",
+        "pod_ip": "10.244.2.15",
+        "host_ip": "192.168.1.102"
+      },
+      "value": [
+        1699185600,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "pod": "nginx-7848d4b86f-k8s9m",
+        "pod_ip": "10.244.3.88",
+        "host_ip": "192.168.1.103"
+      },
+      "value": [
+        1699185600,
+        "1"
+      ]
+    }
+  ]
+}

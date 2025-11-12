@@ -37,3 +37,16 @@ type UpdateIanRecordRequest struct {
 type UpdateIanRecordResponse struct {
 	ID uint `json:"id"`
 }
+
+type QueryPodHistoryRes struct {
+	Data []PodHistoryInfo
+}
+
+type PodHistoryInfo struct {
+	HostIP  string
+	PodName string
+	PodIP   string
+	Time    int64
+	CPU     string
+	Memory  string
+}
