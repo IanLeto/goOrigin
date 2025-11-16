@@ -1,0 +1,217 @@
+package recordHandlers
+
+import (
+	"fmt"
+	"github.com/cstockton/go-conv"
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"goOrigin/API/V1"
+	"goOrigin/internal/logic"
+	"goOrigin/internal/model/entity"
+	"time"
+)
+
+func CreateRecord(c *gin.Context) {
+	var (
+		req = &V1.CreateIanRecordRequest{}
+		res = &V1.CreateIanRecordResponse{}
+		err error
+	)
+	if req.Region == "" {
+		c.Set("region", "win")
+	} else {
+		c.Set("region", req.Region)
+	}
+
+	if err = c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+
+	res.Id, err = logic.CreateRecord(c, req.CreateIanRecordRequestInfo)
+	if err != nil {
+		logrus.Errorf("%s", err)
+		goto ERR
+	}
+
+	V1.BuildResponse(c, V1.BuildInfo(res))
+	return
+ERR:
+	V1.BuildErrResponse(c, V1.BuildErrInfo(0, fmt.Sprintf("create recoed failed by %s", err)))
+}
+------------
+package V1
+
+type CreateIanRecordRequest struct {
+	*CreateIanRecordRequestInfo
+	Region string `json:"region"`
+}
+
+type CreateIanRecordRequestInfo struct {
+	Title     string  `json:"title"`
+	MorWeight float32 `json:"mor_weight"`
+	NigWeight float32 `json:"nig_weight"`
+	IsFuck    bool    `json:"is_fuck"`
+	Vol1      string  `json:"vol1"`
+	Vol2      string  `json:"vol2"`
+	Vol3      string  `json:"vol3"`
+	Vol4      string  `json:"vol4"`
+	Content   string  `json:"content"`
+	Cost      int     `json:"cost"`
+	Coding    string  `json:"coding"`
+	Social    string  `json:"social"`
+}
+
+type CreateIanRecordResponse struct {
+	Id uint `json:"id"`
+}
+
+------
+func CreateRecord(ctx *gin.Context, info *V1.CreateIanRecordRequestInfo) (uint, error) {
+	var (
+		tRecord      = &dao.TRecord{}
+		recordEntity = &entity.RecordEntity{}
+		region       = ctx.GetString("region")
+	)
+	recordEntity.Title = info.Title
+	recordEntity.MorWeight = info.MorWeight
+	recordEntity.NigWeight = info.NigWeight
+	recordEntity.Vol1 = info.Vol1
+	recordEntity.Vol2 = info.Vol2
+	recordEntity.Vol3 = info.Vol3
+	recordEntity.Vol4 = info.Vol4
+	recordEntity.Content = info.Content
+	recordEntity.Cost = info.Cost
+
+	tRecord = repository.ToRecordDAO(recordEntity)
+	db := mysql.GlobalMySQLConns[region]
+	res, _, err := mysql.Create(db.Client, tRecord)
+	if err != nil {
+		logger.Error(fmt.Sprintf("create record failed %s: %s", err, res))
+		goto ERR
+	}
+
+	return tRecord.ID, err
+ERR:
+	return 0, err
+
+}
+------
+package repository
+
+import (
+	"goOrigin/internal/model/dao"
+	"goOrigin/internal/model/entity"
+	"time"
+)
+
+func ToRecordDAO(record *entity.RecordEntity) *dao.TRecord {
+	if record == nil {
+		return nil
+	}
+
+	// 创建Meta实例
+	meta := &dao.Meta{
+		ID: record.ID,
+	}
+
+	return &dao.TRecord{
+		Meta:      meta, // 使用创建的Meta实例
+		Title:     record.Title,
+		MorWeight: record.MorWeight,
+		NigWeight: record.NigWeight,
+		Vol1:      record.Vol1,
+		Vol2:      record.Vol2,
+		Vol3:      record.Vol3,
+		Vol4:      record.Vol4,
+		Content:   record.Content,
+		IsFuck:    record.IsFuck,
+		Cost:      record.Cost,
+		Social:    record.Social,
+	}
+}
+
+// ToRecordEntity 方法：转换 TRecord 为 RecordEntity，并填充时间格式
+func ToRecordEntity(tRecord *dao.TRecord) *entity.RecordEntity {
+	// 创建 `RecordEntity` 实例
+	record := &entity.RecordEntity{
+		ID:         tRecord.ID,
+		Title:      tRecord.Title,
+		MorWeight:  tRecord.MorWeight,
+		NigWeight:  tRecord.NigWeight,
+		Content:    tRecord.Content,
+		Cost:       tRecord.Cost,
+		Vol1:       tRecord.Vol1,
+		Vol2:       tRecord.Vol2,
+		Vol3:       tRecord.Vol3,
+		Vol4:       tRecord.Vol4,
+		Social:     tRecord.Social,
+		IsFuck:     tRecord.IsFuck,
+		CreateTime: tRecord.CreateTime,
+		ModifyTime: tRecord.ModifyTime,
+	}
+
+	// 如果 CreateTime 存在，则填充时间格式
+	if tRecord.CreateTime > 0 {
+		// 转换为 `time.Time`
+		createTime := time.Unix(tRecord.CreateTime, 0)
+
+		// 生成不同格式的时间
+		record.TimeInfo = entity.RecordTimeInfo{
+			CreateTimeISO8601:   createTime.UTC().Format(time.RFC3339),                                            // UTC 时间（ISO 8601）
+			CreateTimeISO8601CN: createTime.In(time.FixedZone("CST", 8*3600)).Format("2006-01-02T15:04:05+08:00"), // 东八区
+			CreateTimeRFC822:    createTime.Format(time.RFC1123Z),                                                 // RFC 822 格式
+			CreateTimeUnix:      tRecord.CreateTime,                                                               // Unix 时间戳（秒）
+			CreateTimeUnixMs:    tRecord.CreateTime * 1000,                                                        // Unix 时间戳（毫秒）
+			CreateTimeDBFormat:  createTime.Format("2006-01-02 15:04:05"),                                         // 数据库格式
+			CreateTimeCompact:   createTime.Format("20060102150405"),                                              // 紧凑格式
+		}
+	}
+
+	return record
+}
+
+----------------------
+package entity
+
+// RecordTimeInfo 结构体，存储所有时间格式
+type RecordTimeInfo struct {
+	CreateTimeISO8601   string `json:"create_time_iso8601"`    // ISO 8601 标准格式（UTC）
+	CreateTimeISO8601CN string `json:"create_time_iso8601_cn"` // ISO 8601 北京时间（东八区）
+	CreateTimeRFC822    string `json:"create_time_rfc822"`     // RFC 822 格式
+	CreateTimeUnix      int64  `json:"create_time_unix"`       // Unix 时间戳（秒）
+	CreateTimeUnixMs    int64  `json:"create_time_unix_ms"`    // Unix 时间戳（毫秒）
+	CreateTimeDBFormat  string `json:"create_time_db"`         // 数据库常用格式
+	CreateTimeCompact   string `json:"create_time_compact"`    // 紧凑格式（无分隔符）
+}
+
+// BalanceInfo 表示余额和消费相关的信息
+type BalanceInfo struct {
+	CurrentBalance float64 `json:"current_balance"` // 当前余额
+	AvgDailyCost   float64 `json:"avg_daily_cost"`  // 平均每日支出（可通过历史数据计算得到）
+	PredictDays    int     `json:"predict_days"`    // 可支撑天数（系统根据 balance / avg_cost 推算）
+	UpdateTime     int64   `json:"update_time"`     // 更新时间戳
+}
+
+// RecordEntity 结构体，包含原始数据 + 时间信息 + 余额信息
+type RecordEntity struct {
+	ID        uint    `json:"id" bson:"_id"`
+	Title     string  `json:"title" bson:"title"`
+	MorWeight float32 `json:"mor_weight"`
+	NigWeight float32 `json:"nig_weight"`
+
+	IsFuck     bool           `json:"is_fuck"`
+	Vol1       string         `json:"vol1" bson:"vol1"`
+	Vol2       string         `json:"vol2" bson:"vol2"`
+	Vol3       string         `json:"vol3" bson:"vol3"`
+	Vol4       string         `json:"vol4" bson:"vol4"`
+	Cost       int            `json:"cost" bson:"cost"` // 单日或一次性支出
+	Content    string         `json:"content" bson:"content"`
+	Coding     string         `json:"coding"`
+	Social     string         `json:"social"`
+	CreateTime int64          `json:"create_time"`
+	ModifyTime int64          `json:"modify_time"`
+	TimeInfo   RecordTimeInfo `json:"time_info"`
+
+	Balance *BalanceInfo `json:"balance,omitempty"` // 新增余额信息，可选字段
+}

@@ -64,10 +64,6 @@ func GetClusterIPPool(ctx context.Context, proxyURL string) ([]string, error) {
 	return ipoolNames, nil
 }
 
-//func QueryHistroy(ctx context.Context, req interface{}) {
-//	re, err := svc.Metric().Query(ctx, req)
-//}
-
 type QueryResult struct {
 	ID string
 }
